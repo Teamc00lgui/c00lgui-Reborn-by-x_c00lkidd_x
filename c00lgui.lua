@@ -10,8 +10,12 @@ local CoreGui = game:GetService("CoreGui")
 local Player = Players.LocalPlayer
 local PlayerGui = Player:WaitForChild("PlayerGui")
 
--- Seleção do contêiner (Tenta CoreGui, fallback para PlayerGui)
+-- =========================================================
+-- CONTAINER
+-- =========================================================
+
 local TargetContainer = CoreGui
+
 local success = pcall(function()
 	local test = Instance.new("Folder")
 	test.Parent = CoreGui
@@ -40,16 +44,43 @@ local Theme = {
 }
 
 local Animations = {
-	Fast = TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-	Normal = TweenInfo.new(0.22, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
-	Smooth = TweenInfo.new(0.35, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+	Fast = TweenInfo.new(
+		0.12,
+		Enum.EasingStyle.Quad,
+		Enum.EasingDirection.Out
+	),
+
+	Normal = TweenInfo.new(
+		0.22,
+		Enum.EasingStyle.Quart,
+		Enum.EasingDirection.Out
+	),
+
+	Smooth = TweenInfo.new(
+		0.35,
+		Enum.EasingStyle.Quint,
+		Enum.EasingDirection.Out
+	),
+
+	TabOut = TweenInfo.new(
+		0.20,
+		Enum.EasingStyle.Quart,
+		Enum.EasingDirection.In
+	),
+
+	TabIn = TweenInfo.new(
+		0.32,
+		Enum.EasingStyle.Quint,
+		Enum.EasingDirection.Out
+	)
 }
 
 -- =========================================================
 -- CLEANUP
 -- =========================================================
 
-local OldGui = TargetContainer:FindFirstChild(GUI_NAME) or PlayerGui:FindFirstChild(GUI_NAME)
+local OldGui = TargetContainer:FindFirstChild(GUI_NAME)
+	or PlayerGui:FindFirstChild(GUI_NAME)
 
 if OldGui then
 	OldGui:Destroy()
@@ -120,6 +151,7 @@ TitleBar.Parent = Main
 Corner(TitleBar, 14)
 
 local TitleBottom = Instance.new("Frame")
+TitleBottom.Name = "TitleBottom"
 TitleBottom.Size = UDim2.new(1, 0, 0, 14)
 TitleBottom.Position = UDim2.new(0, 0, 1, -14)
 TitleBottom.BackgroundColor3 = Theme.Red
@@ -143,6 +175,7 @@ Title.Parent = TitleBar
 -- =========================================================
 
 local Minimize = Instance.new("TextButton")
+Minimize.Name = "Minimize"
 Minimize.Size = UDim2.fromOffset(32, 30)
 Minimize.Position = UDim2.new(1, -76, 0, 7)
 Minimize.BackgroundColor3 = Theme.DarkRed
@@ -156,6 +189,7 @@ Minimize.Parent = TitleBar
 Corner(Minimize, 7)
 
 local Close = Instance.new("TextButton")
+Close.Name = "Close"
 Close.Size = UDim2.fromOffset(32, 30)
 Close.Position = UDim2.new(1, -38, 0, 7)
 Close.BackgroundColor3 = Theme.DarkRed
@@ -173,9 +207,11 @@ Corner(Close, 7)
 -- =========================================================
 
 local Body = Instance.new("Frame")
+Body.Name = "Body"
 Body.Size = UDim2.new(1, 0, 1, -44)
 Body.Position = UDim2.fromOffset(0, 44)
 Body.BackgroundTransparency = 1
+Body.BorderSizePixel = 0
 Body.Parent = Main
 
 -- =========================================================
@@ -183,6 +219,7 @@ Body.Parent = Main
 -- =========================================================
 
 local Sidebar = Instance.new("Frame")
+Sidebar.Name = "Sidebar"
 Sidebar.Size = UDim2.fromOffset(135, 370)
 Sidebar.Position = UDim2.fromOffset(10, 8)
 Sidebar.BackgroundColor3 = Theme.Panel
@@ -207,9 +244,11 @@ SidebarLayout.Parent = Sidebar
 -- =========================================================
 
 local Content = Instance.new("Frame")
+Content.Name = "Content"
 Content.Size = UDim2.new(1, -155, 1, -16)
 Content.Position = UDim2.fromOffset(145, 8)
 Content.BackgroundTransparency = 1
+Content.BorderSizePixel = 0
 Content.ClipsDescendants = true
 Content.Parent = Body
 
@@ -220,6 +259,7 @@ Content.Parent = Body
 local Pages = {}
 local Tabs = {}
 local CurrentPage
+local TabTransitionId = 0
 
 local function CreatePage(name)
 	local page = Instance.new("ScrollingFrame")
@@ -269,6 +309,7 @@ local function AddHeader(page, text)
 	label.Font = Enum.Font.Code
 	label.TextXAlignment = Enum.TextXAlignment.Left
 	label.Parent = page
+
 	return label
 end
 
@@ -283,6 +324,7 @@ local function AddDescription(page, text)
 	label.TextWrapped = true
 	label.TextXAlignment = Enum.TextXAlignment.Left
 	label.Parent = page
+
 	return label
 end
 
@@ -589,10 +631,12 @@ AddButton(
 		}):Play()
 
 		task.delay(0.12, function()
-			Tween(MainStroke, Animations.Smooth, {
-				Color = Theme.Red,
-				Thickness = 2
-			}):Play()
+			if MainStroke and MainStroke.Parent then
+				Tween(MainStroke, Animations.Smooth, {
+					Color = Theme.Red,
+					Thickness = 2
+				}):Play()
+			end
 		end)
 	end
 )
@@ -672,7 +716,9 @@ AddButton(
 		}):Play()
 
 		task.delay(0.4, function()
-			Gui:Destroy()
+			if Gui and Gui.Parent then
+				Gui:Destroy()
+			end
 		end)
 	end
 )
@@ -680,6 +726,22 @@ AddButton(
 -- =========================================================
 -- TAB SYSTEM
 -- =========================================================
+
+local function UpdateTabVisuals(selectedName)
+	for tabName, button in pairs(Tabs) do
+		local selected = tabName == selectedName
+
+		Tween(button, Animations.Normal, {
+			BackgroundColor3 = selected
+				and Theme.DarkRed
+				or Theme.Panel2,
+
+			TextColor3 = selected
+				and Theme.White
+				or Theme.Grey
+		}):Play()
+	end
+end
 
 local function SelectTab(name)
 	local newPage = Pages[name]
@@ -692,41 +754,56 @@ local function SelectTab(name)
 		return
 	end
 
+	TabTransitionId += 1
+
+	local transitionId = TabTransitionId
 	local oldPage = CurrentPage
 
-	for tabName, button in pairs(Tabs) do
-		local selected = tabName == name
+	UpdateTabVisuals(name)
 
-		Tween(button, Animations.Normal, {
-			BackgroundColor3 = selected
-				and Theme.DarkRed
-				or Theme.Panel2,
-
-			TextColor3 = selected
-				and Theme.White
-				or Theme.Grey
-		}):Play()
-	end
+	-- =====================================================
+	-- OLD PAGE
+	-- =====================================================
 
 	if oldPage then
 		oldPage.Visible = true
 
-		Tween(oldPage, Animations.Normal, {
-			Position = UDim2.new(-0.08, 0, 0, 0)
+		Tween(oldPage, Animations.TabOut, {
+			Position = UDim2.new(-0.10, 0, 0, 0)
 		}):Play()
 
-		task.delay(0.18, function()
-			oldPage.Visible = false
-			oldPage.Position = UDim2.fromScale(0, 0)
+		task.delay(0.20, function()
+			if transitionId ~= TabTransitionId then
+				return
+			end
+
+			if oldPage and oldPage.Parent then
+				oldPage.Visible = false
+				oldPage.Position = UDim2.fromScale(0, 0)
+			end
 		end)
 	end
 
-	newPage.Visible = true
-	newPage.Position = UDim2.new(0.08, 0, 0, 0)
+	-- =====================================================
+	-- NEW PAGE
+	-- =====================================================
 
-	Tween(newPage, Animations.Smooth, {
-		Position = UDim2.fromScale(0, 0)
-	}):Play()
+	newPage.Visible = true
+
+	-- Start slightly to the right
+	newPage.Position = UDim2.new(0.10, 0, 0, 0)
+
+	-- Give the page a tiny visual delay so the transition
+	-- feels smoother instead of both pages changing instantly.
+	task.defer(function()
+		if transitionId ~= TabTransitionId then
+			return
+		end
+
+		Tween(newPage, Animations.TabIn, {
+			Position = UDim2.fromScale(0, 0)
+		}):Play()
+	end)
 
 	CurrentPage = newPage
 end
@@ -772,6 +849,18 @@ local function AddTab(name)
 		end
 	end)
 
+	button.MouseButton1Down:Connect(function()
+		Tween(button, Animations.Fast, {
+			Size = UDim2.new(1, -5, 0, 37)
+		}):Play()
+	end)
+
+	button.MouseButton1Up:Connect(function()
+		Tween(button, Animations.Fast, {
+			Size = UDim2.new(1, 0, 0, 40)
+		}):Play()
+	end)
+
 	button.MouseButton1Click:Connect(function()
 		SelectTab(name)
 	end)
@@ -784,6 +873,11 @@ AddTab("VISUALS")
 AddTab("SETTINGS")
 AddTab("ABOUT")
 
+-- =========================================================
+-- INITIAL PAGE
+-- =========================================================
+
+CurrentPage = nil
 SelectTab("PLAYER")
 
 -- =========================================================
@@ -792,31 +886,67 @@ SelectTab("PLAYER")
 
 local Minimized = false
 local NormalSize = UDim2.fromOffset(620, 430)
+local MinimizedSize = UDim2.fromOffset(620, 44)
+local WindowTween
+
+local function StopWindowTween()
+	if WindowTween then
+		WindowTween:Cancel()
+		WindowTween = nil
+	end
+end
 
 local function SetMinimized(state)
 	Minimized = state
 
+	StopWindowTween()
+
 	if state then
-		-- Disable interaction with the body
+		-- Hide the entire body before the window starts shrinking.
 		Body.Visible = false
 
-		-- Keep only the title bar visible
-		Tween(Main, Animations.Smooth, {
-			Size = UDim2.fromOffset(620, 44)
-		}):Play()
+		-- Keep only the title bar inside the window.
+		Main.ClipsDescendants = true
 
 		Minimize.Text = "+"
 
+		WindowTween = Tween(
+			Main,
+			Animations.Smooth,
+			{
+				Size = MinimizedSize
+			}
+		)
+
+		WindowTween:Play()
+
 	else
-		-- Restore the body before expanding
-		Body.Visible = true
-
-		-- Restore the complete window
-		Tween(Main, Animations.Smooth, {
-			Size = NormalSize
-		}):Play()
-
 		Minimize.Text = "—"
+
+		-- Keep the body hidden while the window expands.
+		Body.Visible = false
+
+		WindowTween = Tween(
+			Main,
+			Animations.Smooth,
+			{
+				Size = NormalSize
+			}
+		)
+
+		WindowTween:Play()
+
+		task.delay(0.36, function()
+			if not Main or not Main.Parent then
+				return
+			end
+
+			if not Minimized then
+				-- Guarantee the window is fully restored.
+				Main.Size = NormalSize
+				Body.Visible = true
+			end
+		end)
 	end
 end
 
@@ -829,19 +959,29 @@ end)
 -- =========================================================
 
 Close.MouseButton1Click:Connect(function()
-	Tween(Main, Animations.Smooth, {
-		Size = UDim2.fromOffset(620, 0)
-	}):Play()
+	StopWindowTween()
+
+	Body.Visible = false
+
+	local closeTween = Tween(
+		Main,
+		Animations.Smooth,
+		{
+			Size = UDim2.fromOffset(620, 0)
+		}
+	)
+
+	closeTween:Play()
 
 	task.delay(0.4, function()
-		if Gui then
+		if Gui and Gui.Parent then
 			Gui:Destroy()
 		end
 	end)
 end)
 
 -- =========================================================
--- BUTTON ANIMATIONS
+-- WINDOW BUTTON ANIMATIONS
 -- =========================================================
 
 for _, button in ipairs({Minimize, Close}) do
