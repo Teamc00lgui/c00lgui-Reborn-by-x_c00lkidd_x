@@ -18,8 +18,8 @@ end
 
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 460, 0, 330)
-MainFrame.Position = UDim2.new(0.5, -230, 0.5, -165)
+MainFrame.Size = UDim2.new(0, 460, 0, 340)
+MainFrame.Position = UDim2.new(0.5, -230, 0.5, -170)
 MainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 MainFrame.BorderColor3 = Color3.fromRGB(255, 0, 0)
 MainFrame.BorderSizePixel = 2
@@ -36,8 +36,8 @@ TitleLabel.BorderColor3 = Color3.fromRGB(255, 0, 0)
 TitleLabel.BorderSizePixel = 1
 TitleLabel.Text = "c00lgui Reborn by x_c00lkidd_x"
 TitleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-TitleLabel.TextSize = 16
-TitleLabel.Font = Enum.Font.Bodoni
+TitleLabel.TextSize = 15
+TitleLabel.Font = Enum.Font.SourceSans
 TitleLabel.Parent = MainFrame
 
 local CloseBtn = Instance.new("TextButton")
@@ -49,8 +49,8 @@ CloseBtn.BorderColor3 = Color3.fromRGB(255, 0, 0)
 CloseBtn.BorderSizePixel = 1
 CloseBtn.Text = "X"
 CloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-CloseBtn.Font = Enum.Font.Bodoni
-CloseBtn.TextSize = 16
+CloseBtn.Font = Enum.Font.SourceSansBold
+CloseBtn.TextSize = 15
 CloseBtn.Parent = MainFrame
 
 CloseBtn.MouseButton1Click:Connect(function()
@@ -91,7 +91,7 @@ local function createTab(tabName)
     tabBtn.BorderSizePixel = 1
     tabBtn.Text = tabName
     tabBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    tabBtn.Font = Enum.Font.Bodoni
+    tabBtn.Font = Enum.Font.SourceSans
     tabBtn.TextSize = 14
     tabBtn.Parent = TabBar
 
@@ -107,8 +107,8 @@ local function createTab(tabName)
 
     local gridLayout = Instance.new("UIGridLayout")
     gridLayout.Parent = tabFrame
-    gridLayout.CellSize = UDim2.new(0, 140, 0, 28)
-    gridLayout.CellPadding = UDim2.new(0, 5, 0, 5)
+    gridLayout.CellSize = UDim2.new(0, 102, 0, 28)
+    gridLayout.CellPadding = UDim2.new(0, 4, 0, 4)
     gridLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
     local padding = Instance.new("UIPadding")
@@ -123,7 +123,7 @@ local function createTab(tabName)
             data.Button.TextColor3 = Color3.fromRGB(180, 180, 180)
         end
         tabFrame.Visible = true
-        tabBtn.BackgroundColor3 = Color3.fromRGB(60, 0, 0)
+        tabBtn.BackgroundColor3 = Color3.fromRGB(80, 0, 0)
         tabBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
     end
 
@@ -142,7 +142,8 @@ local function createTab(tabName)
             headerLabel.Text = headerText
             headerLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
             headerLabel.Font = Enum.Font.SourceSansBold
-            headerLabel.TextSize = 15
+            headerLabel.TextSize = 14
+            headerLabel.TextWrapped = true
             headerLabel.Parent = tabFrame
         end,
         AddButton = function(btnText, callback)
@@ -153,8 +154,9 @@ local function createTab(tabName)
             scriptBtn.BorderSizePixel = 1
             scriptBtn.Text = btnText
             scriptBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-            scriptBtn.Font = Enum.Font.Bodoni
-            scriptBtn.TextSize = 14
+            scriptBtn.Font = Enum.Font.SourceSans
+            scriptBtn.TextSize = 13
+            scriptBtn.TextWrapped = true
             scriptBtn.Parent = tabFrame
 
             scriptBtn.MouseButton1Click:Connect(function()
@@ -171,31 +173,41 @@ local function createTab(tabName)
     return tabs[tabName]
 end
 
-local weaponsTab = createTab("Weapons")
-local gearTab = createTab("Gear/Tools")
-local localTab = createTab("Local Player")
+local scriptsTab = createTab("Scripts")
+local adminTab = createTab("Admin/Guis")
+local settingsTab = createTab("Settings")
 
-weaponsTab.AddHeader("Weapon Scripts")
-weaponsTab.AddButton("Drage", function() print("Drage") end)
-weaponsTab.AddButton("Dual Blades", function() print("Dual Blades") end)
-weaponsTab.AddButton("Eyelaser", function() print("Eyelaser") end)
-weaponsTab.AddButton("Knife", function() print("Knife") end)
-weaponsTab.AddButton("Lance", function() print("Lance") end)
-weaponsTab.AddButton("Lightsaber", function() print("Lightsaber") end)
+scriptsTab.AddHeader("Scripts")
+scriptsTab.AddHeader("Fe Scripts")
+scriptsTab.AddButton("Bring all head", function() end)
+scriptsTab.AddButton("sing c00lkidd theme", function() end)
+scriptsTab.AddButton("Platform", function() end)
+scriptsTab.AddButton("Head Fling", function() end)
+scriptsTab.AddButton("Chat Bypass", function() end)
+scriptsTab.AddButton("Floating Pad", function() end)
+scriptsTab.AddButton("Head Shake NEED REANIM", function() end)
+scriptsTab.AddButton("Name Tag (FD)", function() end)
+scriptsTab.AddButton("Destroy Chat", function() end)
+scriptsTab.AddButton("Get all items", function() end)
+scriptsTab.AddButton("Black Hole", function() end)
+scriptsTab.AddButton("Walk On Walls", function() end)
 
-gearTab.AddHeader("Gear/Tools")
-gearTab.AddButton("Custom Gear", function() print("Custom Gear") end)
-gearTab.AddButton("Stamper Tools", function() print("Stamper Tools") end)
-gearTab.AddButton("Tool Stealer", function() print("Tool Stealer") end)
+adminTab.AddHeader("Admin Commands/Guis")
+adminTab.AddHeader("Admin Guis")
+adminTab.AddButton("Harked", function() end)
+adminTab.AddButton("Project Ligma", function() end)
+adminTab.AddButton("TOPK3K", function() end)
+adminTab.AddButton("ByteGui", function() end)
+adminTab.AddButton("Reviz Admin", function() end)
+adminTab.AddButton("Infinite Yield", function() end)
+adminTab.AddButton("Fates Admin", function() end)
+adminTab.AddButton("CMD-X", function() end)
 
-localTab.AddHeader("Player Mods")
-localTab.AddButton("Speed 50", function()
-    if game.Players.LocalPlayer.Character then
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 50
-    end
-end)
-localTab.AddButton("Jump 100", function()
-    if game.Players.LocalPlayer.Character then
-        game.Players.LocalPlayer.Character.Humanoid.JumpPower = 100
-    end
-end)
+settingsTab.AddHeader("God")
+settingsTab.AddHeader("Invisibility")
+settingsTab.AddButton("Enable God", function() end)
+settingsTab.AddButton("Enable Invis", function() end)
+settingsTab.AddHeader("WalkSpeed")
+settingsTab.AddHeader("JumpPower")
+settingsTab.AddButton("Set WalkSpeed", function() end)
+settingsTab.AddButton("Set JumpPower", function() end)
