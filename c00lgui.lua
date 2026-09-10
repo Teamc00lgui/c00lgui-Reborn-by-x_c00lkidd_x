@@ -966,6 +966,7 @@ local function SetMinimized(state)
 
 	if state then
 		Body.Visible = false
+		TitleBottom.Visible = false
 
 		Minimize.Text = "+"
 
@@ -982,6 +983,7 @@ local function SetMinimized(state)
 	else
 		Minimize.Text = "—"
 		Body.Visible = false
+		TitleBottom.Visible = false
 
 		WindowTween = Tween(
 			Main,
@@ -1000,6 +1002,7 @@ local function SetMinimized(state)
 
 			if not Minimized then
 				Main.Size = NormalSize
+				TitleBottom.Visible = true
 				Body.Visible = true
 			end
 		end)
