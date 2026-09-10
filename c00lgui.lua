@@ -797,12 +797,21 @@ local function SetMinimized(state)
 	Minimized = state
 
 	if state then
+		-- Disable interaction with the body
+		Body.Visible = false
+
+		-- Keep only the title bar visible
 		Tween(Main, Animations.Smooth, {
 			Size = UDim2.fromOffset(620, 44)
 		}):Play()
 
 		Minimize.Text = "+"
+
 	else
+		-- Restore the body before expanding
+		Body.Visible = true
+
+		-- Restore the complete window
 		Tween(Main, Animations.Smooth, {
 			Size = NormalSize
 		}):Play()
