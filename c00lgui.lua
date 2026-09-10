@@ -1,6 +1,6 @@
 -- =========================================================
 -- c00lgui Reborn by x_c00lkidd_x
--- V1
+-- V2
 -- =========================================================
 
 local Players = game:GetService("Players")
@@ -14,12 +14,21 @@ local LocalPlayer = Players.LocalPlayer
 -- COLORS / FONT
 -- =========================================================
 
-local blak = Color3.new(0, 0, 0)
-local rede = Color3.new(255 / 255, 0 / 255, 0 / 255)
+local blak = Color3.fromRGB(0, 0, 0)
+local rede = Color3.fromRGB(255, 0, 0)
+local whit = Color3.fromRGB(255, 255, 255)
 local tef = Enum.Font.SourceSans
-local whit = Color3.new(255 / 255, 255 / 255, 255 / 255)
 
 local GUI_NAME = "c00lgui_Reborn_by_x_c00lkidd_x"
+
+-- =========================================================
+-- TRANSPARENCY
+-- =========================================================
+
+local MainTransparency = 0.18
+local PanelTransparency = 0.10
+local ButtonTransparency = 0.04
+local InputTransparency = 0.06
 
 -- =========================================================
 -- DUPLICATE GUARD
@@ -66,15 +75,21 @@ cka.Parent = GuiParent
 local frame = Instance.new("Frame")
 frame.Parent = cka
 frame.BackgroundColor3 = blak
+frame.BackgroundTransparency = MainTransparency
 frame.BorderColor3 = rede
 frame.BorderSizePixel = 3
 frame.Name = "Frame"
 frame.Position = UDim2.new(0, 3, 0.3, 0)
 frame.Size = UDim2.new(0, 300, 0, 400)
 
+-- =========================================================
+-- PAGES CONTAINER
+-- =========================================================
+
 local pges = Instance.new("Frame")
 pges.Parent = frame
 pges.BackgroundColor3 = blak
+pges.BackgroundTransparency = MainTransparency
 pges.BorderColor3 = rede
 pges.BorderSizePixel = 3
 pges.Name = "Pages"
@@ -90,6 +105,7 @@ cope.Parent = cka
 cope.Active = true
 cope.AutoButtonColor = true
 cope.BackgroundColor3 = blak
+cope.BackgroundTransparency = ButtonTransparency
 cope.BorderColor3 = rede
 cope.BorderSizePixel = 3
 cope.Name = "Close/Open"
@@ -118,60 +134,32 @@ end)
 -- PAGES
 -- =========================================================
 
-local page1 = Instance.new("Frame")
-page1.Parent = pges
-page1.BackgroundColor3 = blak
-page1.BorderColor3 = rede
-page1.BorderSizePixel = 3
-page1.Name = "Page1"
-page1.Position = UDim2.new(0, 0, 0, 83)
-page1.Size = UDim2.new(1, 0, 1, -106)
-page1.ZIndex = 2
-page1.Visible = true
+local PageList = {}
 
-local page2 = Instance.new("Frame")
-page2.Parent = pges
-page2.BackgroundColor3 = blak
-page2.BorderColor3 = rede
-page2.BorderSizePixel = 3
-page2.Name = "Page2"
-page2.Position = UDim2.new(0, 0, 0, 83)
-page2.Size = UDim2.new(1, 0, 1, -106)
-page2.ZIndex = 2
-page2.Visible = false
+local function CreatePage(Name, Visible)
+	local Page = Instance.new("Frame")
 
-local page3 = Instance.new("Frame")
-page3.Parent = pges
-page3.BackgroundColor3 = blak
-page3.BorderColor3 = rede
-page3.BorderSizePixel = 3
-page3.Name = "Page3"
-page3.Position = UDim2.new(0, 0, 0, 83)
-page3.Size = UDim2.new(1, 0, 1, -106)
-page3.ZIndex = 2
-page3.Visible = false
+	Page.Parent = pges
+	Page.BackgroundColor3 = blak
+	Page.BackgroundTransparency = PanelTransparency
+	Page.BorderColor3 = rede
+	Page.BorderSizePixel = 3
+	Page.Name = Name
+	Page.Position = UDim2.new(0, 0, 0, 83)
+	Page.Size = UDim2.new(1, 0, 1, -106)
+	Page.ZIndex = 2
+	Page.Visible = Visible
 
-local page4 = Instance.new("Frame")
-page4.Parent = pges
-page4.BackgroundColor3 = blak
-page4.BorderColor3 = rede
-page4.BorderSizePixel = 3
-page4.Name = "Page4"
-page4.Position = UDim2.new(0, 0, 0, 83)
-page4.Size = UDim2.new(1, 0, 1, -106)
-page4.ZIndex = 2
-page4.Visible = false
+	table.insert(PageList, Page)
 
-local page5 = Instance.new("Frame")
-page5.Parent = pges
-page5.BackgroundColor3 = blak
-page5.BorderColor3 = rede
-page5.BorderSizePixel = 3
-page5.Name = "Page5"
-page5.Position = UDim2.new(0, 0, 0, 83)
-page5.Size = UDim2.new(1, 0, 1, -106)
-page5.ZIndex = 2
-page5.Visible = false
+	return Page
+end
+
+local page1 = CreatePage("Page1", true)
+local page2 = CreatePage("Page2", false)
+local page3 = CreatePage("Page3", false)
+local page4 = CreatePage("Page4", false)
+local page5 = CreatePage("Page5", false)
 
 -- =========================================================
 -- SETTINGS
@@ -180,6 +168,7 @@ page5.Visible = false
 local page = Instance.new("Frame")
 page.Parent = frame
 page.BackgroundColor3 = blak
+page.BackgroundTransparency = MainTransparency
 page.BorderColor3 = rede
 page.BorderSizePixel = 3
 page.Name = "Settings"
@@ -195,6 +184,7 @@ page.Visible = true
 local right = Instance.new("TextButton")
 right.Parent = frame
 right.BackgroundColor3 = blak
+right.BackgroundTransparency = ButtonTransparency
 right.BorderColor3 = rede
 right.BorderSizePixel = 3
 right.Name = ">"
@@ -205,10 +195,12 @@ right.Font = tef
 right.Text = ">"
 right.TextColor3 = whit
 right.TextSize = 48
+right.AutoButtonColor = true
 
 local left = Instance.new("TextButton")
 left.Parent = frame
 left.BackgroundColor3 = blak
+left.BackgroundTransparency = ButtonTransparency
 left.BorderColor3 = rede
 left.BorderSizePixel = 3
 left.Name = "<"
@@ -219,6 +211,7 @@ left.Font = tef
 left.Text = "<"
 left.TextColor3 = whit
 left.TextSize = 48
+left.AutoButtonColor = true
 
 -- =========================================================
 -- PAGE EDGE BUTTONS
@@ -227,6 +220,7 @@ left.TextSize = 48
 local addonr = Instance.new("TextButton")
 addonr.Parent = page5
 addonr.BackgroundColor3 = blak
+addonr.BackgroundTransparency = ButtonTransparency
 addonr.BorderColor3 = rede
 addonr.BorderSizePixel = 3
 addonr.Name = "addonr"
@@ -237,10 +231,12 @@ addonr.Text = ">"
 addonr.TextColor3 = whit
 addonr.TextSize = 48
 addonr.ZIndex = 3
+addonr.AutoButtonColor = true
 
 local addonl = Instance.new("TextButton")
 addonl.Parent = page1
 addonl.BackgroundColor3 = blak
+addonl.BackgroundTransparency = ButtonTransparency
 addonl.BorderColor3 = rede
 addonl.BorderSizePixel = 3
 addonl.Name = "addonl"
@@ -251,6 +247,7 @@ addonl.Text = "<"
 addonl.TextColor3 = whit
 addonl.TextSize = 48
 addonl.ZIndex = 3
+addonl.AutoButtonColor = true
 
 -- =========================================================
 -- TITLE
@@ -259,6 +256,7 @@ addonl.ZIndex = 3
 local title = Instance.new("TextLabel")
 title.Parent = frame
 title.BackgroundColor3 = blak
+title.BackgroundTransparency = ButtonTransparency
 title.BorderColor3 = rede
 title.BorderSizePixel = 3
 title.Name = "Title"
@@ -266,113 +264,91 @@ title.Position = UDim2.new(0, 0, 0, 0)
 title.Size = UDim2.new(1, 0, 0, 40)
 title.ZIndex = 2
 title.Font = tef
-title.Text = "c00lgui Reborn Rc7 by v3rx"
+title.Text = "c00lgui Reborn by x_c00lkidd_x"
 title.TextColor3 = whit
 title.TextSize = 24
+title.TextXAlignment = Enum.TextXAlignment.Center
+title.TextYAlignment = Enum.TextYAlignment.Center
 
 -- =========================================================
 -- ORIGINAL PANEL STRUCTURE
 -- =========================================================
 
-local acg = Instance.new("Frame")
-acg.Parent = page1
-acg.BackgroundColor3 = blak
-acg.BorderColor3 = rede
-acg.BorderSizePixel = 3
-acg.Name = "Admin Commands/Guis"
-acg.Position = UDim2.new(0.5, 3, 0, 0)
-acg.Size = UDim2.new(0.5, -3, 1, 0)
-acg.ZIndex = 2
+local function CreatePanel(Parent, Name, Position)
+	local Panel = Instance.new("Frame")
 
-local sd = Instance.new("Frame")
-sd.Parent = page1
-sd.BackgroundColor3 = blak
-sd.BorderColor3 = rede
-sd.BorderSizePixel = 3
-sd.Name = "Server Destruction"
-sd.Position = UDim2.new(0, 0, 0, 0)
-sd.Size = UDim2.new(0.5, -3, 1, 0)
-sd.ZIndex = 2
+	Panel.Parent = Parent
+	Panel.BackgroundColor3 = blak
+	Panel.BackgroundTransparency = PanelTransparency
+	Panel.BorderColor3 = rede
+	Panel.BorderSizePixel = 3
+	Panel.Name = Name
+	Panel.Position = Position
+	Panel.Size = UDim2.new(0.5, -3, 1, 0)
+	Panel.ZIndex = 2
 
-local gt = Instance.new("Frame")
-gt.Parent = page2
-gt.BackgroundColor3 = blak
-gt.BorderColor3 = rede
-gt.BorderSizePixel = 3
-gt.Name = "Gear/Tools"
-gt.Position = UDim2.new(0.5, 3, 0, 0)
-gt.Size = UDim2.new(0.5, -3, 1, 0)
-gt.ZIndex = 2
+	return Panel
+end
 
-local ws = Instance.new("Frame")
-ws.Parent = page2
-ws.BackgroundColor3 = blak
-ws.BorderColor3 = rede
-ws.BorderSizePixel = 3
-ws.Name = "Weapon Scripts"
-ws.Position = UDim2.new(0, 0, 0, 0)
-ws.Size = UDim2.new(0.5, -3, 1, 0)
-ws.ZIndex = 2
+local acg = CreatePanel(
+	page1,
+	"Admin Commands/Guis",
+	UDim2.new(0.5, 3, 0, 0)
+)
 
-local localp = Instance.new("Frame")
-localp.Parent = page3
-localp.BackgroundColor3 = blak
-localp.BorderColor3 = rede
-localp.BorderSizePixel = 3
-localp.Name = "LocalPlayer"
-localp.Position = UDim2.new(0.5, 3, 0, 0)
-localp.Size = UDim2.new(0.5, -3, 1, 0)
-localp.ZIndex = 2
+local sd = CreatePanel(
+	page1,
+	"Server Destruction",
+	UDim2.new(0, 0, 0, 0)
+)
 
-local misc = Instance.new("Frame")
-misc.Parent = page3
-misc.BackgroundColor3 = blak
-misc.BorderColor3 = rede
-misc.BorderSizePixel = 3
-misc.Name = "Misc"
-misc.Position = UDim2.new(0, 0, 0, 0)
-misc.Size = UDim2.new(0.5, -3, 1, 0)
-misc.ZIndex = 2
+local gt = CreatePanel(
+	page2,
+	"Gear/Tools",
+	UDim2.new(0.5, 3, 0, 0)
+)
 
-local pmi = Instance.new("Frame")
-pmi.Parent = page4
-pmi.BackgroundColor3 = blak
-pmi.BorderColor3 = rede
-pmi.BorderSizePixel = 3
-pmi.Name = "Preset Music IDs"
-pmi.Position = UDim2.new(0.5, 3, 0, 0)
-pmi.Size = UDim2.new(0.5, -3, 1, 0)
-pmi.ZIndex = 2
+local ws = CreatePanel(
+	page2,
+	"Weapon Scripts",
+	UDim2.new(0, 0, 0, 0)
+)
 
-local psd = Instance.new("Frame")
-psd.Parent = page4
-psd.BackgroundColor3 = blak
-psd.BorderColor3 = rede
-psd.BorderSizePixel = 3
-psd.Name = "Preset Skybox/Decal IDs"
-psd.Position = UDim2.new(0, 0, 0, 0)
-psd.Size = UDim2.new(0.5, -3, 1, 0)
-psd.ZIndex = 2
+local localp = CreatePanel(
+	page3,
+	"LocalPlayer",
+	UDim2.new(0.5, 3, 0, 0)
+)
 
-local edn = Instance.new("Frame")
-edn.Parent = page5
-edn.BackgroundColor3 = blak
-edn.BorderColor3 = rede
-edn.BorderSizePixel = 3
-edn.Name = "End"
-edn.Position = UDim2.new(0.5, 3, 0, 0)
-edn.Size = UDim2.new(0.5, -3, 1, 0)
-edn.ZIndex = 2
+local misc = CreatePanel(
+	page3,
+	"Misc",
+	UDim2.new(0, 0, 0, 0)
+)
 
-local pgi = Instance.new("Frame")
-pgi.Parent = page5
-pgi.BackgroundColor3 = blak
-pgi.BorderColor3 = rede
-pgi.BorderSizePixel = 3
-pgi.Name = "Preset Gear IDs"
-pgi.Position = UDim2.new(0, 0, 0, 0)
-pgi.Size = UDim2.new(0.5, -3, 1, 0)
-pgi.ZIndex = 2
+local pmi = CreatePanel(
+	page4,
+	"Preset Music IDs",
+	UDim2.new(0.5, 3, 0, 0)
+)
+
+local psd = CreatePanel(
+	page4,
+	"Preset Skybox/Decal IDs",
+	UDim2.new(0, 0, 0, 0)
+)
+
+local edn = CreatePanel(
+	page5,
+	"End",
+	UDim2.new(0.5, 3, 0, 0)
+)
+
+local pgi = CreatePanel(
+	page5,
+	"Preset Gear IDs",
+	UDim2.new(0, 0, 0, 0)
+)
 
 -- =========================================================
 -- BUTTON HELPERS
@@ -383,6 +359,7 @@ local function CreateButton(Parent, Text, Position, Size, Callback)
 
 	Button.Parent = Parent
 	Button.BackgroundColor3 = blak
+	Button.BackgroundTransparency = ButtonTransparency
 	Button.BorderColor3 = rede
 	Button.BorderSizePixel = 3
 	Button.Position = Position
@@ -392,6 +369,7 @@ local function CreateButton(Parent, Text, Position, Size, Callback)
 	Button.TextColor3 = whit
 	Button.TextSize = 18
 	Button.AutoButtonColor = true
+	Button.ZIndex = 3
 
 	if Callback then
 		Button.MouseButton1Click:Connect(function()
@@ -407,6 +385,7 @@ local function CreateInput(Parent, Placeholder, Position)
 
 	Input.Parent = Parent
 	Input.BackgroundColor3 = blak
+	Input.BackgroundTransparency = InputTransparency
 	Input.BorderColor3 = rede
 	Input.BorderSizePixel = 3
 	Input.Position = Position
@@ -418,6 +397,7 @@ local function CreateInput(Parent, Placeholder, Position)
 	Input.TextColor3 = whit
 	Input.TextSize = 17
 	Input.ClearTextOnFocus = false
+	Input.ZIndex = 3
 
 	return Input
 end
@@ -489,7 +469,7 @@ CreateButton(
 	UDim2.new(0, 3, 0, 3),
 	UDim2.new(1, -6, 0, 34),
 	function(Button)
-		Button.Text = "V1"
+		Button.Text = "V2"
 
 		task.delay(2, function()
 			if Button.Parent then
@@ -819,6 +799,12 @@ CreateButton(
 	UDim2.new(1, -6, 0, 34),
 	function()
 		frame.Visible = not frame.Visible
+
+		if frame.Visible then
+			cope.Text = "Close"
+		else
+			cope.Text = "Open"
+		end
 	end
 )
 
@@ -860,14 +846,6 @@ CreateButton(
 -- =========================================================
 -- PAGE SYSTEM
 -- =========================================================
-
-local PageList = {
-	page1,
-	page2,
-	page3,
-	page4,
-	page5
-}
 
 local CurrentPage = 1
 
@@ -980,4 +958,4 @@ end)
 -- READY
 -- =========================================================
 
-print("[ c00lgui Reborn ] V1 loaded.")
+print("[ c00lgui Reborn ] V2 loaded.")
