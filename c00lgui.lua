@@ -967,17 +967,17 @@ local function SetMinimized(state)
 	if state then
 		Body.Visible = false
 
-	Minimize.Text = "+"
+		Minimize.Text = "+"
 
-	WindowTween = Tween(
-		Main,
-		Animations.Smooth,
-		{
-			Size = MinimizedSize
-		}
-	)
+		WindowTween = Tween(
+			Main,
+			Animations.Smooth,
+			{
+				Size = MinimizedSize
+			}
+		)
 
-	WindowTween:Play()
+		WindowTween:Play()
 
 	else
 		Minimize.Text = "—"
