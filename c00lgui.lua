@@ -44,32 +44,58 @@ local Theme = {
 }
 
 local Animations = {
+	-- General UI movement
 	Fast = TweenInfo.new(
-		0.12,
-		Enum.EasingStyle.Quad,
+		0.18,
+		Enum.EasingStyle.Quint,
 		Enum.EasingDirection.Out
 	),
 
+	-- Buttons and small UI elements
+	Button = TweenInfo.new(
+		0.20,
+		Enum.EasingStyle.Quint,
+		Enum.EasingDirection.Out
+	),
+
+	-- Medium UI transitions
 	Normal = TweenInfo.new(
-		0.22,
-		Enum.EasingStyle.Quart,
+		0.28,
+		Enum.EasingStyle.Quint,
 		Enum.EasingDirection.Out
 	),
 
+	-- Smooth larger transitions
 	Smooth = TweenInfo.new(
 		0.35,
 		Enum.EasingStyle.Quint,
 		Enum.EasingDirection.Out
 	),
 
+	-- Tab leaving animation
 	TabOut = TweenInfo.new(
-		0.20,
-		Enum.EasingStyle.Quart,
-		Enum.EasingDirection.In
+		0.24,
+		Enum.EasingStyle.Quint,
+		Enum.EasingDirection.InOut
 	),
 
+	-- Tab entering animation
 	TabIn = TweenInfo.new(
-		0.32,
+		0.38,
+		Enum.EasingStyle.Quint,
+		Enum.EasingDirection.Out
+	),
+
+	-- Slider movement
+	Slider = TweenInfo.new(
+		0.16,
+		Enum.EasingStyle.Quint,
+		Enum.EasingDirection.Out
+	),
+
+	-- Window open animation
+	Open = TweenInfo.new(
+		0.42,
 		Enum.EasingStyle.Quint,
 		Enum.EasingDirection.Out
 	)
@@ -227,6 +253,7 @@ Sidebar.BorderSizePixel = 0
 Sidebar.Parent = Body
 
 Corner(Sidebar, 10)
+
 Stroke(Sidebar, Theme.Stroke, 1)
 
 local SidebarPadding = Instance.new("UIPadding")
@@ -328,6 +355,10 @@ local function AddDescription(page, text)
 	return label
 end
 
+-- =========================================================
+-- BUTTON
+-- =========================================================
+
 local function AddButton(page, text, callback)
 	local button = Instance.new("TextButton")
 	button.Size = UDim2.new(1, 0, 0, 40)
@@ -344,35 +375,41 @@ local function AddButton(page, text, callback)
 
 	local buttonStroke = Stroke(button, Theme.Stroke, 1)
 
+	local normalSize = UDim2.new(1, 0, 0, 40)
+	local pressedSize = UDim2.new(1, -4, 0, 38)
+
 	button.MouseEnter:Connect(function()
-		Tween(button, Animations.Fast, {
+		Tween(button, Animations.Button, {
 			BackgroundColor3 = Color3.fromRGB(35, 8, 8)
 		}):Play()
 
-		Tween(buttonStroke, Animations.Fast, {
-			Color = Theme.Red
+		Tween(buttonStroke, Animations.Button, {
+			Color = Theme.Red,
+			Thickness = 1.2
 		}):Play()
 	end)
 
 	button.MouseLeave:Connect(function()
-		Tween(button, Animations.Fast, {
-			BackgroundColor3 = Theme.Panel2
+		Tween(button, Animations.Button, {
+			BackgroundColor3 = Theme.Panel2,
+			Size = normalSize
 		}):Play()
 
-		Tween(buttonStroke, Animations.Fast, {
-			Color = Theme.Stroke
+		Tween(buttonStroke, Animations.Button, {
+			Color = Theme.Stroke,
+			Thickness = 1
 		}):Play()
 	end)
 
 	button.MouseButton1Down:Connect(function()
 		Tween(button, Animations.Fast, {
-			Size = UDim2.new(1, -6, 0, 37)
+			Size = pressedSize
 		}):Play()
 	end)
 
 	button.MouseButton1Up:Connect(function()
-		Tween(button, Animations.Fast, {
-			Size = UDim2.new(1, 0, 0, 40)
+		Tween(button, Animations.Button, {
+			Size = normalSize
 		}):Play()
 	end)
 
@@ -397,7 +434,8 @@ local function AddSlider(page, title, minimum, maximum, default, callback)
 	container.Parent = page
 
 	Corner(container, 8)
-	Stroke(container, Theme.Stroke, 1)
+
+	local containerStroke = Stroke(container, Theme.Stroke, 1)
 
 	local label = Instance.new("TextLabel")
 	label.Size = UDim2.new(1, -75, 0, 27)
@@ -431,6 +469,7 @@ local function AddSlider(page, title, minimum, maximum, default, callback)
 	Corner(bar, 20)
 
 	local fill = Instance.new("Frame")
+	fill.Size = UDim2.new(0, 0, 1, 0)
 	fill.BackgroundColor3 = Theme.Red
 	fill.BorderSizePixel = 0
 	fill.Parent = bar
@@ -448,7 +487,7 @@ local function AddSlider(page, title, minimum, maximum, default, callback)
 
 	local dragging = false
 
-	local function setValue(value)
+	local function setValue(value, instant)
 		value = math.clamp(value, minimum, maximum)
 		value = math.floor(value + 0.5)
 
@@ -456,11 +495,15 @@ local function AddSlider(page, title, minimum, maximum, default, callback)
 
 		valueLabel.Text = tostring(value)
 
-		Tween(fill, Animations.Fast, {
+		local tweenInfo = instant
+			and TweenInfo.new(0)
+			or Animations.Slider
+
+		Tween(fill, tweenInfo, {
 			Size = UDim2.new(alpha, 0, 1, 0)
 		}):Play()
 
-		Tween(knob, Animations.Fast, {
+		Tween(knob, tweenInfo, {
 			Position = UDim2.new(alpha, 0, 0.5, 0)
 		}):Play()
 
@@ -476,7 +519,10 @@ local function AddSlider(page, title, minimum, maximum, default, callback)
 			1
 		)
 
-		setValue(minimum + ((maximum - minimum) * alpha))
+		setValue(
+			minimum + ((maximum - minimum) * alpha),
+			false
+		)
 	end
 
 	bar.InputBegan:Connect(function(input)
@@ -484,6 +530,11 @@ local function AddSlider(page, title, minimum, maximum, default, callback)
 			or input.UserInputType == Enum.UserInputType.Touch then
 
 			dragging = true
+
+			Tween(containerStroke, Animations.Fast, {
+				Color = Theme.DarkRed
+			}):Play()
+
 			updateFromMouse(input.Position.X)
 		end
 	end)
@@ -504,11 +555,17 @@ local function AddSlider(page, title, minimum, maximum, default, callback)
 		if input.UserInputType == Enum.UserInputType.MouseButton1
 			or input.UserInputType == Enum.UserInputType.Touch then
 
+			if dragging then
+				Tween(containerStroke, Animations.Normal, {
+					Color = Theme.Stroke
+				}):Play()
+			end
+
 			dragging = false
 		end
 	end)
 
-	setValue(default)
+	setValue(default, true)
 
 	return container
 end
@@ -597,7 +654,9 @@ AddButton(
 		local camera = workspace.CurrentCamera
 
 		if camera then
-			camera.FieldOfView = 70
+			Tween(camera, Animations.Smooth, {
+				FieldOfView = 70
+			}):Play()
 		end
 	end
 )
@@ -617,7 +676,9 @@ AddButton(
 	VisualsPage,
 	"RED ACCENT",
 	function()
-		MainStroke.Color = Theme.Red
+		Tween(MainStroke, Animations.Normal, {
+			Color = Theme.Red
+		}):Play()
 	end
 )
 
@@ -630,7 +691,7 @@ AddButton(
 			Thickness = 4
 		}):Play()
 
-		task.delay(0.12, function()
+		task.delay(0.16, function()
 			if MainStroke and MainStroke.Parent then
 				Tween(MainStroke, Animations.Smooth, {
 					Color = Theme.Red,
@@ -769,10 +830,10 @@ local function SelectTab(name)
 		oldPage.Visible = true
 
 		Tween(oldPage, Animations.TabOut, {
-			Position = UDim2.new(-0.10, 0, 0, 0)
+			Position = UDim2.new(-0.08, 0, 0, 0)
 		}):Play()
 
-		task.delay(0.20, function()
+		task.delay(0.24, function()
 			if transitionId ~= TabTransitionId then
 				return
 			end
@@ -789,12 +850,8 @@ local function SelectTab(name)
 	-- =====================================================
 
 	newPage.Visible = true
+	newPage.Position = UDim2.new(0.08, 0, 0, 0)
 
-	-- Start slightly to the right
-	newPage.Position = UDim2.new(0.10, 0, 0, 0)
-
-	-- Give the page a tiny visual delay so the transition
-	-- feels smoother instead of both pages changing instantly.
 	task.defer(function()
 		if transitionId ~= TabTransitionId then
 			return
@@ -825,39 +882,45 @@ local function AddTab(name)
 
 	local buttonStroke = Stroke(button, Theme.Stroke, 1)
 
+	local normalSize = UDim2.new(1, 0, 0, 40)
+	local pressedSize = UDim2.new(1, -4, 0, 38)
+
 	button.MouseEnter:Connect(function()
 		if CurrentPage ~= Pages[name] then
-			Tween(button, Animations.Fast, {
+			Tween(button, Animations.Button, {
 				BackgroundColor3 = Color3.fromRGB(30, 8, 8)
 			}):Play()
 
-			Tween(buttonStroke, Animations.Fast, {
-				Color = Theme.DarkRed
+			Tween(buttonStroke, Animations.Button, {
+				Color = Theme.DarkRed,
+				Thickness = 1.2
 			}):Play()
 		end
 	end)
 
 	button.MouseLeave:Connect(function()
 		if CurrentPage ~= Pages[name] then
-			Tween(button, Animations.Fast, {
-				BackgroundColor3 = Theme.Panel2
+			Tween(button, Animations.Button, {
+				BackgroundColor3 = Theme.Panel2,
+				Size = normalSize
 			}):Play()
 
-			Tween(buttonStroke, Animations.Fast, {
-				Color = Theme.Stroke
+			Tween(buttonStroke, Animations.Button, {
+				Color = Theme.Stroke,
+				Thickness = 1
 			}):Play()
 		end
 	end)
 
 	button.MouseButton1Down:Connect(function()
 		Tween(button, Animations.Fast, {
-			Size = UDim2.new(1, -5, 0, 37)
+			Size = pressedSize
 		}):Play()
 	end)
 
 	button.MouseButton1Up:Connect(function()
-		Tween(button, Animations.Fast, {
-			Size = UDim2.new(1, 0, 0, 40)
+		Tween(button, Animations.Button, {
+			Size = normalSize
 		}):Play()
 	end)
 
@@ -902,28 +965,22 @@ local function SetMinimized(state)
 	StopWindowTween()
 
 	if state then
-		-- Hide the entire body before the window starts shrinking.
 		Body.Visible = false
 
-		-- Keep only the title bar inside the window.
-		Main.ClipsDescendants = true
+	Minimize.Text = "+"
 
-		Minimize.Text = "+"
+	WindowTween = Tween(
+		Main,
+		Animations.Smooth,
+		{
+			Size = MinimizedSize
+		}
+	)
 
-		WindowTween = Tween(
-			Main,
-			Animations.Smooth,
-			{
-				Size = MinimizedSize
-			}
-		)
-
-		WindowTween:Play()
+	WindowTween:Play()
 
 	else
 		Minimize.Text = "—"
-
-		-- Keep the body hidden while the window expands.
 		Body.Visible = false
 
 		WindowTween = Tween(
@@ -942,7 +999,6 @@ local function SetMinimized(state)
 			end
 
 			if not Minimized then
-				-- Guarantee the window is fully restored.
 				Main.Size = NormalSize
 				Body.Visible = true
 			end
@@ -986,14 +1042,26 @@ end)
 
 for _, button in ipairs({Minimize, Close}) do
 	button.MouseEnter:Connect(function()
-		Tween(button, Animations.Fast, {
+		Tween(button, Animations.Button, {
 			BackgroundColor3 = Color3.fromRGB(220, 0, 0)
 		}):Play()
 	end)
 
 	button.MouseLeave:Connect(function()
-		Tween(button, Animations.Fast, {
+		Tween(button, Animations.Button, {
 			BackgroundColor3 = Theme.DarkRed
+		}):Play()
+	end)
+
+	button.MouseButton1Down:Connect(function()
+		Tween(button, Animations.Fast, {
+			Size = UDim2.fromOffset(30, 28)
+		}):Play()
+	end)
+
+	button.MouseButton1Up:Connect(function()
+		Tween(button, Animations.Button, {
+			Size = UDim2.fromOffset(32, 30)
 		}):Play()
 	end)
 end
@@ -1050,6 +1118,6 @@ end)
 
 Main.Size = UDim2.fromOffset(620, 0)
 
-Tween(Main, Animations.Smooth, {
+Tween(Main, Animations.Open, {
 	Size = NormalSize
 }):Play()
