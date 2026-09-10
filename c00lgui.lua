@@ -7,17 +7,19 @@ local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local TeleportService = game:GetService("TeleportService")
 local Lighting = game:GetService("Lighting")
-local TextChatService = game:GetService("TextChatService")
 
 local LocalPlayer = Players.LocalPlayer
 
+-- =========================================================
+-- COLORS / FONT
+-- =========================================================
+
+local blak = Color3.new(0, 0, 0)
+local rede = Color3.new(255 / 255, 0 / 255, 0 / 255)
+local tef = Enum.Font.SourceSans
+local whit = Color3.new(255 / 255, 255 / 255, 255 / 255)
+
 local GUI_NAME = "c00lgui_Reborn_by_x_c00lkidd_x"
-
-local Black = Color3.fromRGB(0, 0, 0)
-local Red = Color3.fromRGB(255, 0, 0)
-local White = Color3.fromRGB(255, 255, 255)
-
-local Font = Enum.Font.SourceSans
 
 -- =========================================================
 -- DUPLICATE GUARD
@@ -51,68 +53,64 @@ if not GuiParent then
 	GuiParent = LocalPlayer:WaitForChild("PlayerGui")
 end
 
-local Gui = Instance.new("ScreenGui")
-Gui.Name = GUI_NAME
-Gui.ResetOnSpawn = false
-Gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-Gui.Parent = GuiParent
+local cka = Instance.new("ScreenGui")
+cka.Name = GUI_NAME
+cka.ResetOnSpawn = false
+cka.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+cka.Parent = GuiParent
 
 -- =========================================================
 -- MAIN FRAME
 -- =========================================================
 
-local Frame = Instance.new("Frame")
-Frame.Parent = Gui
-Frame.BackgroundColor3 = Black
-Frame.BorderColor3 = Red
-Frame.BorderSizePixel = 3
-Frame.Name = "Frame"
-Frame.Position = UDim2.new(0, 3, 0.3, 0)
-Frame.Size = UDim2.new(0, 300, 0, 400)
+local frame = Instance.new("Frame")
+frame.Parent = cka
+frame.BackgroundColor3 = blak
+frame.BorderColor3 = rede
+frame.BorderSizePixel = 3
+frame.Name = "Frame"
+frame.Position = UDim2.new(0, 3, 0.3, 0)
+frame.Size = UDim2.new(0, 300, 0, 400)
 
--- =========================================================
--- PAGES CONTAINER
--- =========================================================
-
-local Pages = Instance.new("Frame")
-Pages.Parent = Frame
-Pages.BackgroundColor3 = Black
-Pages.BorderColor3 = Red
-Pages.BorderSizePixel = 3
-Pages.Name = "Pages"
-Pages.Position = UDim2.new(0, 0, 0, 0)
-Pages.Size = UDim2.new(1, 0, 1, 0)
+local pges = Instance.new("Frame")
+pges.Parent = frame
+pges.BackgroundColor3 = blak
+pges.BorderColor3 = rede
+pges.BorderSizePixel = 3
+pges.Name = "Pages"
+pges.Position = UDim2.new(0, 0, 0, 0)
+pges.Size = UDim2.new(1, 0, 1, 0)
 
 -- =========================================================
 -- CLOSE / OPEN
 -- =========================================================
 
-local CloseOpen = Instance.new("TextButton")
-CloseOpen.Parent = Gui
-CloseOpen.Active = true
-CloseOpen.AutoButtonColor = true
-CloseOpen.BackgroundColor3 = Black
-CloseOpen.BorderColor3 = Red
-CloseOpen.BorderSizePixel = 3
-CloseOpen.Name = "Close/Open"
-CloseOpen.Position = UDim2.new(0, 3, 0.3, 380)
-CloseOpen.Selectable = true
-CloseOpen.Size = UDim2.new(0, 300, 0, 20)
-CloseOpen.ZIndex = 3
-CloseOpen.Font = Font
-CloseOpen.Text = "Close"
-CloseOpen.TextColor3 = White
-CloseOpen.TextSize = 18
-CloseOpen.TextXAlignment = Enum.TextXAlignment.Center
-CloseOpen.TextYAlignment = Enum.TextYAlignment.Center
+local cope = Instance.new("TextButton")
+cope.Parent = cka
+cope.Active = true
+cope.AutoButtonColor = true
+cope.BackgroundColor3 = blak
+cope.BorderColor3 = rede
+cope.BorderSizePixel = 3
+cope.Name = "Close/Open"
+cope.Position = UDim2.new(0, 3, 0.3, 380)
+cope.Selectable = true
+cope.Size = UDim2.new(0, 300, 0, 20)
+cope.ZIndex = 3
+cope.Font = tef
+cope.Text = "Close"
+cope.TextColor3 = whit
+cope.TextSize = 18
+cope.TextXAlignment = Enum.TextXAlignment.Center
+cope.TextYAlignment = Enum.TextYAlignment.Center
 
-CloseOpen.MouseButton1Click:Connect(function()
-	if CloseOpen.Text == "Close" then
-		Frame.Visible = false
-		CloseOpen.Text = "Open"
+cope.MouseButton1Click:Connect(function()
+	if cope.Text == "Close" then
+		frame.Visible = false
+		cope.Text = "Open"
 	else
-		Frame.Visible = true
-		CloseOpen.Text = "Close"
+		frame.Visible = true
+		cope.Text = "Close"
 	end
 end)
 
@@ -120,168 +118,261 @@ end)
 -- PAGES
 -- =========================================================
 
-local Page1 = Instance.new("Frame")
-Page1.Parent = Pages
-Page1.BackgroundColor3 = Black
-Page1.BorderColor3 = Red
-Page1.BorderSizePixel = 3
-Page1.Name = "Page1"
-Page1.Position = UDim2.new(0, 0, 0, 83)
-Page1.Size = UDim2.new(1, 0, 1, -106)
-Page1.ZIndex = 2
-Page1.Visible = true
+local page1 = Instance.new("Frame")
+page1.Parent = pges
+page1.BackgroundColor3 = blak
+page1.BorderColor3 = rede
+page1.BorderSizePixel = 3
+page1.Name = "Page1"
+page1.Position = UDim2.new(0, 0, 0, 83)
+page1.Size = UDim2.new(1, 0, 1, -106)
+page1.ZIndex = 2
+page1.Visible = true
 
-local Page2 = Page1:Clone()
-Page2.Parent = Pages
-Page2.Name = "Page2"
-Page2.Visible = false
+local page2 = Instance.new("Frame")
+page2.Parent = pges
+page2.BackgroundColor3 = blak
+page2.BorderColor3 = rede
+page2.BorderSizePixel = 3
+page2.Name = "Page2"
+page2.Position = UDim2.new(0, 0, 0, 83)
+page2.Size = UDim2.new(1, 0, 1, -106)
+page2.ZIndex = 2
+page2.Visible = false
 
-local Page3 = Page1:Clone()
-Page3.Parent = Pages
-Page3.Name = "Page3"
-Page3.Visible = false
+local page3 = Instance.new("Frame")
+page3.Parent = pges
+page3.BackgroundColor3 = blak
+page3.BorderColor3 = rede
+page3.BorderSizePixel = 3
+page3.Name = "Page3"
+page3.Position = UDim2.new(0, 0, 0, 83)
+page3.Size = UDim2.new(1, 0, 1, -106)
+page3.ZIndex = 2
+page3.Visible = false
 
-local Page4 = Page1:Clone()
-Page4.Parent = Pages
-Page4.Name = "Page4"
-Page4.Visible = false
+local page4 = Instance.new("Frame")
+page4.Parent = pges
+page4.BackgroundColor3 = blak
+page4.BorderColor3 = rede
+page4.BorderSizePixel = 3
+page4.Name = "Page4"
+page4.Position = UDim2.new(0, 0, 0, 83)
+page4.Size = UDim2.new(1, 0, 1, -106)
+page4.ZIndex = 2
+page4.Visible = false
 
-local Page5 = Page1:Clone()
-Page5.Parent = Pages
-Page5.Name = "Page5"
-Page5.Visible = false
+local page5 = Instance.new("Frame")
+page5.Parent = pges
+page5.BackgroundColor3 = blak
+page5.BorderColor3 = rede
+page5.BorderSizePixel = 3
+page5.Name = "Page5"
+page5.Position = UDim2.new(0, 0, 0, 83)
+page5.Size = UDim2.new(1, 0, 1, -106)
+page5.ZIndex = 2
+page5.Visible = false
 
 -- =========================================================
 -- SETTINGS
 -- =========================================================
 
-local Settings = Instance.new("Frame")
-Settings.Parent = Frame
-Settings.BackgroundColor3 = Black
-Settings.BorderColor3 = Red
-Settings.BorderSizePixel = 3
-Settings.Name = "Settings"
-Settings.Position = UDim2.new(1, 3, 0, 0)
-Settings.Size = UDim2.new(1, 0, 1, 0)
-Settings.ZIndex = 1
-Settings.Visible = true
+local page = Instance.new("Frame")
+page.Parent = frame
+page.BackgroundColor3 = blak
+page.BorderColor3 = rede
+page.BorderSizePixel = 3
+page.Name = "Settings"
+page.Position = UDim2.new(1, 3, 0, 0)
+page.Size = UDim2.new(1, 0, 1, 0)
+page.ZIndex = 1
+page.Visible = true
 
 -- =========================================================
 -- NAVIGATION
 -- =========================================================
 
-local Right = Instance.new("TextButton")
-Right.Parent = Frame
-Right.BackgroundColor3 = Black
-Right.BorderColor3 = Red
-Right.BorderSizePixel = 3
-Right.Name = ">"
-Right.Position = UDim2.new(0.5, 3, 0, 40)
-Right.Size = UDim2.new(0.5, -3, 0, 40)
-Right.ZIndex = 2
-Right.Font = Font
-Right.Text = ">"
-Right.TextColor3 = White
-Right.TextSize = 48
+local right = Instance.new("TextButton")
+right.Parent = frame
+right.BackgroundColor3 = blak
+right.BorderColor3 = rede
+right.BorderSizePixel = 3
+right.Name = ">"
+right.Position = UDim2.new(0.5, 3, 0, 40)
+right.Size = UDim2.new(0.5, -3, 0, 40)
+right.ZIndex = 2
+right.Font = tef
+right.Text = ">"
+right.TextColor3 = whit
+right.TextSize = 48
 
-local Left = Instance.new("TextButton")
-Left.Parent = Frame
-Left.BackgroundColor3 = Black
-Left.BorderColor3 = Red
-Left.BorderSizePixel = 3
-Left.Name = "<"
-Left.Position = UDim2.new(0, 0, 0, 40)
-Left.Size = UDim2.new(0.5, -3, 0, 40)
-Left.ZIndex = 2
-Left.Font = Font
-Left.Text = "<"
-Left.TextColor3 = White
-Left.TextSize = 48
+local left = Instance.new("TextButton")
+left.Parent = frame
+left.BackgroundColor3 = blak
+left.BorderColor3 = rede
+left.BorderSizePixel = 3
+left.Name = "<"
+left.Position = UDim2.new(0, 0, 0, 40)
+left.Size = UDim2.new(0.5, -3, 0, 40)
+left.ZIndex = 2
+left.Font = tef
+left.Text = "<"
+left.TextColor3 = whit
+left.TextSize = 48
 
 -- =========================================================
 -- PAGE EDGE BUTTONS
 -- =========================================================
 
-local AddonRight = Instance.new("TextButton")
-AddonRight.Parent = Page5
-AddonRight.BackgroundColor3 = Black
-AddonRight.BorderColor3 = Red
-AddonRight.BorderSizePixel = 3
-AddonRight.Name = "addonr"
-AddonRight.Position = UDim2.new(0, 153, 0, -40)
-AddonRight.Size = UDim2.new(0.49, 0, 0.125, 0)
-AddonRight.Font = Font
-AddonRight.Text = ">"
-AddonRight.TextColor3 = White
-AddonRight.TextSize = 48
-AddonRight.ZIndex = 3
+local addonr = Instance.new("TextButton")
+addonr.Parent = page5
+addonr.BackgroundColor3 = blak
+addonr.BorderColor3 = rede
+addonr.BorderSizePixel = 3
+addonr.Name = "addonr"
+addonr.Position = UDim2.new(0, 153, 0, -40)
+addonr.Size = UDim2.new(0.49, 0, 0.125, 0)
+addonr.Font = tef
+addonr.Text = ">"
+addonr.TextColor3 = whit
+addonr.TextSize = 48
+addonr.ZIndex = 3
 
-local AddonLeft = Instance.new("TextButton")
-AddonLeft.Parent = Page1
-AddonLeft.BackgroundColor3 = Black
-AddonLeft.BorderColor3 = Red
-AddonLeft.BorderSizePixel = 3
-AddonLeft.Name = "addonl"
-AddonLeft.Position = UDim2.new(0, 0, 0, -40)
-AddonLeft.Size = UDim2.new(0.49, 0, 0.125, 0)
-AddonLeft.Font = Font
-AddonLeft.Text = "<"
-AddonLeft.TextColor3 = White
-AddonLeft.TextSize = 48
-AddonLeft.ZIndex = 3
+local addonl = Instance.new("TextButton")
+addonl.Parent = page1
+addonl.BackgroundColor3 = blak
+addonl.BorderColor3 = rede
+addonl.BorderSizePixel = 3
+addonl.Name = "addonl"
+addonl.Position = UDim2.new(0, 0, 0, -40)
+addonl.Size = UDim2.new(0.49, 0, 0.125, 0)
+addonl.Font = tef
+addonl.Text = "<"
+addonl.TextColor3 = whit
+addonl.TextSize = 48
+addonl.ZIndex = 3
 
 -- =========================================================
 -- TITLE
 -- =========================================================
 
-local Title = Instance.new("TextLabel")
-Title.Parent = Frame
-Title.BackgroundColor3 = Black
-Title.BorderColor3 = Red
-Title.BorderSizePixel = 3
-Title.Name = "Title"
-Title.Position = UDim2.new(0, 0, 0, 0)
-Title.Size = UDim2.new(1, 0, 0, 40)
-Title.ZIndex = 2
-Title.Font = Font
-Title.Text = "c00lgui Reborn by x_c00lkidd_x"
-Title.TextColor3 = White
-Title.TextSize = 24
+local title = Instance.new("TextLabel")
+title.Parent = frame
+title.BackgroundColor3 = blak
+title.BorderColor3 = rede
+title.BorderSizePixel = 3
+title.Name = "Title"
+title.Position = UDim2.new(0, 0, 0, 0)
+title.Size = UDim2.new(1, 0, 0, 40)
+title.ZIndex = 2
+title.Font = tef
+title.Text = "c00lgui Reborn Rc7 by v3rx"
+title.TextColor3 = whit
+title.TextSize = 24
 
 -- =========================================================
--- PAGE PANELS
+-- ORIGINAL PANEL STRUCTURE
 -- =========================================================
 
-local function CreatePanel(Parent, Name, RightSide)
-	local Panel = Instance.new("Frame")
-	Panel.Parent = Parent
-	Panel.BackgroundColor3 = Black
-	Panel.BorderColor3 = Red
-	Panel.BorderSizePixel = 3
-	Panel.Name = Name
-	Panel.Position = RightSide
-		and UDim2.new(0.5, 3, 0, 0)
-		or UDim2.new(0, 0, 0, 0)
-	Panel.Size = UDim2.new(0.5, -3, 1, 0)
-	Panel.ZIndex = 2
+local acg = Instance.new("Frame")
+acg.Parent = page1
+acg.BackgroundColor3 = blak
+acg.BorderColor3 = rede
+acg.BorderSizePixel = 3
+acg.Name = "Admin Commands/Guis"
+acg.Position = UDim2.new(0.5, 3, 0, 0)
+acg.Size = UDim2.new(0.5, -3, 1, 0)
+acg.ZIndex = 2
 
-	return Panel
-end
+local sd = Instance.new("Frame")
+sd.Parent = page1
+sd.BackgroundColor3 = blak
+sd.BorderColor3 = rede
+sd.BorderSizePixel = 3
+sd.Name = "Server Destruction"
+sd.Position = UDim2.new(0, 0, 0, 0)
+sd.Size = UDim2.new(0.5, -3, 1, 0)
+sd.ZIndex = 2
 
-local ServerPanel = CreatePanel(Page1, "Server", false)
-local AdminPanel = CreatePanel(Page1, "Admin", true)
+local gt = Instance.new("Frame")
+gt.Parent = page2
+gt.BackgroundColor3 = blak
+gt.BorderColor3 = rede
+gt.BorderSizePixel = 3
+gt.Name = "Gear/Tools"
+gt.Position = UDim2.new(0.5, 3, 0, 0)
+gt.Size = UDim2.new(0.5, -3, 1, 0)
+gt.ZIndex = 2
 
-local ToolsPanel = CreatePanel(Page2, "Tools", false)
-local WeaponsPanel = CreatePanel(Page2, "Weapons", true)
+local ws = Instance.new("Frame")
+ws.Parent = page2
+ws.BackgroundColor3 = blak
+ws.BorderColor3 = rede
+ws.BorderSizePixel = 3
+ws.Name = "Weapon Scripts"
+ws.Position = UDim2.new(0, 0, 0, 0)
+ws.Size = UDim2.new(0.5, -3, 1, 0)
+ws.ZIndex = 2
 
-local LocalPanel = CreatePanel(Page3, "LocalPlayer", false)
-local MiscPanel = CreatePanel(Page3, "Misc", true)
+local localp = Instance.new("Frame")
+localp.Parent = page3
+localp.BackgroundColor3 = blak
+localp.BorderColor3 = rede
+localp.BorderSizePixel = 3
+localp.Name = "LocalPlayer"
+localp.Position = UDim2.new(0.5, 3, 0, 0)
+localp.Size = UDim2.new(0.5, -3, 1, 0)
+localp.ZIndex = 2
 
-local MusicPanel = CreatePanel(Page4, "Music", false)
-local VisualPanel = CreatePanel(Page4, "Visuals", true)
+local misc = Instance.new("Frame")
+misc.Parent = page3
+misc.BackgroundColor3 = blak
+misc.BorderColor3 = rede
+misc.BorderSizePixel = 3
+misc.Name = "Misc"
+misc.Position = UDim2.new(0, 0, 0, 0)
+misc.Size = UDim2.new(0.5, -3, 1, 0)
+misc.ZIndex = 2
 
-local EndPanel = CreatePanel(Page5, "End", false)
-local GearPanel = CreatePanel(Page5, "Gear", true)
+local pmi = Instance.new("Frame")
+pmi.Parent = page4
+pmi.BackgroundColor3 = blak
+pmi.BorderColor3 = rede
+pmi.BorderSizePixel = 3
+pmi.Name = "Preset Music IDs"
+pmi.Position = UDim2.new(0.5, 3, 0, 0)
+pmi.Size = UDim2.new(0.5, -3, 1, 0)
+pmi.ZIndex = 2
+
+local psd = Instance.new("Frame")
+psd.Parent = page4
+psd.BackgroundColor3 = blak
+psd.BorderColor3 = rede
+psd.BorderSizePixel = 3
+psd.Name = "Preset Skybox/Decal IDs"
+psd.Position = UDim2.new(0, 0, 0, 0)
+psd.Size = UDim2.new(0.5, -3, 1, 0)
+psd.ZIndex = 2
+
+local edn = Instance.new("Frame")
+edn.Parent = page5
+edn.BackgroundColor3 = blak
+edn.BorderColor3 = rede
+edn.BorderSizePixel = 3
+edn.Name = "End"
+edn.Position = UDim2.new(0.5, 3, 0, 0)
+edn.Size = UDim2.new(0.5, -3, 1, 0)
+edn.ZIndex = 2
+
+local pgi = Instance.new("Frame")
+pgi.Parent = page5
+pgi.BackgroundColor3 = blak
+pgi.BorderColor3 = rede
+pgi.BorderSizePixel = 3
+pgi.Name = "Preset Gear IDs"
+pgi.Position = UDim2.new(0, 0, 0, 0)
+pgi.Size = UDim2.new(0.5, -3, 1, 0)
+pgi.ZIndex = 2
 
 -- =========================================================
 -- BUTTON HELPERS
@@ -289,20 +380,23 @@ local GearPanel = CreatePanel(Page5, "Gear", true)
 
 local function CreateButton(Parent, Text, Position, Size, Callback)
 	local Button = Instance.new("TextButton")
+
 	Button.Parent = Parent
-	Button.BackgroundColor3 = Black
-	Button.BorderColor3 = Red
+	Button.BackgroundColor3 = blak
+	Button.BorderColor3 = rede
 	Button.BorderSizePixel = 3
 	Button.Position = Position
 	Button.Size = Size
-	Button.Font = Font
+	Button.Font = tef
 	Button.Text = Text
-	Button.TextColor3 = White
+	Button.TextColor3 = whit
 	Button.TextSize = 18
 	Button.AutoButtonColor = true
 
 	if Callback then
-		Button.MouseButton1Click:Connect(Callback)
+		Button.MouseButton1Click:Connect(function()
+			Callback(Button)
+		end)
 	end
 
 	return Button
@@ -310,17 +404,18 @@ end
 
 local function CreateInput(Parent, Placeholder, Position)
 	local Input = Instance.new("TextBox")
+
 	Input.Parent = Parent
-	Input.BackgroundColor3 = Black
-	Input.BorderColor3 = Red
+	Input.BackgroundColor3 = blak
+	Input.BorderColor3 = rede
 	Input.BorderSizePixel = 3
 	Input.Position = Position
 	Input.Size = UDim2.new(1, -6, 0, 30)
-	Input.Font = Font
+	Input.Font = tef
 	Input.PlaceholderText = Placeholder
-	Input.PlaceholderColor3 = White
+	Input.PlaceholderColor3 = whit
 	Input.Text = ""
-	Input.TextColor3 = White
+	Input.TextColor3 = whit
 	Input.TextSize = 17
 	Input.ClearTextOnFocus = false
 
@@ -332,7 +427,7 @@ end
 -- =========================================================
 
 CreateButton(
-	ServerPanel,
+	sd,
 	"REJOIN",
 	UDim2.new(0, 3, 0, 3),
 	UDim2.new(1, -6, 0, 34),
@@ -342,7 +437,7 @@ CreateButton(
 )
 
 CreateButton(
-	ServerPanel,
+	sd,
 	"RESET",
 	UDim2.new(0, 3, 0, 42),
 	UDim2.new(1, -6, 0, 34),
@@ -357,7 +452,7 @@ CreateButton(
 )
 
 CreateButton(
-	ServerPanel,
+	sd,
 	"SERVER INFO",
 	UDim2.new(0, 3, 0, 81),
 	UDim2.new(1, -6, 0, 34),
@@ -365,7 +460,7 @@ CreateButton(
 		Button.Text = tostring(#Players:GetPlayers()) .. " PLAYERS"
 
 		task.delay(2, function()
-			if Button then
+			if Button.Parent then
 				Button.Text = "SERVER INFO"
 			end
 		end)
@@ -373,7 +468,7 @@ CreateButton(
 )
 
 CreateButton(
-	ServerPanel,
+	sd,
 	"JOB ID",
 	UDim2.new(0, 3, 0, 120),
 	UDim2.new(1, -6, 0, 34),
@@ -381,7 +476,7 @@ CreateButton(
 		Button.Text = string.sub(game.JobId, 1, 12)
 
 		task.delay(2, function()
-			if Button then
+			if Button.Parent then
 				Button.Text = "JOB ID"
 			end
 		end)
@@ -389,7 +484,7 @@ CreateButton(
 )
 
 CreateButton(
-	AdminPanel,
+	acg,
 	"ABOUT",
 	UDim2.new(0, 3, 0, 3),
 	UDim2.new(1, -6, 0, 34),
@@ -397,7 +492,7 @@ CreateButton(
 		Button.Text = "V1"
 
 		task.delay(2, function()
-			if Button then
+			if Button.Parent then
 				Button.Text = "ABOUT"
 			end
 		end)
@@ -405,7 +500,7 @@ CreateButton(
 )
 
 CreateButton(
-	AdminPanel,
+	acg,
 	"CREATOR",
 	UDim2.new(0, 3, 0, 42),
 	UDim2.new(1, -6, 0, 34),
@@ -413,7 +508,7 @@ CreateButton(
 		Button.Text = "x_c00lkidd_x"
 
 		task.delay(2, function()
-			if Button then
+			if Button.Parent then
 				Button.Text = "CREATOR"
 			end
 		end)
@@ -425,7 +520,7 @@ CreateButton(
 -- =========================================================
 
 CreateButton(
-	ToolsPanel,
+	ws,
 	"REMOVE TOOLS",
 	UDim2.new(0, 3, 0, 3),
 	UDim2.new(1, -6, 0, 34),
@@ -449,7 +544,7 @@ CreateButton(
 )
 
 CreateButton(
-	ToolsPanel,
+	ws,
 	"DROP TOOL",
 	UDim2.new(0, 3, 0, 42),
 	UDim2.new(1, -6, 0, 34),
@@ -470,7 +565,7 @@ CreateButton(
 )
 
 CreateButton(
-	ToolsPanel,
+	ws,
 	"TOOL COUNT",
 	UDim2.new(0, 3, 0, 81),
 	UDim2.new(1, -6, 0, 34),
@@ -486,7 +581,7 @@ CreateButton(
 		Button.Text = "TOOLS: " .. Count
 
 		task.delay(2, function()
-			if Button then
+			if Button.Parent then
 				Button.Text = "TOOL COUNT"
 			end
 		end)
@@ -494,7 +589,7 @@ CreateButton(
 )
 
 CreateButton(
-	WeaponsPanel,
+	gt,
 	"UNEQUIP",
 	UDim2.new(0, 3, 0, 3),
 	UDim2.new(1, -6, 0, 34),
@@ -513,13 +608,13 @@ CreateButton(
 -- =========================================================
 
 local SpeedInput = CreateInput(
-	LocalPanel,
+	localp,
 	"WALKSPEED",
 	UDim2.new(0, 3, 0, 3)
 )
 
 CreateButton(
-	LocalPanel,
+	localp,
 	"SET SPEED",
 	UDim2.new(0, 3, 0, 39),
 	UDim2.new(1, -6, 0, 34),
@@ -535,13 +630,13 @@ CreateButton(
 )
 
 local JumpInput = CreateInput(
-	LocalPanel,
+	localp,
 	"JUMPPOWER",
 	UDim2.new(0, 3, 0, 78)
 )
 
 CreateButton(
-	LocalPanel,
+	localp,
 	"SET JUMP",
 	UDim2.new(0, 3, 0, 114),
 	UDim2.new(1, -6, 0, 34),
@@ -558,7 +653,7 @@ CreateButton(
 )
 
 CreateButton(
-	LocalPanel,
+	localp,
 	"NORMAL",
 	UDim2.new(0, 3, 0, 153),
 	UDim2.new(1, -6, 0, 34),
@@ -575,7 +670,7 @@ CreateButton(
 )
 
 CreateButton(
-	MiscPanel,
+	misc,
 	"SIT",
 	UDim2.new(0, 3, 0, 3),
 	UDim2.new(1, -6, 0, 34),
@@ -590,7 +685,7 @@ CreateButton(
 )
 
 CreateButton(
-	MiscPanel,
+	misc,
 	"JUMP",
 	UDim2.new(0, 3, 0, 42),
 	UDim2.new(1, -6, 0, 34),
@@ -609,13 +704,13 @@ CreateButton(
 -- =========================================================
 
 local MusicInput = CreateInput(
-	MusicPanel,
+	pmi,
 	"MUSIC ID",
 	UDim2.new(0, 3, 0, 3)
 )
 
 CreateButton(
-	MusicPanel,
+	pmi,
 	"PLAY",
 	UDim2.new(0, 3, 0, 39),
 	UDim2.new(1, -6, 0, 34),
@@ -642,7 +737,7 @@ CreateButton(
 )
 
 CreateButton(
-	MusicPanel,
+	pmi,
 	"STOP",
 	UDim2.new(0, 3, 0, 78),
 	UDim2.new(1, -6, 0, 34),
@@ -656,7 +751,7 @@ CreateButton(
 )
 
 CreateButton(
-	VisualPanel,
+	psd,
 	"BRIGHT",
 	UDim2.new(0, 3, 0, 3),
 	UDim2.new(1, -6, 0, 34),
@@ -666,7 +761,7 @@ CreateButton(
 )
 
 CreateButton(
-	VisualPanel,
+	psd,
 	"DAY",
 	UDim2.new(0, 3, 0, 42),
 	UDim2.new(1, -6, 0, 34),
@@ -676,7 +771,7 @@ CreateButton(
 )
 
 CreateButton(
-	VisualPanel,
+	psd,
 	"NIGHT",
 	UDim2.new(0, 3, 0, 81),
 	UDim2.new(1, -6, 0, 34),
@@ -686,7 +781,7 @@ CreateButton(
 )
 
 CreateButton(
-	VisualPanel,
+	psd,
 	"FOV 120",
 	UDim2.new(0, 3, 0, 120),
 	UDim2.new(1, -6, 0, 34),
@@ -700,7 +795,7 @@ CreateButton(
 )
 
 CreateButton(
-	VisualPanel,
+	psd,
 	"FOV NORMAL",
 	UDim2.new(0, 3, 0, 159),
 	UDim2.new(1, -6, 0, 34),
@@ -718,28 +813,28 @@ CreateButton(
 -- =========================================================
 
 CreateButton(
-	EndPanel,
+	edn,
 	"TOGGLE",
 	UDim2.new(0, 3, 0, 3),
 	UDim2.new(1, -6, 0, 34),
 	function()
-		Frame.Visible = not Frame.Visible
+		frame.Visible = not frame.Visible
 	end
 )
 
 CreateButton(
-	EndPanel,
+	edn,
 	"RESET POSITION",
 	UDim2.new(0, 3, 0, 42),
 	UDim2.new(1, -6, 0, 34),
 	function()
-		Frame.Position = UDim2.new(0, 3, 0.3, 0)
-		CloseOpen.Position = UDim2.new(0, 3, 0.3, 380)
+		frame.Position = UDim2.new(0, 3, 0.3, 0)
+		cope.Position = UDim2.new(0, 3, 0.3, 380)
 	end
 )
 
 CreateButton(
-	GearPanel,
+	pgi,
 	"BACKPACK",
 	UDim2.new(0, 3, 0, 3),
 	UDim2.new(1, -6, 0, 34),
@@ -755,7 +850,7 @@ CreateButton(
 		Button.Text = "TOOLS " .. Count
 
 		task.delay(2, function()
-			if Button then
+			if Button.Parent then
 				Button.Text = "BACKPACK"
 			end
 		end)
@@ -767,18 +862,18 @@ CreateButton(
 -- =========================================================
 
 local PageList = {
-	Page1,
-	Page2,
-	Page3,
-	Page4,
-	Page5
+	page1,
+	page2,
+	page3,
+	page4,
+	page5
 }
 
 local CurrentPage = 1
 
 local function UpdatePage()
-	for Index, Page in ipairs(PageList) do
-		Page.Visible = Index == CurrentPage
+	for Index, CurrentPageObject in ipairs(PageList) do
+		CurrentPageObject.Visible = Index == CurrentPage
 	end
 end
 
@@ -802,11 +897,11 @@ local function PreviousPage()
 	UpdatePage()
 end
 
-Right.MouseButton1Click:Connect(NextPage)
-Left.MouseButton1Click:Connect(PreviousPage)
+right.MouseButton1Click:Connect(NextPage)
+left.MouseButton1Click:Connect(PreviousPage)
 
-AddonRight.MouseButton1Click:Connect(NextPage)
-AddonLeft.MouseButton1Click:Connect(PreviousPage)
+addonr.MouseButton1Click:Connect(NextPage)
+addonl.MouseButton1Click:Connect(PreviousPage)
 
 UpdatePage()
 
@@ -818,13 +913,13 @@ local Dragging = false
 local DragStart
 local StartPosition
 
-Title.InputBegan:Connect(function(Input)
+title.InputBegan:Connect(function(Input)
 	if Input.UserInputType == Enum.UserInputType.MouseButton1
 		or Input.UserInputType == Enum.UserInputType.Touch then
 
 		Dragging = true
 		DragStart = Input.Position
-		StartPosition = Frame.Position
+		StartPosition = frame.Position
 
 		Input.Changed:Connect(function()
 			if Input.UserInputState == Enum.UserInputState.End then
@@ -846,18 +941,18 @@ UserInputService.InputChanged:Connect(function(Input)
 
 	local Delta = Input.Position - DragStart
 
-	Frame.Position = UDim2.new(
+	frame.Position = UDim2.new(
 		StartPosition.X.Scale,
 		StartPosition.X.Offset + Delta.X,
 		StartPosition.Y.Scale,
 		StartPosition.Y.Offset + Delta.Y
 	)
 
-	CloseOpen.Position = UDim2.new(
-		Frame.Position.X.Scale,
-		Frame.Position.X.Offset,
-		Frame.Position.Y.Scale,
-		Frame.Position.Y.Offset + 380
+	cope.Position = UDim2.new(
+		frame.Position.X.Scale,
+		frame.Position.X.Offset,
+		frame.Position.Y.Scale,
+		frame.Position.Y.Offset + 380
 	)
 end)
 
@@ -871,12 +966,12 @@ UserInputService.InputBegan:Connect(function(Input, GameProcessed)
 	end
 
 	if Input.KeyCode == Enum.KeyCode.RightShift then
-		if Frame.Visible then
-			Frame.Visible = false
-			CloseOpen.Text = "Open"
+		if frame.Visible then
+			frame.Visible = false
+			cope.Text = "Open"
 		else
-			Frame.Visible = true
-			CloseOpen.Text = "Close"
+			frame.Visible = true
+			cope.Text = "Close"
 		end
 	end
 end)
