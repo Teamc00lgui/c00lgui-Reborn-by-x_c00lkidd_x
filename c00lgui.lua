@@ -189,6 +189,7 @@ addonl.ZIndex = 3
 
 local title = Instance.new("TextLabel")
 title.Parent = frame
+title.Active = true
 title.BackgroundColor3 = blak
 title.BorderColor3 = rede
 title.BorderSizePixel = 3
@@ -200,6 +201,58 @@ title.Font = tef
 title.TextSize = 24
 title.Text = "c00lgui Reborn by x_c00lkidd_x"
 title.TextColor3 = whit
+
+-- Dragging --
+
+local UserInputService = game:GetService("UserInputService")
+
+local dragging = false
+local dragStart
+local startPosition
+local dragInput
+
+local function updateDrag(input)
+	local delta = input.Position - dragStart
+
+	frame.Position = UDim2.new(
+		startPosition.X.Scale,
+		startPosition.X.Offset + delta.X,
+		startPosition.Y.Scale,
+		startPosition.Y.Offset + delta.Y
+	)
+end
+
+title.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1
+		or input.UserInputType == Enum.UserInputType.Touch then
+
+		dragging = true
+		dragStart = input.Position
+		startPosition = frame.Position
+
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
+	end
+end)
+
+title.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement
+		or input.UserInputType == Enum.UserInputType.Touch then
+
+		dragInput = input
+	end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+	if input == dragInput and dragging then
+		updateDrag(input)
+	end
+end)
+
+-- Dragging end --
 
 -- inside pages --
 
