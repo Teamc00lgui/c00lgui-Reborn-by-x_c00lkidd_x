@@ -172,6 +172,7 @@ TitleBar.Name = "TitleBar"
 TitleBar.Size = UDim2.new(1, 0, 0, 44)
 TitleBar.BackgroundColor3 = Theme.Red
 TitleBar.BorderSizePixel = 0
+TitleBar.ClipsDescendants = true
 TitleBar.Parent = Main
 
 Corner(TitleBar, 14)
@@ -982,6 +983,7 @@ local function SetMinimized(state)
 
 	else
 		Minimize.Text = "—"
+
 		Body.Visible = false
 		TitleBottom.Visible = false
 
@@ -1021,6 +1023,7 @@ Close.MouseButton1Click:Connect(function()
 	StopWindowTween()
 
 	Body.Visible = false
+	TitleBottom.Visible = false
 
 	local closeTween = Tween(
 		Main,
