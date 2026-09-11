@@ -66,6 +66,19 @@ title.Active = true
 
 title.Parent = frame
 
+local content = Instance.new("CanvasGroup")
+
+content.Name = "Content"
+content.Size = UDim2.new(1, -4, 1, -35)
+content.Position = UDim2.fromOffset(2, 35)
+
+content.BackgroundTransparency = 1
+content.BorderSizePixel = 0
+
+content.GroupTransparency = 0
+
+content.Parent = frame
+
 local toggleButton = Instance.new("TextButton")
 
 toggleButton.Name = "ToggleButton"
@@ -87,7 +100,10 @@ toggleButton.TextSize = 14
 toggleButton.Parent = container
 
 local guiOpen = true
+local animating = false
+
 local animationTime = 0.55
+local contentFadeTime = 0.25
 
 local tweenInfo = TweenInfo.new(
     animationTime,
@@ -95,46 +111,107 @@ local tweenInfo = TweenInfo.new(
     Enum.EasingDirection.Out
 )
 
+local contentTweenInfo = TweenInfo.new(
+    contentFadeTime,
+    Enum.EasingStyle.Quint,
+    Enum.EasingDirection.Out
+)
+
 toggleButton.MouseButton1Click:Connect(function()
+    if animating then
+        return
+    end
+
+    animating = true
     guiOpen = not guiOpen
 
     if guiOpen then
         toggleButton.Text = "Close"
-        frame.Visible = true
 
-        TweenService:Create(
+        frame.Visible = true
+        content.Visible = true
+
+        frame.Size = UDim2.fromOffset(400, 35)
+        toggleButton.Position = UDim2.fromOffset(0, 35)
+
+        content.GroupTransparency = 1
+
+        local frameTween = TweenService:Create(
             frame,
             tweenInfo,
             {
                 Size = UDim2.fromOffset(400, 250)
             }
-        ):Play()
+        )
 
-        TweenService:Create(
+        local buttonTween = TweenService:Create(
             toggleButton,
             tweenInfo,
             {
                 Position = UDim2.fromOffset(0, 250)
             }
-        ):Play()
+        )
+
+        local contentTween = TweenService:Create(
+            content,
+            contentTweenInfo,
+            {
+                GroupTransparency = 0
+            }
+        )
+
+        frameTween:Play()
+        buttonTween:Play()
+        contentTween:Play()
+
+        frameTween.Completed:Once(function()
+            animating = false
+        end)
+
     else
         toggleButton.Text = "Open"
 
-        TweenService:Create(
-            frame,
-            tweenInfo,
+        local contentTween = TweenService:Create(
+            content,
+            contentTweenInfo,
             {
-                Size = UDim2.fromOffset(400, 35)
+                GroupTransparency = 1
             }
-        ):Play()
+        )
 
-        TweenService:Create(
-            toggleButton,
-            tweenInfo,
-            {
-                Position = UDim2.fromOffset(0, 35)
-            }
-        ):Play()
+        contentTween:Play()
+
+        contentTween.Completed:Once(function()
+            if guiOpen then
+                animating = false
+                return
+            end
+
+            content.Visible = false
+
+            local frameTween = TweenService:Create(
+                frame,
+                tweenInfo,
+                {
+                    Size = UDim2.fromOffset(400, 35)
+                }
+            )
+
+            local buttonTween = TweenService:Create(
+                toggleButton,
+                tweenInfo,
+                {
+                    Position = UDim2.fromOffset(0, 35)
+                }
+            )
+
+            frameTween:Play()
+            buttonTween:Play()
+
+            frameTween.Completed:Once(function()
+                animating = false
+            end)
+        end)
     end
 end)
 
