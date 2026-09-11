@@ -53,6 +53,8 @@ title.Size = UDim2.new(1, -4, 0, 31)
 title.Position = UDim2.fromOffset(2, 2)
 
 title.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+title.BorderSizePixel = 0
+
 title.TextColor3 = Color3.fromRGB(255, 255, 255)
 
 title.Text = "c00lgui Reborn by x_c00lkidd_x"
@@ -96,6 +98,7 @@ end)
 local dragging = false
 local dragStart
 local startPosition
+local dragInput
 
 title.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -106,8 +109,14 @@ title.InputBegan:Connect(function(input)
     end
 end)
 
+title.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        dragInput = input
+    end
+end)
+
 UserInputService.InputChanged:Connect(function(input)
-    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+    if dragging and input == dragInput then
         local delta = input.Position - dragStart
 
         container.Position = UDim2.new(
@@ -122,5 +131,6 @@ end)
 UserInputService.InputEnded:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
         dragging = false
+        dragInput = nil
     end
 end)
