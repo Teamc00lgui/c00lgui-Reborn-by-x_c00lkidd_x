@@ -635,6 +635,11 @@ local function startGod()
             return
         end
 
+        if humanoid.Health ~= humanoid.Health then
+            humanoid.Health = math.huge
+            return
+        end
+
         if humanoid.Health < math.huge then
             humanoid.Health = math.huge
         end
