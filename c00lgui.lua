@@ -6,6 +6,7 @@ local tef = Enum.Font.SourceSans
 local whit = Color3.fromRGB(255, 255, 255)
 
 local CoreGui = game:GetService("CoreGui")
+local UserInputService = game:GetService("UserInputService")
 
 local existingGui = CoreGui:FindFirstChild("CoolGui")
 if existingGui then
@@ -56,13 +57,13 @@ cope.TextXAlignment = Enum.TextXAlignment.Center
 cope.TextYAlignment = Enum.TextYAlignment.Center
 
 cope.Activated:Connect(function()
-	if cope.Text == "Close" then
-		frame.Visible = false
-		cope.Text = "Open"
-	else
-		frame.Visible = true
-		cope.Text = "Close"
-	end
+    if cope.Text == "Close" then
+        frame.Visible = false
+        cope.Text = "Open"
+    else
+        frame.Visible = true
+        cope.Text = "Close"
+    end
 end)
 
 local page1 = Instance.new("Frame")
@@ -120,6 +121,8 @@ page5.Size = UDim2.new(1, 0, 1, -106)
 page5.ZIndex = 2
 page5.Visible = false
 
+-- Settings --
+
 local page = Instance.new("Frame")
 page.Parent = frame
 page.BackgroundColor3 = blak
@@ -130,6 +133,97 @@ page.Position = UDim2.new(1, 3, 0, 0)
 page.Size = UDim2.new(1, 0, 1, 0)
 page.ZIndex = 1
 page.Visible = true
+
+local settingsTitle = Instance.new("TextLabel")
+settingsTitle.Parent = page
+settingsTitle.BackgroundColor3 = blak
+settingsTitle.BorderColor3 = rede
+settingsTitle.BorderSizePixel = 3
+settingsTitle.Name = "SettingsTitle"
+settingsTitle.Position = UDim2.new(0, 0, 0, 0)
+settingsTitle.Size = UDim2.new(1, 0, 0, 40)
+settingsTitle.ZIndex = 2
+settingsTitle.Font = tef
+settingsTitle.TextSize = 24
+settingsTitle.Text = "Settings"
+settingsTitle.TextColor3 = whit
+settingsTitle.TextXAlignment = Enum.TextXAlignment.Center
+settingsTitle.TextYAlignment = Enum.TextYAlignment.Center
+
+local settings = {
+    ["Security of character"] = false,
+    ["Windows transparency"] = true,
+    ["Big jumps"] = false,
+    ["HealthBar"] = false,
+    ["Immortal"] = false
+}
+
+local settingButtons = {}
+
+local function createSetting(name, index)
+    local settingButton = Instance.new("TextButton")
+    settingButton.Parent = page
+    settingButton.BackgroundColor3 = blak
+    settingButton.BorderColor3 = rede
+    settingButton.BorderSizePixel = 3
+    settingButton.Name = name
+    settingButton.Position = UDim2.new(0, 0, 0, 40 + ((index - 1) * 45))
+    settingButton.Size = UDim2.new(1, 0, 0, 40)
+    settingButton.ZIndex = 2
+    settingButton.Font = tef
+    settingButton.TextSize = 16
+    settingButton.Text = name
+    settingButton.TextColor3 = whit
+    settingButton.TextXAlignment = Enum.TextXAlignment.Left
+    settingButton.TextYAlignment = Enum.TextYAlignment.Center
+
+    local indicator = Instance.new("TextLabel")
+    indicator.Parent = settingButton
+    indicator.BackgroundColor3 = rede
+    indicator.BorderColor3 = rede
+    indicator.BorderSizePixel = 2
+    indicator.Name = "Status"
+    indicator.Position = UDim2.new(1, -35, 0, 10)
+    indicator.Size = UDim2.new(0, 25, 0, 20)
+    indicator.ZIndex = 3
+    indicator.Font = tef
+    indicator.TextSize = 14
+    indicator.TextColor3 = whit
+    indicator.TextXAlignment = Enum.TextXAlignment.Center
+    indicator.TextYAlignment = Enum.TextYAlignment.Center
+
+    local function updateIndicator()
+        if settings[name] then
+            indicator.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
+            indicator.BorderColor3 = Color3.fromRGB(0, 170, 0)
+            indicator.Text = "ON"
+        else
+            indicator.BackgroundColor3 = Color3.fromRGB(120, 0, 0)
+            indicator.BorderColor3 = Color3.fromRGB(120, 0, 0)
+            indicator.Text = "OFF"
+        end
+    end
+
+    updateIndicator()
+
+    settingButton.Activated:Connect(function()
+        settings[name] = not settings[name]
+        updateIndicator()
+    end)
+
+    settingButtons[name] = {
+        Button = settingButton,
+        Indicator = indicator
+    }
+end
+
+createSetting("Security of character", 1)
+createSetting("Windows transparency", 2)
+createSetting("Big jumps", 3)
+createSetting("HealthBar", 4)
+createSetting("Immortal", 5)
+
+-- Settings end --
 
 local right = Instance.new("TextButton")
 right.Parent = frame
@@ -201,10 +295,10 @@ title.Font = tef
 title.TextSize = 24
 title.Text = "c00lgui Reborn by x_c00lkidd_x"
 title.TextColor3 = whit
+title.TextXAlignment = Enum.TextXAlignment.Center
+title.TextYAlignment = Enum.TextYAlignment.Center
 
 -- Dragging --
-
-local UserInputService = game:GetService("UserInputService")
 
 local dragging = false
 local dragStart
@@ -212,55 +306,55 @@ local startPosition
 local dragInput
 
 local function updateDrag(input)
-	local delta = input.Position - dragStart
+    local delta = input.Position - dragStart
 
-	local newPosition = UDim2.new(
-		startPosition.X.Scale,
-		startPosition.X.Offset + delta.X,
-		startPosition.Y.Scale,
-		startPosition.Y.Offset + delta.Y
-	)
+    local newPosition = UDim2.new(
+        startPosition.X.Scale,
+        startPosition.X.Offset + delta.X,
+        startPosition.Y.Scale,
+        startPosition.Y.Offset + delta.Y
+    )
 
-	frame.Position = newPosition
+    frame.Position = newPosition
 
-	cope.Position = UDim2.new(
-		newPosition.X.Scale,
-		newPosition.X.Offset,
-		newPosition.Y.Scale,
-		newPosition.Y.Offset + frame.Size.Y.Offset - cope.Size.Y.Offset
-	)
+    cope.Position = UDim2.new(
+        newPosition.X.Scale,
+        newPosition.X.Offset,
+        newPosition.Y.Scale,
+        newPosition.Y.Offset + frame.Size.Y.Offset - cope.Size.Y.Offset
+    )
 end
 
 title.InputBegan:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseButton1
-		or input.UserInputType == Enum.UserInputType.Touch then
+    if input.UserInputType == Enum.UserInputType.MouseButton1
+        or input.UserInputType == Enum.UserInputType.Touch then
 
-		dragging = true
-		dragStart = input.Position
-		startPosition = frame.Position
-		dragInput = input
+        dragging = true
+        dragStart = input.Position
+        startPosition = frame.Position
+        dragInput = input
 
-		input.Changed:Connect(function()
-			if input.UserInputState == Enum.UserInputState.End then
-				dragging = false
-				dragInput = nil
-			end
-		end)
-	end
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+                dragInput = nil
+            end
+        end)
+    end
 end)
 
 title.InputChanged:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseMovement
-		or input.UserInputType == Enum.UserInputType.Touch then
+    if input.UserInputType == Enum.UserInputType.MouseMovement
+        or input.UserInputType == Enum.UserInputType.Touch then
 
-		dragInput = input
-	end
+        dragInput = input
+    end
 end)
 
 UserInputService.InputChanged:Connect(function(input)
-	if input == dragInput and dragging then
-		updateDrag(input)
-	end
+    if input == dragInput and dragging then
+        updateDrag(input)
+    end
 end)
 
 -- Dragging end --
@@ -368,3 +462,43 @@ pgi.Size = UDim2.new(0.5, -3, 1, 0)
 pgi.ZIndex = 2
 
 -- inside pages end --
+
+-- Page navigation --
+
+local CurrentPage = 1
+
+local function FlipPage(Way)
+    local NewPage = CurrentPage + Way
+
+    if pges:FindFirstChild("Page" .. NewPage) then
+        CurrentPage = NewPage
+
+        for _, child in ipairs(pges:GetChildren()) do
+            if child:IsA("Frame") and child.Name:match("^Page%d+$") then
+                child.Visible = false
+            end
+        end
+
+        pges:FindFirstChild("Page" .. NewPage).Visible = true
+    end
+end
+
+right.Activated:Connect(function()
+    FlipPage(1)
+end)
+
+left.Activated:Connect(function()
+    FlipPage(-1)
+end)
+
+addonl.Activated:Connect(function()
+    CurrentPage = 1
+    FlipPage(0)
+end)
+
+addonr.Activated:Connect(function()
+    CurrentPage = 5
+    FlipPage(0)
+end)
+
+-- Page navigation end --
