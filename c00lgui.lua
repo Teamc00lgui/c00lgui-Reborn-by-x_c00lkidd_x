@@ -17,7 +17,7 @@ if not success then
 
     gui.Parent = player:WaitForChild("PlayerGui")
 
-    warn("Use c00lgui in: PlayerGui.")
+    warn("Using PlayerGui now.")
 end
 
 local container = Instance.new("Frame")
@@ -26,6 +26,7 @@ container.Name = "MainContainer"
 container.Size = UDim2.fromOffset(400, 270)
 container.Position = UDim2.fromScale(0.5, 0.5)
 container.AnchorPoint = Vector2.new(0.5, 0.5)
+
 container.BackgroundTransparency = 1
 container.BorderSizePixel = 0
 
@@ -38,6 +39,7 @@ frame.Size = UDim2.fromOffset(400, 250)
 frame.Position = UDim2.fromOffset(0, 0)
 
 frame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+
 frame.BorderSizePixel = 2
 frame.BorderColor3 = Color3.fromRGB(255, 0, 0)
 
@@ -46,10 +48,11 @@ frame.Parent = container
 local title = Instance.new("TextLabel")
 
 title.Name = "Title"
-title.Size = UDim2.new(1, 0, 0, 35)
-title.Position = UDim2.fromOffset(0, 0)
 
-title.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+title.Size = UDim2.new(1, -4, 0, 31)
+title.Position = UDim2.fromOffset(2, 2)
+
+title.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 title.TextColor3 = Color3.fromRGB(255, 255, 255)
 
 title.Text = "c00lgui Reborn by x_c00lkidd_x"
@@ -57,11 +60,14 @@ title.Text = "c00lgui Reborn by x_c00lkidd_x"
 title.Font = Enum.Font.SourceSans
 title.TextSize = 20
 
+title.Active = true
+
 title.Parent = frame
 
 local toggleButton = Instance.new("TextButton")
 
 toggleButton.Name = "ToggleButton"
+
 toggleButton.Size = UDim2.fromOffset(400, 20)
 toggleButton.Position = UDim2.fromOffset(0, 250)
 
