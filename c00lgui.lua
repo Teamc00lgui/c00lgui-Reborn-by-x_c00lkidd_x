@@ -87,11 +87,11 @@ toggleButton.TextSize = 14
 toggleButton.Parent = container
 
 local guiOpen = true
-local animationTime = 0.25
+local animationTime = 0.55
 
 local tweenInfo = TweenInfo.new(
     animationTime,
-    Enum.EasingStyle.Quart,
+    Enum.EasingStyle.Quint,
     Enum.EasingDirection.Out
 )
 
