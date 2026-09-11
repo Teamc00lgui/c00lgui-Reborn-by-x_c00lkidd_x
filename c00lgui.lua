@@ -523,6 +523,63 @@ local InfiniteJumpButton = createPlayerButton(
     160
 )
 
+local ClickTeleportButton = createPlayerButton(
+    "ClickTeleportButton",
+    "Click Teleport: OFF",
+    160,
+    160
+)
+
+local clickTeleport = false
+
+local mouse = player:GetMouse()
+
+local function stopClickTeleport()
+    clickTeleport = false
+
+    ClickTeleportButton.Text = "Click Teleport: OFF"
+    ClickTeleportButton.TextColor3 = Color3.fromRGB(255, 0, 0)
+end
+
+local function startClickTeleport()
+    clickTeleport = true
+
+    ClickTeleportButton.Text = "Click Teleport: ON"
+    ClickTeleportButton.TextColor3 = Color3.fromRGB(0, 255, 0)
+end
+
+ClickTeleportButton.MouseButton1Click:Connect(function()
+    if clickTeleport then
+        stopClickTeleport()
+    else
+        startClickTeleport()
+    end
+end)
+
+mouse.Button1Down:Connect(function()
+    if not clickTeleport then
+        return
+    end
+
+    local character = player.Character
+
+    if not character then
+        return
+    end
+
+    local root = character:FindFirstChild("HumanoidRootPart")
+
+    if not root then
+        return
+    end
+
+    local targetPosition = mouse.Hit.Position
+
+    root.CFrame = CFrame.new(
+        targetPosition + Vector3.new(0, 3, 0)
+    )
+end)
+
 local infiniteJump = false
 
 local function stopInfiniteJump()
@@ -2383,6 +2440,10 @@ player.CharacterAdded:Connect(function(character)
 
     if infiniteJump then
         stopInfiniteJump()
+    end
+
+    if clickTeleport then
+        stopClickTeleport()
     end
 
     applyCharacterSettings()
