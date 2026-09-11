@@ -103,7 +103,7 @@ playerTab.BorderSizePixel = 0
 playerTab.Text = "PLAYER"
 playerTab.TextColor3 = Color3.fromRGB(255, 255, 255)
 
-playerTab.Font = Enum.Font.Code
+playerTab.Font = Enum.Font.SourceSansBold
 playerTab.TextSize = 14
 
 playerTab.Parent = tabBar
@@ -150,7 +150,7 @@ walkSpeedLabel.BackgroundTransparency = 1
 walkSpeedLabel.Text = "WalkSpeed"
 walkSpeedLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 
-walkSpeedLabel.Font = Enum.Font.Code
+walkSpeedLabel.Font = Enum.Font.SourceSans
 walkSpeedLabel.TextSize = 14
 walkSpeedLabel.TextXAlignment = Enum.TextXAlignment.Left
 
@@ -203,7 +203,7 @@ valueBox.BorderColor3 = Color3.fromRGB(120, 0, 0)
 valueBox.Text = "16"
 valueBox.TextColor3 = Color3.fromRGB(255, 255, 255)
 
-valueBox.Font = Enum.Font.Code
+valueBox.Font = Enum.Font.SourceSans
 valueBox.TextSize = 14
 
 valueBox.ClearTextOnFocus = false
@@ -225,7 +225,7 @@ toggleButton.BorderColor3 = Color3.fromRGB(255, 0, 0)
 toggleButton.Text = "Close"
 toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 
-toggleButton.Font = Enum.Font.Code
+toggleButton.Font = Enum.Font.SourceSans
 toggleButton.TextSize = 14
 
 toggleButton.Parent = container
