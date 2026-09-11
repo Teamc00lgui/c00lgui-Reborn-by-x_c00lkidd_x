@@ -3,6 +3,7 @@ local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
+local GuiService = game:GetService("GuiService")
 local SoundService = game:GetService("SoundService")
 local Lighting = game:GetService("Lighting")
 
@@ -558,6 +559,15 @@ end)
 
 mouse.Button1Down:Connect(function()
     if not clickTeleport then
+        return
+    end
+
+    local guiObjects = GuiService:GetGuiObjectsAtPosition(
+        mouse.X,
+        mouse.Y
+    )
+
+    if #guiObjects > 0 then
         return
     end
 
