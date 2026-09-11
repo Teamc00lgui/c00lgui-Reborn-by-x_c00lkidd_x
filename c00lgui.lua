@@ -7,6 +7,22 @@ local SoundService = game:GetService("SoundService")
 
 local player = Players.LocalPlayer
 
+local existingCoreGui = CoreGui:FindFirstChild("c00lgui")
+
+if existingCoreGui then
+    existingCoreGui:Destroy()
+end
+
+local playerGui = player:FindFirstChild("PlayerGui")
+
+if playerGui then
+    local existingPlayerGui = playerGui:FindFirstChild("c00lgui")
+
+    if existingPlayerGui then
+        existingPlayerGui:Destroy()
+    end
+end
+
 local gui = Instance.new("ScreenGui")
 
 gui.Name = "c00lgui"
@@ -18,7 +34,6 @@ end)
 
 if not success then
     gui.Parent = player:WaitForChild("PlayerGui")
-    warn("Using PlayerGui now.")
 end
 
 local container = Instance.new("Frame")
