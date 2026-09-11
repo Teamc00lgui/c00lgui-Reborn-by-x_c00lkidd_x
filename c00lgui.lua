@@ -209,15 +209,25 @@ local UserInputService = game:GetService("UserInputService")
 local dragging = false
 local dragStart
 local startPosition
+local dragInput
 
 local function updateDrag(input)
 	local delta = input.Position - dragStart
 
-	frame.Position = UDim2.new(
+	local newPosition = UDim2.new(
 		startPosition.X.Scale,
 		startPosition.X.Offset + delta.X,
 		startPosition.Y.Scale,
 		startPosition.Y.Offset + delta.Y
+	)
+
+	frame.Position = newPosition
+
+	cope.Position = UDim2.new(
+		newPosition.X.Scale,
+		newPosition.X.Offset,
+		newPosition.Y.Scale,
+		newPosition.Y.Offset + frame.Size.Y.Offset - cope.Size.Y.Offset
 	)
 end
 
@@ -228,25 +238,27 @@ title.InputBegan:Connect(function(input)
 		dragging = true
 		dragStart = input.Position
 		startPosition = frame.Position
+		dragInput = input
+
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+				dragInput = nil
+			end
+		end)
 	end
 end)
 
-title.InputEnded:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseButton1
+title.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement
 		or input.UserInputType == Enum.UserInputType.Touch then
 
-		dragging = false
+		dragInput = input
 	end
 end)
 
 UserInputService.InputChanged:Connect(function(input)
-	if not dragging then
-		return
-	end
-
-	if input.UserInputType == Enum.UserInputType.MouseMovement
-		or input.UserInputType == Enum.UserInputType.Touch then
-
+	if input == dragInput and dragging then
 		updateDrag(input)
 	end
 end)
