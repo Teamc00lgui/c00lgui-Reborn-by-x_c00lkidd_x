@@ -495,6 +495,66 @@ local NoclipButton = createPlayerButton(
     130
 )
 
+local mobileFlyControls = Instance.new("Frame")
+
+mobileFlyControls.Name = "MobileFlyControls"
+mobileFlyControls.Size = UDim2.fromOffset(70, 150)
+mobileFlyControls.Position = UDim2.new(1, -90, 1, -190)
+
+mobileFlyControls.BackgroundTransparency = 1
+mobileFlyControls.BorderSizePixel = 0
+
+mobileFlyControls.Visible = false
+mobileFlyControls.ZIndex = 100
+
+mobileFlyControls.Parent = gui
+
+local mobileFlyUpButton = Instance.new("TextButton")
+
+mobileFlyUpButton.Name = "FlyUp"
+mobileFlyUpButton.Size = UDim2.fromOffset(60, 60)
+mobileFlyUpButton.Position = UDim2.fromOffset(5, 0)
+
+mobileFlyUpButton.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+mobileFlyUpButton.BackgroundTransparency = 0.15
+
+mobileFlyUpButton.BorderSizePixel = 2
+mobileFlyUpButton.BorderColor3 = Color3.fromRGB(255, 0, 0)
+
+mobileFlyUpButton.Text = "▲"
+mobileFlyUpButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+mobileFlyUpButton.Font = Enum.Font.SourceSansBold
+mobileFlyUpButton.TextSize = 26
+
+mobileFlyUpButton.AutoButtonColor = false
+mobileFlyUpButton.ZIndex = 101
+
+mobileFlyUpButton.Parent = mobileFlyControls
+
+local mobileFlyDownButton = Instance.new("TextButton")
+
+mobileFlyDownButton.Name = "FlyDown"
+mobileFlyDownButton.Size = UDim2.fromOffset(60, 60)
+mobileFlyDownButton.Position = UDim2.fromOffset(5, 70)
+
+mobileFlyDownButton.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+mobileFlyDownButton.BackgroundTransparency = 0.15
+
+mobileFlyDownButton.BorderSizePixel = 2
+mobileFlyDownButton.BorderColor3 = Color3.fromRGB(255, 0, 0)
+
+mobileFlyDownButton.Text = "▼"
+mobileFlyDownButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+mobileFlyDownButton.Font = Enum.Font.SourceSansBold
+mobileFlyDownButton.TextSize = 26
+
+mobileFlyDownButton.AutoButtonColor = false
+mobileFlyDownButton.ZIndex = 101
+
+mobileFlyDownButton.Parent = mobileFlyControls
+
 local flying = false
 
 local flyVelocity
@@ -503,8 +563,24 @@ local flyOrientation
 local flyOrientationAttachment
 local flyConnection
 
+local flyUp = false
+local flyDown = false
+
+local mobileDevice = UserInputService.TouchEnabled
+
+local function setMobileFlyControlsVisible(visible)
+    if not mobileDevice then
+        mobileFlyControls.Visible = false
+        return
+    end
+
+    mobileFlyControls.Visible = visible
+end
+
 local function stopFly()
     flying = false
+    flyUp = false
+    flyDown = false
 
     if flyConnection then
         flyConnection:Disconnect()
@@ -530,6 +606,8 @@ local function stopFly()
         flyOrientationAttachment:Destroy()
         flyOrientationAttachment = nil
     end
+
+    setMobileFlyControlsVisible(false)
 
     local character = player.Character
 
@@ -577,27 +655,43 @@ local function updateFly()
 
     local direction = Vector3.zero
 
-    if UserInputService:IsKeyDown(Enum.KeyCode.W) then
-        direction += camera.CFrame.LookVector
+    if mobileDevice then
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
+
+        if humanoid then
+            direction += humanoid.MoveDirection
+        end
+    else
+        if UserInputService:IsKeyDown(Enum.KeyCode.W) then
+            direction += camera.CFrame.LookVector
+        end
+
+        if UserInputService:IsKeyDown(Enum.KeyCode.S) then
+            direction -= camera.CFrame.LookVector
+        end
+
+        if UserInputService:IsKeyDown(Enum.KeyCode.A) then
+            direction -= camera.CFrame.RightVector
+        end
+
+        if UserInputService:IsKeyDown(Enum.KeyCode.D) then
+            direction += camera.CFrame.RightVector
+        end
+
+        if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+            direction += Vector3.yAxis
+        end
+
+        if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then
+            direction -= Vector3.yAxis
+        end
     end
 
-    if UserInputService:IsKeyDown(Enum.KeyCode.S) then
-        direction -= camera.CFrame.LookVector
-    end
-
-    if UserInputService:IsKeyDown(Enum.KeyCode.A) then
-        direction -= camera.CFrame.RightVector
-    end
-
-    if UserInputService:IsKeyDown(Enum.KeyCode.D) then
-        direction += camera.CFrame.RightVector
-    end
-
-    if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+    if flyUp then
         direction += Vector3.yAxis
     end
 
-    if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then
+    if flyDown then
         direction -= Vector3.yAxis
     end
 
@@ -678,6 +772,8 @@ local function startFly()
     FlyButton.Text = "Fly: ON"
     FlyButton.TextColor3 = Color3.fromRGB(0, 255, 0)
 
+    setMobileFlyControlsVisible(true)
+
     flyConnection = RunService.RenderStepped:Connect(updateFly)
 end
 
@@ -687,6 +783,54 @@ FlyButton.MouseButton1Click:Connect(function()
     else
         startFly()
     end
+end)
+
+mobileFlyUpButton.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch
+        or input.UserInputType == Enum.UserInputType.MouseButton1 then
+
+        flyUp = true
+    end
+end)
+
+mobileFlyUpButton.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch
+        or input.UserInputType == Enum.UserInputType.MouseButton1 then
+
+        flyUp = false
+    end
+end)
+
+mobileFlyDownButton.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch
+        or input.UserInputType == Enum.UserInputType.MouseButton1 then
+
+        flyDown = true
+    end
+end)
+
+mobileFlyDownButton.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch
+        or input.UserInputType == Enum.UserInputType.MouseButton1 then
+
+        flyDown = false
+    end
+end)
+
+mobileFlyUpButton.MouseEnter:Connect(function()
+    mobileFlyUpButton.BackgroundColor3 = Color3.fromRGB(22, 0, 0)
+end)
+
+mobileFlyUpButton.MouseLeave:Connect(function()
+    mobileFlyUpButton.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+end)
+
+mobileFlyDownButton.MouseEnter:Connect(function()
+    mobileFlyDownButton.BackgroundColor3 = Color3.fromRGB(22, 0, 0)
+end)
+
+mobileFlyDownButton.MouseLeave:Connect(function()
+    mobileFlyDownButton.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
 end)
 
 local noclip = false
