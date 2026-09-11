@@ -547,6 +547,7 @@ local GodButton = createPlayerButton(
 local forceFieldEnabled = false
 local godEnabled = false
 local godConnection
+local originalMaxHealth
 
 local function removeForceField()
     local character = player.Character
@@ -598,24 +599,34 @@ local function stopGod()
         godConnection = nil
     end
 
+    local character = player.Character
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+
+    if humanoid and originalMaxHealth then
+        humanoid.MaxHealth = originalMaxHealth
+        humanoid.Health = math.min(
+            humanoid.Health,
+            humanoid.MaxHealth
+        )
+    end
+
+    originalMaxHealth = nil
+
     GodButton.Text = "God: OFF"
     GodButton.TextColor3 = Color3.fromRGB(255, 0, 0)
 end
 
 local function startGod()
-    godEnabled = true
-
     local character = player.Character
     local humanoid = character and character:FindFirstChildOfClass("Humanoid")
 
     if not humanoid then
-        GodButton.Text = "God: OFF"
-        GodButton.TextColor3 = Color3.fromRGB(255, 0, 0)
-        godEnabled = false
         return
     end
 
-    humanoid.MaxHealth = math.huge
+    godEnabled = true
+    originalMaxHealth = humanoid.MaxHealth
+
     humanoid.Health = humanoid.MaxHealth
 
     godConnection = humanoid.HealthChanged:Connect(function()
