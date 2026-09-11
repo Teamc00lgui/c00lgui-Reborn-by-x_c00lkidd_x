@@ -121,8 +121,6 @@ page5.Size = UDim2.new(1, 0, 1, -106)
 page5.ZIndex = 2
 page5.Visible = false
 
--- Settings --
-
 local page = Instance.new("Frame")
 page.Parent = frame
 page.BackgroundColor3 = blak
@@ -133,6 +131,8 @@ page.Position = UDim2.new(1, 3, 0, 0)
 page.Size = UDim2.new(1, 0, 1, 0)
 page.ZIndex = 1
 page.Visible = true
+
+-- Settings --
 
 local settingsTitle = Instance.new("TextLabel")
 settingsTitle.Parent = page
@@ -161,59 +161,69 @@ local settings = {
 local settingButtons = {}
 
 local function createSetting(name, index)
-    local settingButton = Instance.new("TextButton")
-    settingButton.Parent = page
-    settingButton.BackgroundColor3 = blak
-    settingButton.BorderColor3 = rede
-    settingButton.BorderSizePixel = 3
-    settingButton.Name = name
-    settingButton.Position = UDim2.new(0, 0, 0, 40 + ((index - 1) * 45))
-    settingButton.Size = UDim2.new(1, 0, 0, 40)
-    settingButton.ZIndex = 2
-    settingButton.Font = tef
-    settingButton.TextSize = 16
-    settingButton.Text = name
-    settingButton.TextColor3 = whit
-    settingButton.TextXAlignment = Enum.TextXAlignment.Left
-    settingButton.TextYAlignment = Enum.TextYAlignment.Center
+    local setting = Instance.new("Frame")
+    setting.Parent = page
+    setting.BackgroundColor3 = blak
+    setting.BorderColor3 = rede
+    setting.BorderSizePixel = 2
+    setting.Name = name
+    setting.Position = UDim2.new(0, 5, 0, 45 + ((index - 1) * 32))
+    setting.Size = UDim2.new(1, -10, 0, 30)
+    setting.ZIndex = 2
 
-    local indicator = Instance.new("TextLabel")
-    indicator.Parent = settingButton
-    indicator.BackgroundColor3 = rede
-    indicator.BorderColor3 = rede
-    indicator.BorderSizePixel = 2
-    indicator.Name = "Status"
-    indicator.Position = UDim2.new(1, -35, 0, 10)
-    indicator.Size = UDim2.new(0, 25, 0, 20)
-    indicator.ZIndex = 3
-    indicator.Font = tef
-    indicator.TextSize = 14
-    indicator.TextColor3 = whit
-    indicator.TextXAlignment = Enum.TextXAlignment.Center
-    indicator.TextYAlignment = Enum.TextYAlignment.Center
+    local label = Instance.new("TextLabel")
+    label.Parent = setting
+    label.BackgroundTransparency = 1
+    label.BorderSizePixel = 0
+    label.Name = "Name"
+    label.Position = UDim2.new(0, 5, 0, 0)
+    label.Size = UDim2.new(1, -55, 1, 0)
+    label.ZIndex = 3
+    label.Font = tef
+    label.TextSize = 16
+    label.Text = name
+    label.TextColor3 = whit
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.TextYAlignment = Enum.TextYAlignment.Center
 
-    local function updateIndicator()
+    local toggle = Instance.new("TextButton")
+    toggle.Parent = setting
+    toggle.BackgroundColor3 = blak
+    toggle.BorderColor3 = rede
+    toggle.BorderSizePixel = 2
+    toggle.Name = "Toggle"
+    toggle.Position = UDim2.new(1, -40, 0, 5)
+    toggle.Size = UDim2.new(0, 35, 0, 20)
+    toggle.ZIndex = 3
+    toggle.Font = tef
+    toggle.TextSize = 12
+    toggle.TextColor3 = whit
+    toggle.TextXAlignment = Enum.TextXAlignment.Center
+    toggle.TextYAlignment = Enum.TextYAlignment.Center
+
+    local function updateToggle()
         if settings[name] then
-            indicator.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
-            indicator.BorderColor3 = Color3.fromRGB(0, 170, 0)
-            indicator.Text = "ON"
+            toggle.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
+            toggle.BorderColor3 = Color3.fromRGB(0, 170, 0)
+            toggle.Text = "ON"
         else
-            indicator.BackgroundColor3 = Color3.fromRGB(120, 0, 0)
-            indicator.BorderColor3 = Color3.fromRGB(120, 0, 0)
-            indicator.Text = "OFF"
+            toggle.BackgroundColor3 = Color3.fromRGB(120, 0, 0)
+            toggle.BorderColor3 = Color3.fromRGB(120, 0, 0)
+            toggle.Text = "OFF"
         end
     end
 
-    updateIndicator()
+    updateToggle()
 
-    settingButton.Activated:Connect(function()
+    toggle.Activated:Connect(function()
         settings[name] = not settings[name]
-        updateIndicator()
+        updateToggle()
     end)
 
     settingButtons[name] = {
-        Button = settingButton,
-        Indicator = indicator
+        Frame = setting,
+        Label = label,
+        Button = toggle
     }
 end
 
