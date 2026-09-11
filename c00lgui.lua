@@ -363,6 +363,11 @@ local pageOptions = {
     musicOption
 }
 
+pageDropdown.Size = UDim2.fromOffset(
+    140,
+    #pageOptions * 25
+)
+
 for _, option in ipairs(pageOptions) do
     option.MouseEnter:Connect(function()
         option.BackgroundColor3 = Color3.fromRGB(22, 0, 0)
@@ -967,6 +972,9 @@ if not musicSound then
     musicSound.Parent = SoundService
 end
 
+musicSound.Volume = 0.5
+musicSound.PlaybackSpeed = 1
+
 local musicTitle = Instance.new("TextLabel")
 
 musicTitle.Name = "MusicTitle"
@@ -1049,11 +1057,175 @@ musicStopButton.AutoButtonColor = false
 
 musicStopButton.Parent = musicPage
 
+local musicVolumeControl = Instance.new("Frame")
+
+musicVolumeControl.Name = "MusicVolumeControl"
+musicVolumeControl.Size = UDim2.fromOffset(377, 25)
+musicVolumeControl.Position = UDim2.fromOffset(8, 72)
+
+musicVolumeControl.BackgroundTransparency = 1
+musicVolumeControl.BorderSizePixel = 0
+
+musicVolumeControl.Parent = musicPage
+
+local musicVolumeLabel = Instance.new("TextLabel")
+
+musicVolumeLabel.Name = "Label"
+musicVolumeLabel.Size = UDim2.fromOffset(100, 25)
+musicVolumeLabel.Position = UDim2.fromOffset(0, 0)
+
+musicVolumeLabel.BackgroundTransparency = 1
+
+musicVolumeLabel.Text = "Volume"
+musicVolumeLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+musicVolumeLabel.Font = Enum.Font.SourceSans
+musicVolumeLabel.TextSize = 14
+musicVolumeLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+musicVolumeLabel.Parent = musicVolumeControl
+
+local musicVolumeSlider = Instance.new("Frame")
+
+musicVolumeSlider.Name = "Slider"
+musicVolumeSlider.Size = UDim2.fromOffset(190, 4)
+musicVolumeSlider.Position = UDim2.fromOffset(97, 11)
+
+musicVolumeSlider.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+musicVolumeSlider.BorderSizePixel = 0
+
+musicVolumeSlider.Parent = musicVolumeControl
+
+local musicVolumeFill = Instance.new("Frame")
+
+musicVolumeFill.Name = "Fill"
+musicVolumeFill.Size = UDim2.fromScale(0.5, 1)
+
+musicVolumeFill.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+musicVolumeFill.BorderSizePixel = 0
+
+musicVolumeFill.Parent = musicVolumeSlider
+
+local musicVolumeKnob = Instance.new("Frame")
+
+musicVolumeKnob.Name = "Knob"
+musicVolumeKnob.Size = UDim2.fromOffset(10, 10)
+musicVolumeKnob.AnchorPoint = Vector2.new(0.5, 0.5)
+musicVolumeKnob.Position = UDim2.fromScale(0.5, 0.5)
+
+musicVolumeKnob.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+musicVolumeKnob.BorderSizePixel = 0
+
+musicVolumeKnob.Parent = musicVolumeSlider
+
+local musicVolumeBox = Instance.new("TextBox")
+
+musicVolumeBox.Name = "Value"
+musicVolumeBox.Size = UDim2.fromOffset(55, 22)
+musicVolumeBox.Position = UDim2.fromOffset(297, 0)
+
+musicVolumeBox.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+
+musicVolumeBox.BorderSizePixel = 1
+musicVolumeBox.BorderColor3 = Color3.fromRGB(120, 0, 0)
+
+musicVolumeBox.Text = "0.5"
+musicVolumeBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+musicVolumeBox.Font = Enum.Font.SourceSans
+musicVolumeBox.TextSize = 14
+
+musicVolumeBox.ClearTextOnFocus = false
+
+musicVolumeBox.Parent = musicVolumeControl
+
+local musicPitchControl = Instance.new("Frame")
+
+musicPitchControl.Name = "MusicPitchControl"
+musicPitchControl.Size = UDim2.fromOffset(377, 25)
+musicPitchControl.Position = UDim2.fromOffset(8, 102)
+
+musicPitchControl.BackgroundTransparency = 1
+musicPitchControl.BorderSizePixel = 0
+
+musicPitchControl.Parent = musicPage
+
+local musicPitchLabel = Instance.new("TextLabel")
+
+musicPitchLabel.Name = "Label"
+musicPitchLabel.Size = UDim2.fromOffset(100, 25)
+musicPitchLabel.Position = UDim2.fromOffset(0, 0)
+
+musicPitchLabel.BackgroundTransparency = 1
+
+musicPitchLabel.Text = "Pitch"
+musicPitchLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+musicPitchLabel.Font = Enum.Font.SourceSans
+musicPitchLabel.TextSize = 14
+musicPitchLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+musicPitchLabel.Parent = musicPitchControl
+
+local musicPitchSlider = Instance.new("Frame")
+
+musicPitchSlider.Name = "Slider"
+musicPitchSlider.Size = UDim2.fromOffset(190, 4)
+musicPitchSlider.Position = UDim2.fromOffset(97, 11)
+
+musicPitchSlider.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+musicPitchSlider.BorderSizePixel = 0
+
+musicPitchSlider.Parent = musicPitchControl
+
+local musicPitchFill = Instance.new("Frame")
+
+musicPitchFill.Name = "Fill"
+musicPitchFill.Size = UDim2.fromScale(0.333333, 1)
+
+musicPitchFill.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+musicPitchFill.BorderSizePixel = 0
+
+musicPitchFill.Parent = musicPitchSlider
+
+local musicPitchKnob = Instance.new("Frame")
+
+musicPitchKnob.Name = "Knob"
+musicPitchKnob.Size = UDim2.fromOffset(10, 10)
+musicPitchKnob.AnchorPoint = Vector2.new(0.5, 0.5)
+musicPitchKnob.Position = UDim2.fromScale(0.333333, 0.5)
+
+musicPitchKnob.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+musicPitchKnob.BorderSizePixel = 0
+
+musicPitchKnob.Parent = musicPitchSlider
+
+local musicPitchBox = Instance.new("TextBox")
+
+musicPitchBox.Name = "Value"
+musicPitchBox.Size = UDim2.fromOffset(55, 22)
+musicPitchBox.Position = UDim2.fromOffset(297, 0)
+
+musicPitchBox.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+
+musicPitchBox.BorderSizePixel = 1
+musicPitchBox.BorderColor3 = Color3.fromRGB(120, 0, 0)
+
+musicPitchBox.Text = "1"
+musicPitchBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+musicPitchBox.Font = Enum.Font.SourceSans
+musicPitchBox.TextSize = 14
+
+musicPitchBox.ClearTextOnFocus = false
+
+musicPitchBox.Parent = musicPitchControl
+
 local presetTitle = Instance.new("TextLabel")
 
 presetTitle.Name = "PresetTitle"
 presetTitle.Size = UDim2.fromOffset(300, 25)
-presetTitle.Position = UDim2.fromOffset(8, 75)
+presetTitle.Position = UDim2.fromOffset(8, 135)
 
 presetTitle.BackgroundTransparency = 1
 
@@ -1093,6 +1265,136 @@ end
 local function stopMusic()
     musicSound:Stop()
 end
+
+local function setMusicVolume(value)
+    value = math.clamp(value, 0, 1)
+
+    value = math.floor(value * 100 + 0.5) / 100
+
+    musicSound.Volume = value
+    musicVolumeBox.Text = tostring(value)
+
+    local percentage = value
+
+    musicVolumeFill.Size = UDim2.fromScale(
+        percentage,
+        1
+    )
+
+    musicVolumeKnob.Position = UDim2.fromScale(
+        percentage,
+        0.5
+    )
+end
+
+local function setMusicPitch(value)
+    value = math.clamp(value, 0.5, 2)
+
+    value = math.floor(value * 100 + 0.5) / 100
+
+    musicSound.PlaybackSpeed = value
+    musicPitchBox.Text = tostring(value)
+
+    local percentage = (
+        value - 0.5
+    ) / (
+        2 - 0.5
+    )
+
+    musicPitchFill.Size = UDim2.fromScale(
+        percentage,
+        1
+    )
+
+    musicPitchKnob.Position = UDim2.fromScale(
+        percentage,
+        0.5
+    )
+end
+
+local function connectMusicSlider(
+    slider,
+    valueBox,
+    minimumValue,
+    maximumValue,
+    setter
+)
+    local dragging = false
+
+    local function updateSlider(input)
+        local relativeX = input.Position.X - slider.AbsolutePosition.X
+
+        local percentage = math.clamp(
+            relativeX / slider.AbsoluteSize.X,
+            0,
+            1
+        )
+
+        local value = minimumValue + (
+            (maximumValue - minimumValue) * percentage
+        )
+
+        value = math.floor(value * 100 + 0.5) / 100
+
+        setter(value)
+    end
+
+    slider.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1
+            or input.UserInputType == Enum.UserInputType.Touch then
+
+            dragging = true
+
+            updateSlider(input)
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if dragging then
+            if input.UserInputType == Enum.UserInputType.MouseMovement
+                or input.UserInputType == Enum.UserInputType.Touch then
+
+                updateSlider(input)
+            end
+        end
+    end)
+
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1
+            or input.UserInputType == Enum.UserInputType.Touch then
+
+            dragging = false
+        end
+    end)
+
+    valueBox.FocusLost:Connect(function()
+        local value = tonumber(valueBox.Text)
+
+        if value then
+            setter(value)
+        else
+            valueBox.Text = tostring(
+                minimumValue
+            )
+        end
+    end)
+end
+
+connectMusicSlider(
+    musicVolumeSlider,
+    musicVolumeBox,
+    0,
+    1,
+    setMusicVolume
+)
+
+connectMusicSlider(
+    musicPitchSlider,
+    musicPitchBox,
+    0.5,
+    2,
+    setMusicPitch
+)
 
 local function createMusicPreset(name, id, yPosition)
     local button = Instance.new("TextButton")
@@ -1135,7 +1437,7 @@ local function createMusicPreset(name, id, yPosition)
     return button
 end
 
-local presetY = 105
+local presetY = 165
 
 for _, preset in ipairs(musicPresets) do
     createMusicPreset(
@@ -1591,6 +1893,8 @@ end)
 setWalkSpeed(16)
 setJumpPower(50)
 setGravity(196.2)
+setMusicVolume(0.5)
+setMusicPitch(1)
 
 if player.Character then
     setCharacterSize(1)
