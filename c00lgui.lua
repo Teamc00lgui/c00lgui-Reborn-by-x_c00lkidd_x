@@ -2,6 +2,9 @@ local CoreGui = game:GetService("CoreGui")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
 
 local gui = Instance.new("ScreenGui")
 
@@ -13,10 +16,7 @@ local success = pcall(function()
 end)
 
 if not success then
-    local player = Players.LocalPlayer
-
     gui.Parent = player:WaitForChild("PlayerGui")
-
     warn("Using PlayerGui now.")
 end
 
@@ -456,6 +456,311 @@ local characterSizeControl = createSliderControl(
     5
 )
 
+local function createPlayerButton(name, text, xPosition, yPosition)
+    local button = Instance.new("TextButton")
+
+    button.Name = name
+    button.Size = UDim2.fromOffset(140, 25)
+    button.Position = UDim2.fromOffset(xPosition, yPosition)
+
+    button.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+
+    button.BorderSizePixel = 1
+    button.BorderColor3 = Color3.fromRGB(120, 0, 0)
+
+    button.Text = text
+    button.TextColor3 = Color3.fromRGB(255, 0, 0)
+
+    button.Font = Enum.Font.SourceSans
+    button.TextSize = 14
+
+    button.AutoButtonColor = false
+
+    button.Parent = playerPage
+
+    return button
+end
+
+local FlyButton = createPlayerButton(
+    "FlyButton",
+    "Fly: OFF",
+    8,
+    130
+)
+
+local NoclipButton = createPlayerButton(
+    "NoclipButton",
+    "Noclip: OFF",
+    160,
+    130
+)
+
+local flying = false
+
+local flyVelocity
+local flyAttachment
+local flyOrientation
+local flyOrientationAttachment
+local flyConnection
+
+local function stopFly()
+    flying = false
+
+    if flyConnection then
+        flyConnection:Disconnect()
+        flyConnection = nil
+    end
+
+    if flyVelocity then
+        flyVelocity:Destroy()
+        flyVelocity = nil
+    end
+
+    if flyOrientation then
+        flyOrientation:Destroy()
+        flyOrientation = nil
+    end
+
+    if flyAttachment then
+        flyAttachment:Destroy()
+        flyAttachment = nil
+    end
+
+    if flyOrientationAttachment then
+        flyOrientationAttachment:Destroy()
+        flyOrientationAttachment = nil
+    end
+
+    local character = player.Character
+
+    if character then
+        local animate = character:FindFirstChild("Animate")
+
+        if animate then
+            animate.Disabled = false
+        end
+
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
+
+        if humanoid then
+            humanoid.AutoRotate = true
+        end
+    end
+
+    FlyButton.Text = "Fly: OFF"
+    FlyButton.TextColor3 = Color3.fromRGB(255, 0, 0)
+end
+
+local function updateFly()
+    if not flying or not flyVelocity then
+        return
+    end
+
+    local character = player.Character
+
+    if not character then
+        stopFly()
+        return
+    end
+
+    local root = character:FindFirstChild("HumanoidRootPart")
+
+    if not root then
+        return
+    end
+
+    local camera = workspace.CurrentCamera
+
+    if not camera then
+        return
+    end
+
+    local direction = Vector3.zero
+
+    if UserInputService:IsKeyDown(Enum.KeyCode.W) then
+        direction += camera.CFrame.LookVector
+    end
+
+    if UserInputService:IsKeyDown(Enum.KeyCode.S) then
+        direction -= camera.CFrame.LookVector
+    end
+
+    if UserInputService:IsKeyDown(Enum.KeyCode.A) then
+        direction -= camera.CFrame.RightVector
+    end
+
+    if UserInputService:IsKeyDown(Enum.KeyCode.D) then
+        direction += camera.CFrame.RightVector
+    end
+
+    if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+        direction += Vector3.yAxis
+    end
+
+    if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then
+        direction -= Vector3.yAxis
+    end
+
+    if direction.Magnitude > 0 then
+        direction = direction.Unit * 50
+    end
+
+    flyVelocity.VectorVelocity = direction
+
+    if flyOrientation then
+        local lookDirection = camera.CFrame.LookVector
+
+        if lookDirection.Magnitude > 0 then
+            flyOrientation.CFrame = CFrame.lookAt(
+                root.Position,
+                root.Position + lookDirection.Unit
+            )
+        end
+    end
+end
+
+local function startFly()
+    if flying then
+        return
+    end
+
+    local character = player.Character
+
+    if not character then
+        return
+    end
+
+    local root = character:FindFirstChild("HumanoidRootPart")
+
+    if not root then
+        return
+    end
+
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+
+    if humanoid then
+        humanoid.AutoRotate = false
+    end
+
+    local animate = character:FindFirstChild("Animate")
+
+    if animate then
+        animate.Disabled = true
+    end
+
+    flyAttachment = Instance.new("Attachment")
+    flyAttachment.Name = "c00lFlyAttachment"
+    flyAttachment.Parent = root
+
+    flyVelocity = Instance.new("LinearVelocity")
+    flyVelocity.Name = "c00lFlyVelocity"
+    flyVelocity.Attachment0 = flyAttachment
+    flyVelocity.RelativeTo = Enum.ActuatorRelativeTo.World
+    flyVelocity.MaxForce = math.huge
+    flyVelocity.VectorVelocity = Vector3.zero
+    flyVelocity.Parent = root
+
+    flyOrientationAttachment = Instance.new("Attachment")
+    flyOrientationAttachment.Name = "c00lFlyOrientationAttachment"
+    flyOrientationAttachment.Parent = root
+
+    flyOrientation = Instance.new("AlignOrientation")
+    flyOrientation.Name = "c00lFlyOrientation"
+    flyOrientation.Attachment0 = flyOrientationAttachment
+    flyOrientation.Mode = Enum.OrientationAlignmentMode.OneAttachment
+    flyOrientation.MaxTorque = math.huge
+    flyOrientation.Responsiveness = 20
+    flyOrientation.CFrame = root.CFrame
+    flyOrientation.Parent = root
+
+    flying = true
+
+    FlyButton.Text = "Fly: ON"
+    FlyButton.TextColor3 = Color3.fromRGB(0, 255, 0)
+
+    flyConnection = RunService.RenderStepped:Connect(updateFly)
+end
+
+FlyButton.MouseButton1Click:Connect(function()
+    if flying then
+        stopFly()
+    else
+        startFly()
+    end
+end)
+
+local noclip = false
+local noclipConnection
+
+local function stopNoclip()
+    noclip = false
+
+    if noclipConnection then
+        noclipConnection:Disconnect()
+        noclipConnection = nil
+    end
+
+    local character = player.Character
+
+    if character then
+        for _, object in ipairs(character:GetDescendants()) do
+            if object:IsA("BasePart") then
+                object.CanCollide = true
+            end
+        end
+    end
+
+    NoclipButton.Text = "Noclip: OFF"
+    NoclipButton.TextColor3 = Color3.fromRGB(255, 0, 0)
+end
+
+local function updateNoclip()
+    if not noclip then
+        return
+    end
+
+    local character = player.Character
+
+    if not character then
+        return
+    end
+
+    for _, object in ipairs(character:GetDescendants()) do
+        if object:IsA("BasePart") then
+            object.CanCollide = false
+        end
+    end
+end
+
+local function startNoclip()
+    if noclip then
+        return
+    end
+
+    local character = player.Character
+
+    if not character then
+        return
+    end
+
+    noclip = true
+
+    NoclipButton.Text = "Noclip: ON"
+    NoclipButton.TextColor3 = Color3.fromRGB(0, 255, 0)
+
+    noclipConnection = RunService.Stepped:Connect(updateNoclip)
+
+    updateNoclip()
+end
+
+NoclipButton.MouseButton1Click:Connect(function()
+    if noclip then
+        stopNoclip()
+    else
+        startNoclip()
+    end
+end)
+
 local function updateCanvasSize(scrollingFrame)
     local contentHeight = 0
 
@@ -497,8 +802,6 @@ toggleButton.Font = Enum.Font.SourceSans
 toggleButton.TextSize = 14
 
 toggleButton.Parent = container
-
-local player = Players.LocalPlayer
 
 local guiOpen = true
 local animating = false
@@ -862,6 +1165,14 @@ player.CharacterAdded:Connect(function(character)
     character:WaitForChild("Humanoid")
 
     task.wait(0.1)
+
+    if flying then
+        stopFly()
+    end
+
+    if noclip then
+        stopNoclip()
+    end
 
     applyCharacterSettings()
 end)
