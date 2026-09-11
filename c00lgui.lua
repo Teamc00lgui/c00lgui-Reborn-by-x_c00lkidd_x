@@ -627,15 +627,16 @@ local function startGod()
     godEnabled = true
     originalMaxHealth = humanoid.MaxHealth
 
-    humanoid.Health = humanoid.MaxHealth
+    humanoid.MaxHealth = math.huge
+    humanoid.Health = math.huge
 
     godConnection = humanoid.HealthChanged:Connect(function()
         if not godEnabled then
             return
         end
 
-        if humanoid.Health < humanoid.MaxHealth then
-            humanoid.Health = humanoid.MaxHealth
+        if humanoid.Health < math.huge then
+            humanoid.Health = math.huge
         end
     end)
 
