@@ -591,6 +591,8 @@ local function startForceField()
     ForceFieldButton.TextColor3 = Color3.fromRGB(0, 255, 0)
 end
 
+local godHealth = 1e9
+
 local function stopGod()
     godEnabled = false
 
@@ -627,21 +629,16 @@ local function startGod()
     godEnabled = true
     originalMaxHealth = humanoid.MaxHealth
 
-    humanoid.MaxHealth = math.huge
-    humanoid.Health = math.huge
+    humanoid.MaxHealth = godHealth
+    humanoid.Health = godHealth
 
     godConnection = humanoid.HealthChanged:Connect(function()
         if not godEnabled then
             return
         end
 
-        if humanoid.Health ~= humanoid.Health then
-            humanoid.Health = math.huge
-            return
-        end
-
-        if humanoid.Health < math.huge then
-            humanoid.Health = math.huge
+        if humanoid.Health < godHealth then
+            humanoid.Health = godHealth
         end
     end)
 
@@ -1117,10 +1114,10 @@ local function startFly()
 
     setMobileFlyControlsVisible(true)
 
-    flyAnimationConnection = RunService.RenderStepped:Connect(function()
-        if not flying then
-            return
-        end
+flyAnimationConnection = RunService.RenderStepped:Connect(function()
+    if not flying then
+        return
+    end
 
     local currentCharacter = player.Character
 
