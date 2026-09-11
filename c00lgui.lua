@@ -256,52 +256,9 @@ toggleButton.MouseButton1Click:Connect(function()
     end
 
     animating = true
-    guiOpen = not guiOpen
 
     if guiOpen then
-        toggleButton.Text = "Close"
-
-        frame.Visible = true
-        content.Visible = true
-
-        frame.Size = UDim2.fromOffset(400, 35)
-        toggleButton.Position = UDim2.fromOffset(0, 35)
-
-        content.GroupTransparency = 1
-
-        local frameTween = TweenService:Create(
-            frame,
-            tweenInfo,
-            {
-                Size = UDim2.fromOffset(400, 250)
-            }
-        )
-
-        local buttonTween = TweenService:Create(
-            toggleButton,
-            tweenInfo,
-            {
-                Position = UDim2.fromOffset(0, 250)
-            }
-        )
-
-        local contentTween = TweenService:Create(
-            content,
-            contentTweenInfo,
-            {
-                GroupTransparency = 0
-            }
-        )
-
-        frameTween:Play()
-        buttonTween:Play()
-        contentTween:Play()
-
-        frameTween.Completed:Once(function()
-            animating = false
-        end)
-
-    else
+        guiOpen = false
         toggleButton.Text = "Open"
 
         local contentTween = TweenService:Create(
@@ -344,6 +301,50 @@ toggleButton.MouseButton1Click:Connect(function()
             frameTween.Completed:Once(function()
                 animating = false
             end)
+        end)
+
+    else
+        guiOpen = true
+        toggleButton.Text = "Close"
+
+        frame.Visible = true
+        content.Visible = true
+
+        frame.Size = UDim2.fromOffset(400, 35)
+        toggleButton.Position = UDim2.fromOffset(0, 35)
+
+        content.GroupTransparency = 1
+
+        local frameTween = TweenService:Create(
+            frame,
+            tweenInfo,
+            {
+                Size = UDim2.fromOffset(400, 250)
+            }
+        )
+
+        local buttonTween = TweenService:Create(
+            toggleButton,
+            tweenInfo,
+            {
+                Position = UDim2.fromOffset(0, 250)
+            }
+        )
+
+        local contentTween = TweenService:Create(
+            content,
+            contentTweenInfo,
+            {
+                GroupTransparency = 0
+            }
+        )
+
+        frameTween:Play()
+        buttonTween:Play()
+        contentTween:Play()
+
+        frameTween.Completed:Once(function()
+            animating = false
         end)
     end
 end)
