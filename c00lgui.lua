@@ -209,7 +209,6 @@ local UserInputService = game:GetService("UserInputService")
 local dragging = false
 local dragStart
 local startPosition
-local dragInput
 
 local function updateDrag(input)
 	local delta = input.Position - dragStart
@@ -229,25 +228,25 @@ title.InputBegan:Connect(function(input)
 		dragging = true
 		dragStart = input.Position
 		startPosition = frame.Position
-
-		input.Changed:Connect(function()
-			if input.UserInputState == Enum.UserInputState.End then
-				dragging = false
-			end
-		end)
 	end
 end)
 
-title.InputChanged:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseMovement
+title.InputEnded:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1
 		or input.UserInputType == Enum.UserInputType.Touch then
 
-		dragInput = input
+		dragging = false
 	end
 end)
 
 UserInputService.InputChanged:Connect(function(input)
-	if input == dragInput and dragging then
+	if not dragging then
+		return
+	end
+
+	if input.UserInputType == Enum.UserInputType.MouseMovement
+		or input.UserInputType == Enum.UserInputType.Touch then
+
 		updateDrag(input)
 	end
 end)
