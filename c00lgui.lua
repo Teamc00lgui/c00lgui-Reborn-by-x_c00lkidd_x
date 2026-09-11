@@ -69,6 +69,7 @@ title.Parent = frame
 local content = Instance.new("CanvasGroup")
 
 content.Name = "Content"
+
 content.Size = UDim2.new(1, -4, 1, -35)
 content.Position = UDim2.fromOffset(2, 35)
 
@@ -82,6 +83,7 @@ content.Parent = frame
 local tabBar = Instance.new("Frame")
 
 tabBar.Name = "TabBar"
+
 tabBar.Size = UDim2.new(1, 0, 0, 25)
 tabBar.Position = UDim2.fromOffset(0, 0)
 
@@ -93,6 +95,7 @@ tabBar.Parent = content
 local playerTab = Instance.new("TextButton")
 
 playerTab.Name = "PlayerTab"
+
 playerTab.Size = UDim2.fromOffset(80, 25)
 playerTab.Position = UDim2.fromOffset(0, 0)
 
@@ -111,6 +114,7 @@ playerTab.Parent = tabBar
 local pages = Instance.new("Frame")
 
 pages.Name = "Pages"
+
 pages.Size = UDim2.new(1, 0, 1, -25)
 pages.Position = UDim2.fromOffset(0, 25)
 
@@ -122,6 +126,7 @@ pages.Parent = content
 local playerPage = Instance.new("ScrollingFrame")
 
 playerPage.Name = "PlayerPage"
+
 playerPage.Size = UDim2.fromScale(1, 1)
 playerPage.Position = UDim2.fromOffset(0, 0)
 
@@ -142,6 +147,7 @@ playerPage.Parent = pages
 local walkSpeedLabel = Instance.new("TextLabel")
 
 walkSpeedLabel.Name = "WalkSpeedLabel"
+
 walkSpeedLabel.Size = UDim2.fromOffset(100, 25)
 walkSpeedLabel.Position = UDim2.fromOffset(8, 8)
 
@@ -159,6 +165,7 @@ walkSpeedLabel.Parent = playerPage
 local slider = Instance.new("Frame")
 
 slider.Name = "WalkSpeedSlider"
+
 slider.Size = UDim2.fromOffset(190, 4)
 slider.Position = UDim2.fromOffset(105, 19)
 
@@ -170,6 +177,7 @@ slider.Parent = playerPage
 local fill = Instance.new("Frame")
 
 fill.Name = "Fill"
+
 fill.Size = UDim2.fromScale(0.032, 1)
 
 fill.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
@@ -180,6 +188,7 @@ fill.Parent = slider
 local knob = Instance.new("Frame")
 
 knob.Name = "Knob"
+
 knob.Size = UDim2.fromOffset(10, 10)
 knob.AnchorPoint = Vector2.new(0.5, 0.5)
 knob.Position = UDim2.fromScale(0.032, 0.5)
@@ -192,6 +201,7 @@ knob.Parent = slider
 local valueBox = Instance.new("TextBox")
 
 valueBox.Name = "Value"
+
 valueBox.Size = UDim2.fromOffset(55, 22)
 valueBox.Position = UDim2.fromOffset(305, 8)
 
