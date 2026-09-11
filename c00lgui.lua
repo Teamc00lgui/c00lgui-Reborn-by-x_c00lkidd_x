@@ -132,83 +132,134 @@ playerPage.ScrollBarThickness = 3
 playerPage.ScrollBarImageColor3 = Color3.fromRGB(255, 0, 0)
 
 playerPage.ScrollingDirection = Enum.ScrollingDirection.Y
-playerPage.CanvasSize = UDim2.fromOffset(0, 100)
+playerPage.CanvasSize = UDim2.fromOffset(0, 190)
 
 playerPage.Active = true
 playerPage.Visible = true
 
 playerPage.Parent = pages
 
-local walkSpeedLabel = Instance.new("TextLabel")
+local function createSliderControl(name, labelText, yPosition, defaultValue, minimumValue, maximumValue)
+    local label = Instance.new("TextLabel")
 
-walkSpeedLabel.Name = "WalkSpeedLabel"
-walkSpeedLabel.Size = UDim2.fromOffset(100, 25)
-walkSpeedLabel.Position = UDim2.fromOffset(8, 8)
+    label.Name = name .. "Label"
+    label.Size = UDim2.fromOffset(100, 25)
+    label.Position = UDim2.fromOffset(8, yPosition)
 
-walkSpeedLabel.BackgroundTransparency = 1
+    label.BackgroundTransparency = 1
 
-walkSpeedLabel.Text = "WalkSpeed"
-walkSpeedLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    label.Text = labelText
+    label.TextColor3 = Color3.fromRGB(255, 255, 255)
 
-walkSpeedLabel.Font = Enum.Font.SourceSans
-walkSpeedLabel.TextSize = 14
-walkSpeedLabel.TextXAlignment = Enum.TextXAlignment.Left
+    label.Font = Enum.Font.SourceSans
+    label.TextSize = 14
+    label.TextXAlignment = Enum.TextXAlignment.Left
 
-walkSpeedLabel.Parent = playerPage
+    label.Parent = playerPage
 
-local slider = Instance.new("Frame")
+    local slider = Instance.new("Frame")
 
-slider.Name = "WalkSpeedSlider"
-slider.Size = UDim2.fromOffset(190, 4)
-slider.Position = UDim2.fromOffset(105, 19)
+    slider.Name = name .. "Slider"
+    slider.Size = UDim2.fromOffset(190, 4)
+    slider.Position = UDim2.fromOffset(105, yPosition + 11)
 
-slider.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-slider.BorderSizePixel = 0
+    slider.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    slider.BorderSizePixel = 0
 
-slider.Parent = playerPage
+    slider.Parent = playerPage
 
-local fill = Instance.new("Frame")
+    local percentage = (defaultValue - minimumValue) / (maximumValue - minimumValue)
 
-fill.Name = "Fill"
-fill.Size = UDim2.fromScale(0.032, 1)
+    local fill = Instance.new("Frame")
 
-fill.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-fill.BorderSizePixel = 0
+    fill.Name = "Fill"
+    fill.Size = UDim2.fromScale(percentage, 1)
 
-fill.Parent = slider
+    fill.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+    fill.BorderSizePixel = 0
 
-local knob = Instance.new("Frame")
+    fill.Parent = slider
 
-knob.Name = "Knob"
-knob.Size = UDim2.fromOffset(10, 10)
-knob.AnchorPoint = Vector2.new(0.5, 0.5)
-knob.Position = UDim2.fromScale(0.032, 0.5)
+    local knob = Instance.new("Frame")
 
-knob.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
-knob.BorderSizePixel = 0
+    knob.Name = "Knob"
+    knob.Size = UDim2.fromOffset(10, 10)
+    knob.AnchorPoint = Vector2.new(0.5, 0.5)
+    knob.Position = UDim2.fromScale(percentage, 0.5)
 
-knob.Parent = slider
+    knob.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+    knob.BorderSizePixel = 0
 
-local valueBox = Instance.new("TextBox")
+    knob.Parent = slider
 
-valueBox.Name = "Value"
-valueBox.Size = UDim2.fromOffset(55, 22)
-valueBox.Position = UDim2.fromOffset(305, 8)
+    local valueBox = Instance.new("TextBox")
 
-valueBox.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+    valueBox.Name = "Value"
+    valueBox.Size = UDim2.fromOffset(55, 22)
+    valueBox.Position = UDim2.fromOffset(305, yPosition)
 
-valueBox.BorderSizePixel = 1
-valueBox.BorderColor3 = Color3.fromRGB(120, 0, 0)
+    valueBox.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
 
-valueBox.Text = "16"
-valueBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    valueBox.BorderSizePixel = 1
+    valueBox.BorderColor3 = Color3.fromRGB(120, 0, 0)
 
-valueBox.Font = Enum.Font.SourceSans
-valueBox.TextSize = 14
+    valueBox.Text = tostring(defaultValue)
+    valueBox.TextColor3 = Color3.fromRGB(255, 255, 255)
 
-valueBox.ClearTextOnFocus = false
+    valueBox.Font = Enum.Font.SourceSans
+    valueBox.TextSize = 14
 
-valueBox.Parent = playerPage
+    valueBox.ClearTextOnFocus = false
+
+    valueBox.Parent = playerPage
+
+    return {
+        label = label,
+        slider = slider,
+        fill = fill,
+        knob = knob,
+        valueBox = valueBox,
+        currentValue = defaultValue,
+        minimumValue = minimumValue,
+        maximumValue = maximumValue
+    }
+end
+
+local walkSpeedControl = createSliderControl(
+    "WalkSpeed",
+    "WalkSpeed",
+    8,
+    16,
+    0,
+    500
+)
+
+local jumpPowerControl = createSliderControl(
+    "JumpPower",
+    "JumpPower",
+    38,
+    50,
+    0,
+    300
+)
+
+local gravityControl = createSliderControl(
+    "Gravity",
+    "Gravity",
+    68,
+    196.2,
+    0,
+    500
+)
+
+local characterSizeControl = createSliderControl(
+    "CharacterSize",
+    "CharacterSize",
+    98,
+    1,
+    0.1,
+    5
+)
 
 local toggleButton = Instance.new("TextButton")
 
@@ -424,21 +475,28 @@ toggleButton.MouseButton1Click:Connect(function()
     end
 end)
 
-local currentValue = 16
-local minimumValue = 0
-local maximumValue = 500
+local function setControlValue(control, value)
+    value = math.clamp(
+        value,
+        control.minimumValue,
+        control.maximumValue
+    )
+
+    control.currentValue = value
+    control.valueBox.Text = tostring(value)
+
+    local percentage = (
+        value - control.minimumValue
+    ) / (
+        control.maximumValue - control.minimumValue
+    )
+
+    control.fill.Size = UDim2.fromScale(percentage, 1)
+    control.knob.Position = UDim2.fromScale(percentage, 0.5)
+end
 
 local function setWalkSpeed(value)
-    value = math.clamp(value, minimumValue, maximumValue)
-
-    currentValue = value
-
-    valueBox.Text = tostring(value)
-
-    local percentage = (value - minimumValue) / (maximumValue - minimumValue)
-
-    fill.Size = UDim2.fromScale(percentage, 1)
-    knob.Position = UDim2.fromScale(percentage, 0.5)
+    setControlValue(walkSpeedControl, value)
 
     local character = player.Character
 
@@ -446,72 +504,182 @@ local function setWalkSpeed(value)
         local humanoid = character:FindFirstChildOfClass("Humanoid")
 
         if humanoid then
-            humanoid.WalkSpeed = value
+            humanoid.WalkSpeed = walkSpeedControl.currentValue
         end
     end
 end
 
-local draggingSlider = false
+local function setJumpPower(value)
+    setControlValue(jumpPowerControl, value)
 
-local function updateSlider(input)
-    local relativeX = input.Position.X - slider.AbsolutePosition.X
+    local character = player.Character
 
-    local percentage = math.clamp(
-        relativeX / slider.AbsoluteSize.X,
-        0,
-        1
-    )
+    if character then
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
 
-    local value = minimumValue + (
-        (maximumValue - minimumValue) * percentage
-    )
-
-    value = math.round(value)
-
-    setWalkSpeed(value)
+        if humanoid then
+            humanoid.UseJumpPower = true
+            humanoid.JumpPower = jumpPowerControl.currentValue
+        end
+    end
 end
 
-slider.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1
-        or input.UserInputType == Enum.UserInputType.Touch then
+local function setGravity(value)
+    setControlValue(gravityControl, value)
 
-        draggingSlider = true
+    workspace.Gravity = gravityControl.currentValue
+end
 
-        updateSlider(input)
+local originalCharacterData = {}
+
+local function cacheCharacter(character)
+    originalCharacterData = {}
+
+    for _, object in ipairs(character:GetDescendants()) do
+        if object:IsA("BasePart") then
+            originalCharacterData[object] = {
+                Size = object.Size
+            }
+        elseif object:IsA("SpecialMesh") then
+            originalCharacterData[object] = {
+                Scale = object.Scale
+            }
+        end
     end
-end)
+end
 
-UserInputService.InputChanged:Connect(function(input)
-    if draggingSlider then
-        if input.UserInputType == Enum.UserInputType.MouseMovement
+local function setCharacterSize(value)
+    setControlValue(characterSizeControl, value)
+
+    local character = player.Character
+
+    if not character then
+        return
+    end
+
+    if next(originalCharacterData) == nil then
+        cacheCharacter(character)
+    end
+
+    for object, data in pairs(originalCharacterData) do
+        if object and object.Parent then
+            if object:IsA("BasePart") then
+                object.Size = data.Size * characterSizeControl.currentValue
+            elseif object:IsA("SpecialMesh") then
+                object.Scale = data.Scale * characterSizeControl.currentValue
+            end
+        end
+    end
+end
+
+local function connectControl(control, setter)
+    local dragging = false
+
+    local function updateSlider(input)
+        local relativeX = input.Position.X - control.slider.AbsolutePosition.X
+
+        local percentage = math.clamp(
+            relativeX / control.slider.AbsoluteSize.X,
+            0,
+            1
+        )
+
+        local value = control.minimumValue + (
+            (control.maximumValue - control.minimumValue) * percentage
+        )
+
+        if control == characterSizeControl then
+            value = math.floor(value * 10 + 0.5) / 10
+        elseif control == gravityControl then
+            value = math.floor(value * 10 + 0.5) / 10
+        else
+            value = math.round(value)
+        end
+
+        setter(value)
+    end
+
+    control.slider.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1
             or input.UserInputType == Enum.UserInputType.Touch then
+
+            dragging = true
 
             updateSlider(input)
         end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if dragging then
+            if input.UserInputType == Enum.UserInputType.MouseMovement
+                or input.UserInputType == Enum.UserInputType.Touch then
+
+                updateSlider(input)
+            end
+        end
+    end)
+
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1
+            or input.UserInputType == Enum.UserInputType.Touch then
+
+            dragging = false
+        end
+    end)
+
+    control.valueBox.FocusLost:Connect(function()
+        local value = tonumber(control.valueBox.Text)
+
+        if value then
+            setter(value)
+        else
+            control.valueBox.Text = tostring(control.currentValue)
+        end
+    end)
+end
+
+connectControl(walkSpeedControl, setWalkSpeed)
+connectControl(jumpPowerControl, setJumpPower)
+connectControl(gravityControl, setGravity)
+connectControl(characterSizeControl, setCharacterSize)
+
+local function applyCharacterSettings()
+    local character = player.Character
+
+    if not character then
+        return
     end
-end)
 
-UserInputService.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1
-        or input.UserInputType == Enum.UserInputType.Touch then
+    originalCharacterData = {}
 
-        draggingSlider = false
-    end
-end)
+    task.wait()
 
-valueBox.FocusLost:Connect(function()
-    local value = tonumber(valueBox.Text)
+    cacheCharacter(character)
 
-    if value then
-        value = math.clamp(value, minimumValue, maximumValue)
+    setWalkSpeed(walkSpeedControl.currentValue)
+    setJumpPower(jumpPowerControl.currentValue)
+    setCharacterSize(characterSizeControl.currentValue)
+end
 
-        setWalkSpeed(value)
-    else
-        valueBox.Text = tostring(currentValue)
-    end
+player.CharacterAdded:Connect(function(character)
+    originalCharacterData = {}
+
+    character:WaitForChild("Humanoid")
+
+    task.wait(0.1)
+
+    applyCharacterSettings()
 end)
 
 setWalkSpeed(16)
+setJumpPower(50)
+setGravity(196.2)
+
+if player.Character then
+    cacheCharacter(player.Character)
+end
+
+setCharacterSize(1)
 
 local dragging = false
 local dragStart
