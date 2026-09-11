@@ -17,7 +17,7 @@ if not success then
 
     gui.Parent = player:WaitForChild("PlayerGui")
 
-    warn("Sem permissão para anexar ao CoreGui. Usando PlayerGui como alternativa.")
+    warn("Use c00lgui in: PlayerGui.")
 end
 
 local container = Instance.new("Frame")
