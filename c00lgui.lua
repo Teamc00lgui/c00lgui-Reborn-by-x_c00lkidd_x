@@ -120,29 +120,21 @@ toggleButton.MouseButton1Click:Connect(function()
     else
         toggleButton.Text = "Open"
 
-        local frameTween = TweenService:Create(
+        TweenService:Create(
             frame,
             tweenInfo,
             {
-                Size = UDim2.fromOffset(400, 0)
+                Size = UDim2.fromOffset(400, 35)
             }
-        )
+        ):Play()
 
         TweenService:Create(
             toggleButton,
             tweenInfo,
             {
-                Position = UDim2.fromOffset(0, 0)
+                Position = UDim2.fromOffset(0, 35)
             }
         ):Play()
-
-        frameTween:Play()
-
-        frameTween.Completed:Once(function()
-            if not guiOpen then
-                frame.Visible = false
-            end
-        end)
     end
 end)
 
