@@ -4,6 +4,7 @@ local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local SoundService = game:GetService("SoundService")
+local Lighting = game:GetService("Lighting")
 
 local player = Players.LocalPlayer
 
@@ -143,100 +144,43 @@ pageDropdown.ZIndex = 20
 
 pageDropdown.Parent = content
 
-local playerPage = Instance.new("ScrollingFrame")
+local function createPage(name)
+    local page = Instance.new("ScrollingFrame")
 
-playerPage.Name = "PlayerPage"
-playerPage.Size = UDim2.fromScale(1, 1)
-playerPage.Position = UDim2.fromOffset(0, 0)
+    page.Name = name .. "Page"
+    page.Size = UDim2.fromScale(1, 1)
+    page.Position = UDim2.fromOffset(0, 0)
 
-playerPage.BackgroundTransparency = 1
-playerPage.BorderSizePixel = 0
+    page.BackgroundTransparency = 1
+    page.BorderSizePixel = 0
 
-playerPage.ScrollBarThickness = 3
-playerPage.ScrollBarImageColor3 = Color3.fromRGB(255, 0, 0)
+    page.ScrollBarThickness = 3
+    page.ScrollBarImageColor3 = Color3.fromRGB(255, 0, 0)
 
-playerPage.ScrollingDirection = Enum.ScrollingDirection.Y
-playerPage.CanvasSize = UDim2.fromOffset(0, 0)
+    page.ScrollingDirection = Enum.ScrollingDirection.Y
+    page.CanvasSize = UDim2.fromOffset(0, 0)
 
-playerPage.Active = true
-playerPage.Visible = false
+    page.Active = true
+    page.Visible = false
 
-playerPage.ZIndex = 1
+    page.ZIndex = 1
 
-playerPage.Parent = pages
+    page.Parent = pages
 
-local visualsPage = Instance.new("ScrollingFrame")
+    return page
+end
 
-visualsPage.Name = "VisualsPage"
-visualsPage.Size = UDim2.fromScale(1, 1)
-visualsPage.Position = UDim2.fromOffset(0, 0)
+local playerPage = createPage("Player")
+local visualsPage = createPage("Visuals")
+local serverPage = createPage("Server")
+local musicPage = createPage("Music")
 
-visualsPage.BackgroundTransparency = 1
-visualsPage.BorderSizePixel = 0
-
-visualsPage.ScrollBarThickness = 3
-visualsPage.ScrollBarImageColor3 = Color3.fromRGB(255, 0, 0)
-
-visualsPage.ScrollingDirection = Enum.ScrollingDirection.Y
-visualsPage.CanvasSize = UDim2.fromOffset(0, 0)
-
-visualsPage.Active = true
-visualsPage.Visible = false
-
-visualsPage.ZIndex = 1
-
-visualsPage.Parent = pages
-
-local serverPage = Instance.new("ScrollingFrame")
-
-serverPage.Name = "ServerPage"
-serverPage.Size = UDim2.fromScale(1, 1)
-serverPage.Position = UDim2.fromOffset(0, 0)
-
-serverPage.BackgroundTransparency = 1
-serverPage.BorderSizePixel = 0
-
-serverPage.ScrollBarThickness = 3
-serverPage.ScrollBarImageColor3 = Color3.fromRGB(255, 0, 0)
-
-serverPage.ScrollingDirection = Enum.ScrollingDirection.Y
-serverPage.CanvasSize = UDim2.fromOffset(0, 0)
-
-serverPage.Active = true
-serverPage.Visible = false
-
-serverPage.ZIndex = 1
-
-serverPage.Parent = pages
-
-local musicPage = Instance.new("ScrollingFrame")
-
-musicPage.Name = "MusicPage"
-musicPage.Size = UDim2.fromScale(1, 1)
-musicPage.Position = UDim2.fromOffset(0, 0)
-
-musicPage.BackgroundTransparency = 1
-musicPage.BorderSizePixel = 0
-
-musicPage.ScrollBarThickness = 3
-musicPage.ScrollBarImageColor3 = Color3.fromRGB(255, 0, 0)
-
-musicPage.ScrollingDirection = Enum.ScrollingDirection.Y
-musicPage.CanvasSize = UDim2.fromOffset(0, 0)
-
-musicPage.Active = true
-musicPage.Visible = false
-
-musicPage.ZIndex = 1
-
-musicPage.Parent = pages
-
-local pageFrames = {}
-
-pageFrames.Player = playerPage
-pageFrames.Visuals = visualsPage
-pageFrames.Server = serverPage
-pageFrames.Music = musicPage
+local pageFrames = {
+    Player = playerPage,
+    Visuals = visualsPage,
+    Server = serverPage,
+    Music = musicPage
+}
 
 local function createPageOption(name, text, position)
     local option = Instance.new("TextButton")
@@ -288,6 +232,30 @@ local musicOption = createPageOption(
     "MUSIC",
     75
 )
+
+local pageOptions = {
+    playerOption,
+    visualsOption,
+    serverOption,
+    musicOption
+}
+
+pageDropdown.Size = UDim2.fromOffset(
+    140,
+    #pageOptions * 25
+)
+
+for _, option in ipairs(pageOptions) do
+    option.MouseEnter:Connect(function()
+        option.BackgroundColor3 = Color3.fromRGB(22, 0, 0)
+        option.TextColor3 = Color3.fromRGB(255, 0, 0)
+    end)
+
+    option.MouseLeave:Connect(function()
+        option.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+        option.TextColor3 = Color3.fromRGB(255, 255, 255)
+    end)
+end
 
 local selectedPage = nil
 
@@ -356,31 +324,8 @@ pageSelector.MouseLeave:Connect(function()
     pageSelector.TextColor3 = Color3.fromRGB(255, 255, 255)
 end)
 
-local pageOptions = {
-    playerOption,
-    visualsOption,
-    serverOption,
-    musicOption
-}
-
-pageDropdown.Size = UDim2.fromOffset(
-    140,
-    #pageOptions * 25
-)
-
-for _, option in ipairs(pageOptions) do
-    option.MouseEnter:Connect(function()
-        option.BackgroundColor3 = Color3.fromRGB(22, 0, 0)
-        option.TextColor3 = Color3.fromRGB(255, 0, 0)
-    end)
-
-    option.MouseLeave:Connect(function()
-        option.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
-        option.TextColor3 = Color3.fromRGB(255, 255, 255)
-    end)
-end
-
 local function createSliderControl(
+    parent,
     name,
     labelText,
     yPosition,
@@ -403,7 +348,7 @@ local function createSliderControl(
     label.TextSize = 14
     label.TextXAlignment = Enum.TextXAlignment.Left
 
-    label.Parent = playerPage
+    label.Parent = parent
 
     local slider = Instance.new("Frame")
 
@@ -414,7 +359,7 @@ local function createSliderControl(
     slider.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
     slider.BorderSizePixel = 0
 
-    slider.Parent = playerPage
+    slider.Parent = parent
 
     local percentage = (
         defaultValue - minimumValue
@@ -463,7 +408,7 @@ local function createSliderControl(
 
     valueBox.ClearTextOnFocus = false
 
-    valueBox.Parent = playerPage
+    valueBox.Parent = parent
 
     return {
         label = label,
@@ -478,6 +423,7 @@ local function createSliderControl(
 end
 
 local walkSpeedControl = createSliderControl(
+    playerPage,
     "WalkSpeed",
     "WalkSpeed",
     8,
@@ -487,6 +433,7 @@ local walkSpeedControl = createSliderControl(
 )
 
 local jumpPowerControl = createSliderControl(
+    playerPage,
     "JumpPower",
     "JumpPower",
     38,
@@ -496,6 +443,7 @@ local jumpPowerControl = createSliderControl(
 )
 
 local gravityControl = createSliderControl(
+    playerPage,
     "Gravity",
     "Gravity",
     68,
@@ -505,6 +453,7 @@ local gravityControl = createSliderControl(
 )
 
 local characterSizeControl = createSliderControl(
+    playerPage,
     "CharacterSize",
     "CharacterSize",
     98,
@@ -962,6 +911,294 @@ NoclipButton.MouseButton1Click:Connect(function()
     end
 end)
 
+local chaosTexture = "rbxassetid://116754971513830"
+
+local visualsDecalName = "c00lVisualDecal"
+local visualsFireName = "c00lVisualFire"
+local visualsParticlesName = "c00lVisualParticles"
+local visualsSkyName = "c00lVisualSky"
+
+local function createVisualButton(name, text, xPosition, yPosition, width)
+    local button = Instance.new("TextButton")
+
+    button.Name = name
+    button.Size = UDim2.fromOffset(width or 377, 25)
+    button.Position = UDim2.fromOffset(xPosition, yPosition)
+
+    button.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+
+    button.BorderSizePixel = 1
+    button.BorderColor3 = Color3.fromRGB(120, 0, 0)
+
+    button.Text = text
+    button.TextColor3 = Color3.fromRGB(255, 0, 0)
+
+    button.Font = Enum.Font.SourceSans
+    button.TextSize = 14
+    button.TextXAlignment = Enum.TextXAlignment.Left
+
+    button.AutoButtonColor = false
+
+    button.Parent = visualsPage
+
+    button.MouseEnter:Connect(function()
+        button.BackgroundColor3 = Color3.fromRGB(22, 0, 0)
+        button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    end)
+
+    button.MouseLeave:Connect(function()
+        button.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+        button.TextColor3 = Color3.fromRGB(255, 0, 0)
+    end)
+
+    return button
+end
+
+local visualsTitle = Instance.new("TextLabel")
+
+visualsTitle.Name = "VisualsTitle"
+visualsTitle.Size = UDim2.fromOffset(300, 25)
+visualsTitle.Position = UDim2.fromOffset(8, 8)
+
+visualsTitle.BackgroundTransparency = 1
+
+visualsTitle.Text = "VISUALS"
+visualsTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+visualsTitle.Font = Enum.Font.SourceSansBold
+visualsTitle.TextSize = 16
+visualsTitle.TextXAlignment = Enum.TextXAlignment.Left
+
+visualsTitle.Parent = visualsPage
+
+local spamDecalButton = createVisualButton(
+    "SpamDecalButton",
+    "Spam Decal",
+    8,
+    38
+)
+
+local fireButton = createVisualButton(
+    "FireButton",
+    "Fire",
+    8,
+    68,
+    183
+)
+
+local particlesButton = createVisualButton(
+    "ParticlesButton",
+    "Particles",
+    202,
+    68,
+    183
+)
+
+local skyButton = createVisualButton(
+    "SkyButton",
+    "Sky / Skybox",
+    8,
+    98
+)
+
+local removeDecalsButton = createVisualButton(
+    "RemoveDecalsButton",
+    "Remove Decals",
+    8,
+    128
+)
+
+local removeFireButton = createVisualButton(
+    "RemoveFireButton",
+    "Remove Fire",
+    8,
+    158
+)
+
+local removeParticlesButton = createVisualButton(
+    "RemoveParticlesButton",
+    "Remove Particles",
+    8,
+    188
+)
+
+local removeSkyButton = createVisualButton(
+    "RemoveSkyButton",
+    "Remove Sky",
+    8,
+    218
+)
+
+local function createSpamDecals()
+    local faces = {
+        Enum.NormalId.Front,
+        Enum.NormalId.Back,
+        Enum.NormalId.Left,
+        Enum.NormalId.Right,
+        Enum.NormalId.Top,
+        Enum.NormalId.Bottom
+    }
+
+    for _, object in ipairs(workspace:GetDescendants()) do
+        if object:IsA("BasePart") then
+            for _, face in ipairs(faces) do
+                local decalName = visualsDecalName .. face.Name
+
+                if not object:FindFirstChild(decalName) then
+                    local decal = Instance.new("Decal")
+
+                    decal.Name = decalName
+                    decal.Texture = chaosTexture
+                    decal.Face = face
+
+                    decal.Parent = object
+                end
+            end
+        end
+    end
+end
+
+local function removeSpamDecals()
+    for _, object in ipairs(workspace:GetDescendants()) do
+        if object:IsA("Decal")
+            and object.Name:sub(1, #visualsDecalName) == visualsDecalName then
+
+            object:Destroy()
+        end
+    end
+end
+
+local function createFire()
+    for _, object in ipairs(workspace:GetDescendants()) do
+        if object:IsA("BasePart") then
+            if not object:FindFirstChild(visualsFireName) then
+                local fire = Instance.new("Fire")
+
+                fire.Name = visualsFireName
+                fire.Heat = 8
+
+                local character = object:FindFirstAncestorOfClass("Model")
+                local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+
+                if humanoid then
+                    fire.Size = 5
+                else
+                    fire.Size = math.max(
+                        object.Size.X,
+                        object.Size.Y,
+                        object.Size.Z
+                    ) * 0.5
+                end
+
+                fire.Parent = object
+            end
+        end
+    end
+end
+
+local function removeFire()
+    for _, object in ipairs(workspace:GetDescendants()) do
+        if object:IsA("Fire")
+            and object.Name == visualsFireName then
+
+            object:Destroy()
+        end
+    end
+end
+
+local function createParticles()
+    for _, object in ipairs(workspace:GetDescendants()) do
+        if object:IsA("BasePart") then
+            if not object:FindFirstChild(visualsParticlesName) then
+                local particles = Instance.new("ParticleEmitter")
+
+                particles.Name = visualsParticlesName
+                particles.Texture = chaosTexture
+                particles.Rate = 8
+                particles.Lifetime = NumberRange.new(2, 4)
+                particles.Speed = NumberRange.new(1, 3)
+                particles.SpreadAngle = Vector2.new(360, 360)
+                particles.Rotation = NumberRange.new(0, 360)
+                particles.RotSpeed = NumberRange.new(-90, 90)
+                particles.Size = NumberSequence.new(1)
+
+                particles.Parent = object
+            end
+        end
+    end
+end
+
+local function removeParticles()
+    for _, object in ipairs(workspace:GetDescendants()) do
+        if object:IsA("ParticleEmitter")
+            and object.Name == visualsParticlesName then
+
+            object:Destroy()
+        end
+    end
+end
+
+local function createSky()
+    local existingSky = Lighting:FindFirstChild(visualsSkyName)
+
+    if existingSky then
+        existingSky:Destroy()
+    end
+
+    local sky = Instance.new("Sky")
+
+    sky.Name = visualsSkyName
+
+    sky.SkyboxBk = chaosTexture
+    sky.SkyboxDn = chaosTexture
+    sky.SkyboxFt = chaosTexture
+    sky.SkyboxLf = chaosTexture
+    sky.SkyboxRt = chaosTexture
+    sky.SkyboxUp = chaosTexture
+
+    sky.Parent = Lighting
+end
+
+local function removeSky()
+    local sky = Lighting:FindFirstChild(visualsSkyName)
+
+    if sky then
+        sky:Destroy()
+    end
+end
+
+spamDecalButton.MouseButton1Click:Connect(function()
+    createSpamDecals()
+end)
+
+fireButton.MouseButton1Click:Connect(function()
+    createFire()
+end)
+
+particlesButton.MouseButton1Click:Connect(function()
+    createParticles()
+end)
+
+skyButton.MouseButton1Click:Connect(function()
+    createSky()
+end)
+
+removeDecalsButton.MouseButton1Click:Connect(function()
+    removeSpamDecals()
+end)
+
+removeFireButton.MouseButton1Click:Connect(function()
+    removeFire()
+end)
+
+removeParticlesButton.MouseButton1Click:Connect(function()
+    removeParticles()
+end)
+
+removeSkyButton.MouseButton1Click:Connect(function()
+    removeSky()
+end)
+
 local musicSound = SoundService:FindFirstChild("c00lguiMusic")
 
 if not musicSound then
@@ -1072,7 +1309,6 @@ local musicVolumeLabel = Instance.new("TextLabel")
 
 musicVolumeLabel.Name = "Label"
 musicVolumeLabel.Size = UDim2.fromOffset(100, 25)
-musicVolumeLabel.Position = UDim2.fromOffset(0, 0)
 
 musicVolumeLabel.BackgroundTransparency = 1
 
@@ -1154,7 +1390,6 @@ local musicPitchLabel = Instance.new("TextLabel")
 
 musicPitchLabel.Name = "Label"
 musicPitchLabel.Size = UDim2.fromOffset(100, 25)
-musicPitchLabel.Position = UDim2.fromOffset(0, 0)
 
 musicPitchLabel.BackgroundTransparency = 1
 
@@ -1274,15 +1509,13 @@ local function setMusicVolume(value)
     musicSound.Volume = value
     musicVolumeBox.Text = tostring(value)
 
-    local percentage = value
-
     musicVolumeFill.Size = UDim2.fromScale(
-        percentage,
+        value,
         1
     )
 
     musicVolumeKnob.Position = UDim2.fromScale(
-        percentage,
+        value,
         0.5
     )
 end
@@ -1373,9 +1606,7 @@ local function connectMusicSlider(
         if value then
             setter(value)
         else
-            valueBox.Text = tostring(
-                minimumValue
-            )
+            setter(minimumValue)
         end
     end)
 end
