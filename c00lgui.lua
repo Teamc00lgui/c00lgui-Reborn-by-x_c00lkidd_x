@@ -3,6 +3,7 @@ local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
+local SoundService = game:GetService("SoundService")
 
 local player = Players.LocalPlayer
 
@@ -116,7 +117,7 @@ pageSelector.Parent = content
 local pageDropdown = Instance.new("Frame")
 
 pageDropdown.Name = "PageDropdown"
-pageDropdown.Size = UDim2.fromOffset(140, 75)
+pageDropdown.Size = UDim2.fromOffset(140, 100)
 pageDropdown.Position = UDim2.fromOffset(6, 25)
 
 pageDropdown.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
@@ -193,11 +194,34 @@ serverPage.ZIndex = 1
 
 serverPage.Parent = pages
 
+local musicPage = Instance.new("ScrollingFrame")
+
+musicPage.Name = "MusicPage"
+musicPage.Size = UDim2.fromScale(1, 1)
+musicPage.Position = UDim2.fromOffset(0, 0)
+
+musicPage.BackgroundTransparency = 1
+musicPage.BorderSizePixel = 0
+
+musicPage.ScrollBarThickness = 3
+musicPage.ScrollBarImageColor3 = Color3.fromRGB(255, 0, 0)
+
+musicPage.ScrollingDirection = Enum.ScrollingDirection.Y
+musicPage.CanvasSize = UDim2.fromOffset(0, 0)
+
+musicPage.Active = true
+musicPage.Visible = false
+
+musicPage.ZIndex = 1
+
+musicPage.Parent = pages
+
 local pageFrames = {}
 
 pageFrames.Player = playerPage
 pageFrames.Visuals = visualsPage
 pageFrames.Server = serverPage
+pageFrames.Music = musicPage
 
 local function createPageOption(name, text, position)
     local option = Instance.new("TextButton")
@@ -244,6 +268,12 @@ local serverOption = createPageOption(
     50
 )
 
+local musicOption = createPageOption(
+    "Music",
+    "MUSIC",
+    75
+)
+
 local selectedPage = nil
 
 local function setSelectorText(pageName, opened)
@@ -255,6 +285,8 @@ local function setSelectorText(pageName, opened)
         pageSelector.Text = "VISUALS  " .. arrow
     elseif pageName == "Server" then
         pageSelector.Text = "SERVER  " .. arrow
+    elseif pageName == "Music" then
+        pageSelector.Text = "MUSIC  " .. arrow
     end
 end
 
@@ -297,6 +329,10 @@ serverOption.MouseButton1Click:Connect(function()
     selectPage("Server")
 end)
 
+musicOption.MouseButton1Click:Connect(function()
+    selectPage("Music")
+end)
+
 pageSelector.MouseEnter:Connect(function()
     pageSelector.TextColor3 = Color3.fromRGB(255, 0, 0)
 end)
@@ -308,7 +344,8 @@ end)
 local pageOptions = {
     playerOption,
     visualsOption,
-    serverOption
+    serverOption,
+    musicOption
 }
 
 for _, option in ipairs(pageOptions) do
@@ -905,6 +942,220 @@ NoclipButton.MouseButton1Click:Connect(function()
     end
 end)
 
+local musicSound = SoundService:FindFirstChild("c00lguiMusic")
+
+if not musicSound then
+    musicSound = Instance.new("Sound")
+    musicSound.Name = "c00lguiMusic"
+    musicSound.Volume = 0.5
+    musicSound.Looped = true
+    musicSound.Parent = SoundService
+end
+
+local musicTitle = Instance.new("TextLabel")
+
+musicTitle.Name = "MusicTitle"
+musicTitle.Size = UDim2.fromOffset(300, 25)
+musicTitle.Position = UDim2.fromOffset(8, 8)
+
+musicTitle.BackgroundTransparency = 1
+
+musicTitle.Text = "MUSIC"
+musicTitle.TextColor3 = Color3.fromRGB(255, 0, 0)
+
+musicTitle.Font = Enum.Font.SourceSansBold
+musicTitle.TextSize = 16
+musicTitle.TextXAlignment = Enum.TextXAlignment.Left
+
+musicTitle.Parent = musicPage
+
+local musicIdBox = Instance.new("TextBox")
+
+musicIdBox.Name = "MusicIdBox"
+musicIdBox.Size = UDim2.fromOffset(210, 25)
+musicIdBox.Position = UDim2.fromOffset(8, 38)
+
+musicIdBox.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+
+musicIdBox.BorderSizePixel = 1
+musicIdBox.BorderColor3 = Color3.fromRGB(120, 0, 0)
+
+musicIdBox.Text = ""
+musicIdBox.PlaceholderText = "Music ID"
+musicIdBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+musicIdBox.PlaceholderColor3 = Color3.fromRGB(120, 120, 120)
+
+musicIdBox.Font = Enum.Font.SourceSans
+musicIdBox.TextSize = 14
+
+musicIdBox.ClearTextOnFocus = false
+
+musicIdBox.Parent = musicPage
+
+local musicPlayButton = Instance.new("TextButton")
+
+musicPlayButton.Name = "MusicPlayButton"
+musicPlayButton.Size = UDim2.fromOffset(75, 25)
+musicPlayButton.Position = UDim2.fromOffset(225, 38)
+
+musicPlayButton.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+
+musicPlayButton.BorderSizePixel = 1
+musicPlayButton.BorderColor3 = Color3.fromRGB(120, 0, 0)
+
+musicPlayButton.Text = "PLAY"
+musicPlayButton.TextColor3 = Color3.fromRGB(255, 0, 0)
+
+musicPlayButton.Font = Enum.Font.SourceSans
+musicPlayButton.TextSize = 14
+
+musicPlayButton.AutoButtonColor = false
+
+musicPlayButton.Parent = musicPage
+
+local musicStopButton = Instance.new("TextButton")
+
+musicStopButton.Name = "MusicStopButton"
+musicStopButton.Size = UDim2.fromOffset(75, 25)
+musicStopButton.Position = UDim2.fromOffset(310, 38)
+
+musicStopButton.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+
+musicStopButton.BorderSizePixel = 1
+musicStopButton.BorderColor3 = Color3.fromRGB(120, 0, 0)
+
+musicStopButton.Text = "STOP"
+musicStopButton.TextColor3 = Color3.fromRGB(255, 0, 0)
+
+musicStopButton.Font = Enum.Font.SourceSans
+musicStopButton.TextSize = 14
+
+musicStopButton.AutoButtonColor = false
+
+musicStopButton.Parent = musicPage
+
+local presetTitle = Instance.new("TextLabel")
+
+presetTitle.Name = "PresetTitle"
+presetTitle.Size = UDim2.fromOffset(300, 25)
+presetTitle.Position = UDim2.fromOffset(8, 75)
+
+presetTitle.BackgroundTransparency = 1
+
+presetTitle.Text = "PRESET MUSIC"
+presetTitle.TextColor3 = Color3.fromRGB(255, 0, 0)
+
+presetTitle.Font = Enum.Font.SourceSansBold
+presetTitle.TextSize = 14
+presetTitle.TextXAlignment = Enum.TextXAlignment.Left
+
+presetTitle.Parent = musicPage
+
+local musicPresets = {
+    {
+        Name = "Electro Sp00ky",
+        Id = "96965660515155"
+    }
+}
+
+local function extractMusicId(text)
+    local id = tostring(text):match("%d+")
+
+    return id
+end
+
+local function playMusic(id)
+    local musicId = extractMusicId(id)
+
+    if not musicId then
+        return
+    end
+
+    musicSound.SoundId = "rbxassetid://" .. musicId
+    musicSound:Play()
+end
+
+local function stopMusic()
+    musicSound:Stop()
+end
+
+local function createMusicPreset(name, id, yPosition)
+    local button = Instance.new("TextButton")
+
+    button.Name = name:gsub("%s+", "") .. "Button"
+    button.Size = UDim2.fromOffset(377, 25)
+    button.Position = UDim2.fromOffset(8, yPosition)
+
+    button.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+
+    button.BorderSizePixel = 1
+    button.BorderColor3 = Color3.fromRGB(120, 0, 0)
+
+    button.Text = name
+    button.TextColor3 = Color3.fromRGB(255, 0, 0)
+
+    button.Font = Enum.Font.SourceSans
+    button.TextSize = 14
+    button.TextXAlignment = Enum.TextXAlignment.Left
+
+    button.AutoButtonColor = false
+
+    button.Parent = musicPage
+
+    button.MouseEnter:Connect(function()
+        button.BackgroundColor3 = Color3.fromRGB(22, 0, 0)
+        button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    end)
+
+    button.MouseLeave:Connect(function()
+        button.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+        button.TextColor3 = Color3.fromRGB(255, 0, 0)
+    end)
+
+    button.MouseButton1Click:Connect(function()
+        musicIdBox.Text = id
+        playMusic(id)
+    end)
+
+    return button
+end
+
+local presetY = 105
+
+for _, preset in ipairs(musicPresets) do
+    createMusicPreset(
+        preset.Name,
+        preset.Id,
+        presetY
+    )
+
+    presetY += 30
+end
+
+musicPlayButton.MouseEnter:Connect(function()
+    musicPlayButton.BackgroundColor3 = Color3.fromRGB(22, 0, 0)
+end)
+
+musicPlayButton.MouseLeave:Connect(function()
+    musicPlayButton.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+end)
+
+musicStopButton.MouseEnter:Connect(function()
+    musicStopButton.BackgroundColor3 = Color3.fromRGB(22, 0, 0)
+end)
+
+musicStopButton.MouseLeave:Connect(function()
+    musicStopButton.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+end)
+
+musicPlayButton.MouseButton1Click:Connect(function()
+    playMusic(musicIdBox.Text)
+end)
+
+musicStopButton.MouseButton1Click:Connect(function()
+    stopMusic()
+end)
+
 local function updateCanvasSize(scrollingFrame)
     local contentHeight = 0
 
@@ -926,6 +1177,11 @@ local function updateCanvasSize(scrollingFrame)
         contentHeight + 10
     )
 end
+
+updateCanvasSize(playerPage)
+updateCanvasSize(visualsPage)
+updateCanvasSize(serverPage)
+updateCanvasSize(musicPage)
 
 local toggleButton = Instance.new("TextButton")
 
@@ -1284,10 +1540,6 @@ connectControl(walkSpeedControl, setWalkSpeed)
 connectControl(jumpPowerControl, setJumpPower)
 connectControl(gravityControl, setGravity)
 connectControl(characterSizeControl, setCharacterSize)
-
-updateCanvasSize(playerPage)
-updateCanvasSize(visualsPage)
-updateCanvasSize(serverPage)
 
 local function applyCharacterSettings()
     local character = player.Character
