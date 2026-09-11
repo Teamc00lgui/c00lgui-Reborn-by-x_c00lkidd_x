@@ -140,7 +140,7 @@ playerPage.ScrollBarThickness = 3
 playerPage.ScrollBarImageColor3 = Color3.fromRGB(255, 0, 0)
 
 playerPage.ScrollingDirection = Enum.ScrollingDirection.Y
-playerPage.CanvasSize = UDim2.fromOffset(0, 190)
+playerPage.CanvasSize = UDim2.fromOffset(0, 0)
 
 playerPage.Active = true
 playerPage.Visible = false
@@ -162,7 +162,7 @@ visualsPage.ScrollBarThickness = 3
 visualsPage.ScrollBarImageColor3 = Color3.fromRGB(255, 0, 0)
 
 visualsPage.ScrollingDirection = Enum.ScrollingDirection.Y
-visualsPage.CanvasSize = UDim2.fromOffset(0, 190)
+visualsPage.CanvasSize = UDim2.fromOffset(0, 0)
 
 visualsPage.Active = true
 visualsPage.Visible = false
@@ -184,7 +184,7 @@ serverPage.ScrollBarThickness = 3
 serverPage.ScrollBarImageColor3 = Color3.fromRGB(255, 0, 0)
 
 serverPage.ScrollingDirection = Enum.ScrollingDirection.Y
-serverPage.CanvasSize = UDim2.fromOffset(0, 190)
+serverPage.CanvasSize = UDim2.fromOffset(0, 0)
 
 serverPage.Active = true
 serverPage.Visible = false
@@ -455,6 +455,28 @@ local characterSizeControl = createSliderControl(
     0.1,
     5
 )
+
+local function updateCanvasSize(scrollingFrame)
+    local contentHeight = 0
+
+    for _, object in ipairs(scrollingFrame:GetChildren()) do
+        if object:IsA("GuiObject") then
+            local bottom = (
+                object.Position.Y.Offset
+                + object.Size.Y.Offset
+            )
+
+            if bottom > contentHeight then
+                contentHeight = bottom
+            end
+        end
+    end
+
+    scrollingFrame.CanvasSize = UDim2.fromOffset(
+        0,
+        contentHeight + 10
+    )
+end
 
 local toggleButton = Instance.new("TextButton")
 
@@ -815,6 +837,10 @@ connectControl(walkSpeedControl, setWalkSpeed)
 connectControl(jumpPowerControl, setJumpPower)
 connectControl(gravityControl, setGravity)
 connectControl(characterSizeControl, setCharacterSize)
+
+updateCanvasSize(playerPage)
+updateCanvasSize(visualsPage)
+updateCanvasSize(serverPage)
 
 local function applyCharacterSettings()
     local character = player.Character
