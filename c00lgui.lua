@@ -174,12 +174,14 @@ local playerPage = createPage("Player")
 local visualsPage = createPage("Visuals")
 local serverPage = createPage("Server")
 local musicPage = createPage("Music")
+local executorPage = createPage("Executor")
 
 local pageFrames = {
     Player = playerPage,
     Visuals = visualsPage,
     Server = serverPage,
-    Music = musicPage
+    Music = musicPage,
+    Executor = executorPage
 }
 
 local function createPageOption(name, text, position)
@@ -233,11 +235,18 @@ local musicOption = createPageOption(
     75
 )
 
+local executorOption = createPageOption(
+    "Executor",
+    "EXECUTOR",
+    100
+)
+
 local pageOptions = {
     playerOption,
     visualsOption,
     serverOption,
-    musicOption
+    musicOption,
+    executorOption
 }
 
 pageDropdown.Size = UDim2.fromOffset(
@@ -270,6 +279,8 @@ local function setSelectorText(pageName, opened)
         pageSelector.Text = "SERVER  " .. arrow
     elseif pageName == "Music" then
         pageSelector.Text = "MUSIC  " .. arrow
+    elseif pageName == "Executor" then
+        pageSelector.Text = "EXECUTOR  " .. arrow
     end
 end
 
@@ -314,6 +325,10 @@ end)
 
 musicOption.MouseButton1Click:Connect(function()
     selectPage("Music")
+end)
+
+executorOption.MouseButton1Click:Connect(function()
+    selectPage("Executor")
 end)
 
 pageSelector.MouseEnter:Connect(function()
@@ -1704,6 +1719,204 @@ musicStopButton.MouseButton1Click:Connect(function()
     stopMusic()
 end)
 
+local executorTitle = Instance.new("TextLabel")
+
+executorTitle.Name = "ExecutorTitle"
+executorTitle.Size = UDim2.fromOffset(300, 25)
+executorTitle.Position = UDim2.fromOffset(8, 8)
+
+executorTitle.BackgroundTransparency = 1
+
+executorTitle.Text = "EXECUTOR"
+executorTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+executorTitle.Font = Enum.Font.SourceSansBold
+executorTitle.TextSize = 16
+executorTitle.TextXAlignment = Enum.TextXAlignment.Left
+
+executorTitle.Parent = executorPage
+
+local executorEditor = Instance.new("TextBox")
+
+executorEditor.Name = "ScriptEditor"
+executorEditor.Size = UDim2.fromOffset(377, 120)
+executorEditor.Position = UDim2.fromOffset(8, 38)
+
+executorEditor.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+
+executorEditor.BorderSizePixel = 1
+executorEditor.BorderColor3 = Color3.fromRGB(120, 0, 0)
+
+executorEditor.Text = ""
+executorEditor.PlaceholderText = "-- Write your Luau script here"
+executorEditor.PlaceholderColor3 = Color3.fromRGB(100, 100, 100)
+
+executorEditor.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+executorEditor.Font = Enum.Font.Code
+executorEditor.TextSize = 14
+
+executorEditor.TextXAlignment = Enum.TextXAlignment.Left
+executorEditor.TextYAlignment = Enum.TextYAlignment.Top
+
+executorEditor.MultiLine = true
+executorEditor.ClearTextOnFocus = false
+
+executorEditor.Parent = executorPage
+
+local executeButton = Instance.new("TextButton")
+
+executeButton.Name = "ExecuteButton"
+executeButton.Size = UDim2.fromOffset(183, 25)
+executeButton.Position = UDim2.fromOffset(8, 166)
+
+executeButton.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+
+executeButton.BorderSizePixel = 1
+executeButton.BorderColor3 = Color3.fromRGB(120, 0, 0)
+
+executeButton.Text = "EXECUTE"
+executeButton.TextColor3 = Color3.fromRGB(255, 0, 0)
+
+executeButton.Font = Enum.Font.SourceSans
+executeButton.TextSize = 14
+
+executeButton.AutoButtonColor = false
+
+executeButton.Parent = executorPage
+
+local clearButton = Instance.new("TextButton")
+
+clearButton.Name = "ClearButton"
+clearButton.Size = UDim2.fromOffset(183, 25)
+clearButton.Position = UDim2.fromOffset(202, 166)
+
+clearButton.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+
+clearButton.BorderSizePixel = 1
+clearButton.BorderColor3 = Color3.fromRGB(120, 0, 0)
+
+clearButton.Text = "CLEAR"
+clearButton.TextColor3 = Color3.fromRGB(255, 0, 0)
+
+clearButton.Font = Enum.Font.SourceSans
+clearButton.TextSize = 14
+
+clearButton.AutoButtonColor = false
+
+clearButton.Parent = executorPage
+
+local outputTitle = Instance.new("TextLabel")
+
+outputTitle.Name = "OutputTitle"
+outputTitle.Size = UDim2.fromOffset(300, 25)
+outputTitle.Position = UDim2.fromOffset(8, 201)
+
+outputTitle.BackgroundTransparency = 1
+
+outputTitle.Text = "OUTPUT"
+outputTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+outputTitle.Font = Enum.Font.SourceSansBold
+outputTitle.TextSize = 14
+outputTitle.TextXAlignment = Enum.TextXAlignment.Left
+
+outputTitle.Parent = executorPage
+
+local outputBox = Instance.new("TextLabel")
+
+outputBox.Name = "Output"
+outputBox.Size = UDim2.fromOffset(377, 70)
+outputBox.Position = UDim2.fromOffset(8, 226)
+
+outputBox.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+
+outputBox.BorderSizePixel = 1
+outputBox.BorderColor3 = Color3.fromRGB(120, 0, 0)
+
+outputBox.Text = "Ready."
+
+outputBox.TextColor3 = Color3.fromRGB(0, 255, 0)
+
+outputBox.Font = Enum.Font.Code
+outputBox.TextSize = 13
+
+outputBox.TextXAlignment = Enum.TextXAlignment.Left
+outputBox.TextYAlignment = Enum.TextYAlignment.Top
+
+outputBox.Parent = executorPage
+
+local function setExecutorOutput(text)
+    outputBox.Text = tostring(text)
+end
+
+local function executeScript()
+    local source = executorEditor.Text
+
+    if source == "" or source:match("^%s*$") then
+        setExecutorOutput("No script provided.")
+        return
+    end
+
+    local loadFunction = loadstring
+
+    if type(loadFunction) ~= "function" then
+        setExecutorOutput("Execution unavailable.")
+        return
+    end
+
+    setExecutorOutput("Executing...")
+
+    local success, result = pcall(function()
+        local compiled, compileError = loadFunction(source)
+
+        if not compiled then
+            error(compileError)
+        end
+
+        return compiled()
+    end)
+
+    if success then
+        if result ~= nil then
+            setExecutorOutput("Execution completed.\n" .. tostring(result))
+        else
+            setExecutorOutput("Execution completed.")
+        end
+    else
+        setExecutorOutput("Execution failed:\n" .. tostring(result))
+    end
+end
+
+executeButton.MouseEnter:Connect(function()
+    executeButton.BackgroundColor3 = Color3.fromRGB(22, 0, 0)
+    executeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+end)
+
+executeButton.MouseLeave:Connect(function()
+    executeButton.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+    executeButton.TextColor3 = Color3.fromRGB(255, 0, 0)
+end)
+
+clearButton.MouseEnter:Connect(function()
+    clearButton.BackgroundColor3 = Color3.fromRGB(22, 0, 0)
+    clearButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+end)
+
+clearButton.MouseLeave:Connect(function()
+    clearButton.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+    clearButton.TextColor3 = Color3.fromRGB(255, 0, 0)
+end)
+
+executeButton.MouseButton1Click:Connect(function()
+    executeScript()
+end)
+
+clearButton.MouseButton1Click:Connect(function()
+    executorEditor.Text = ""
+    setExecutorOutput("Ready.")
+end)
+
 local function updateCanvasSize(scrollingFrame)
     local contentHeight = 0
 
@@ -1730,6 +1943,7 @@ updateCanvasSize(playerPage)
 updateCanvasSize(visualsPage)
 updateCanvasSize(serverPage)
 updateCanvasSize(musicPage)
+updateCanvasSize(executorPage)
 
 local toggleButton = Instance.new("TextButton")
 
