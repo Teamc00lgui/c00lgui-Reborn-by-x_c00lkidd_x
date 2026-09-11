@@ -1,6 +1,6 @@
 local CoreGui = game:GetService("CoreGui")
 local UserInputService = game:GetService("UserInputService")
-
+local TweenService = game:GetService("TweenService")
 local gui = Instance.new("ScreenGui")
 
 gui.Name = "c00lgui"
@@ -87,12 +87,63 @@ toggleButton.TextSize = 14
 toggleButton.Parent = container
 
 local guiOpen = true
+local animationTime = 0.25
+
+local tweenInfo = TweenInfo.new(
+    animationTime,
+    Enum.EasingStyle.Quart,
+    Enum.EasingDirection.Out
+)
 
 toggleButton.MouseButton1Click:Connect(function()
     guiOpen = not guiOpen
 
-    frame.Visible = guiOpen
-    toggleButton.Text = guiOpen and "Close" or "Open"
+    if guiOpen then
+        toggleButton.Text = "Close"
+        frame.Visible = true
+
+        TweenService:Create(
+            frame,
+            tweenInfo,
+            {
+                Size = UDim2.fromOffset(400, 250)
+            }
+        ):Play()
+
+        TweenService:Create(
+            toggleButton,
+            tweenInfo,
+            {
+                Position = UDim2.fromOffset(0, 250)
+            }
+        ):Play()
+    else
+        toggleButton.Text = "Open"
+
+        local frameTween = TweenService:Create(
+            frame,
+            tweenInfo,
+            {
+                Size = UDim2.fromOffset(400, 0)
+            }
+        )
+
+        TweenService:Create(
+            toggleButton,
+            tweenInfo,
+            {
+                Position = UDim2.fromOffset(0, 0)
+            }
+        ):Play()
+
+        frameTween:Play()
+
+        frameTween.Completed:Once(function()
+            if not guiOpen then
+                frame.Visible = false
+            end
+        end)
+    end
 end)
 
 local dragging = false
