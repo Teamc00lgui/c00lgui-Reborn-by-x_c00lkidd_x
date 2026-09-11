@@ -134,88 +134,21 @@ page.Visible = true
 
 -- Settings --
 
-local settings = {
-    ["Security of character"] = false,
-    ["Windows transparency"] = true,
-    ["Big jumps"] = false,
-    ["HealthBar"] = false,
-    ["Immortal"] = false
-}
-
-local settingsList = {
-    "Security of character",
-    "Windows transparency",
-    "Big jumps",
-    "HealthBar",
-    "Immortal"
-}
-
-local settingButtons = {}
-
-local function createSetting(name, index)
-    local setting = Instance.new("Frame")
-    setting.Parent = page
-    setting.BackgroundColor3 = blak
-    setting.BorderColor3 = rede
-    setting.BorderSizePixel = 3
-    setting.Name = name
-    setting.Position = UDim2.new(0, 5, 0, 45 + ((index - 1) * 30))
-    setting.Size = UDim2.new(1, -10, 0, 25)
-    setting.ZIndex = 2
-
-    local label = Instance.new("TextLabel")
-    label.Parent = setting
-    label.BackgroundTransparency = 1
-    label.BorderSizePixel = 0
-    label.Name = "Name"
-    label.Position = UDim2.new(0, 5, 0, 0)
-    label.Size = UDim2.new(1, -65, 1, 0)
-    label.ZIndex = 3
-    label.Font = tef
-    label.TextSize = 14
-    label.Text = name
-    label.TextColor3 = whit
-    label.TextXAlignment = Enum.TextXAlignment.Left
-    label.TextYAlignment = Enum.TextYAlignment.Center
-
-    local button = Instance.new("TextButton")
-    button.Parent = setting
-    button.BackgroundColor3 = blak
-    button.BorderColor3 = rede
-    button.BorderSizePixel = 3
-    button.Name = "Button"
-    button.Position = UDim2.new(1, -55, 0, 3)
-    button.Size = UDim2.new(0, 50, 0, 19)
-    button.ZIndex = 3
-    button.Font = tef
-    button.TextSize = 14
-    button.TextColor3 = whit
-    button.TextXAlignment = Enum.TextXAlignment.Center
-    button.TextYAlignment = Enum.TextYAlignment.Center
-
-    local function updateButton()
-        if settings[name] then
-            button.Text = "ON"
-            button.BackgroundColor3 = Color3.fromRGB(0, 120, 0)
-        else
-            button.Text = "OFF"
-            button.BackgroundColor3 = Color3.fromRGB(120, 0, 0)
-        end
-    end
-
-    updateButton()
-
-    button.Activated:Connect(function()
-        settings[name] = not settings[name]
-        updateButton()
-    end)
-
-    settingButtons[name] = button
-end
-
-for index, name in ipairs(settingsList) do
-    createSetting(name, index)
-end
+local settingsTitle = Instance.new("TextLabel")
+settingsTitle.Parent = page
+settingsTitle.BackgroundColor3 = blak
+settingsTitle.BorderColor3 = rede
+settingsTitle.BorderSizePixel = 3
+settingsTitle.Name = "SettingsTitle"
+settingsTitle.Position = UDim2.new(0, 0, 0, 0)
+settingsTitle.Size = UDim2.new(1, 0, 0, 40)
+settingsTitle.ZIndex = 2
+settingsTitle.Font = tef
+settingsTitle.TextSize = 24
+settingsTitle.Text = "Settings"
+settingsTitle.TextColor3 = whit
+settingsTitle.TextXAlignment = Enum.TextXAlignment.Center
+settingsTitle.TextYAlignment = Enum.TextYAlignment.Center
 
 -- Settings end --
 
