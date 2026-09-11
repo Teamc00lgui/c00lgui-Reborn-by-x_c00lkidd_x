@@ -541,13 +541,6 @@ local function setGravity(value)
     workspace.Gravity = gravityControl.currentValue
 end
 
-local characterScaleValues = {
-    "BodyHeightScale",
-    "BodyWidthScale",
-    "BodyDepthScale",
-    "HeadScale"
-}
-
 local function setCharacterSize(value)
     setControlValue(characterSizeControl, value)
 
@@ -557,24 +550,9 @@ local function setCharacterSize(value)
         return
     end
 
-    local humanoid = character:FindFirstChildOfClass("Humanoid")
-
-    if not humanoid then
-        return
-    end
-
-    for _, scaleName in ipairs(characterScaleValues) do
-        local scale = humanoid:FindFirstChild(scaleName)
-
-        if not scale then
-            scale = Instance.new("NumberValue")
-            scale.Name = scaleName
-            scale.Value = 1
-            scale.Parent = humanoid
-        end
-
-        scale.Value = characterSizeControl.currentValue
-    end
+    pcall(function()
+        character:ScaleTo(characterSizeControl.currentValue)
+    end)
 end
 
 local function connectControl(control, setter)
