@@ -516,6 +516,55 @@ local NoclipButton = createPlayerButton(
     130
 )
 
+local InfiniteJumpButton = createPlayerButton(
+    "InfiniteJumpButton",
+    "Infinite Jump: OFF",
+    8,
+    160
+)
+
+local infiniteJump = false
+
+local function stopInfiniteJump()
+    infiniteJump = false
+
+    InfiniteJumpButton.Text = "Infinite Jump: OFF"
+    InfiniteJumpButton.TextColor3 = Color3.fromRGB(255, 0, 0)
+end
+
+local function startInfiniteJump()
+    infiniteJump = true
+
+    InfiniteJumpButton.Text = "Infinite Jump: ON"
+    InfiniteJumpButton.TextColor3 = Color3.fromRGB(0, 255, 0)
+end
+
+InfiniteJumpButton.MouseButton1Click:Connect(function()
+    if infiniteJump then
+        stopInfiniteJump()
+    else
+        startInfiniteJump()
+    end
+end)
+
+UserInputService.JumpRequest:Connect(function()
+    if not infiniteJump then
+        return
+    end
+
+    local character = player.Character
+
+    if not character then
+        return
+    end
+
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+
+    if humanoid then
+        humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+    end
+end)
+
 local mobileFlyControls = Instance.new("Frame")
 
 mobileFlyControls.Name = "MobileFlyControls"
@@ -2330,6 +2379,10 @@ player.CharacterAdded:Connect(function(character)
 
     if noclip then
         stopNoclip()
+    end
+
+    if infiniteJump then
+        stopInfiniteJump()
     end
 
     applyCharacterSettings()
