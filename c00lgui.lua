@@ -1,6 +1,8 @@
 local CoreGui = game:GetService("CoreGui")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
+local Players = game:GetService("Players")
+
 local gui = Instance.new("ScreenGui")
 
 gui.Name = "c00lgui"
@@ -11,8 +13,6 @@ local success = pcall(function()
 end)
 
 if not success then
-    local Players = game:GetService("Players")
-
     local player = Players.LocalPlayer
 
     gui.Parent = player:WaitForChild("PlayerGui")
@@ -79,6 +79,137 @@ content.GroupTransparency = 0
 
 content.Parent = frame
 
+local tabBar = Instance.new("Frame")
+
+tabBar.Name = "TabBar"
+tabBar.Size = UDim2.new(1, 0, 0, 25)
+tabBar.Position = UDim2.fromOffset(0, 0)
+
+tabBar.BackgroundTransparency = 1
+tabBar.BorderSizePixel = 0
+
+tabBar.Parent = content
+
+local playerTab = Instance.new("TextButton")
+
+playerTab.Name = "PlayerTab"
+playerTab.Size = UDim2.fromOffset(80, 25)
+playerTab.Position = UDim2.fromOffset(0, 0)
+
+playerTab.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+
+playerTab.BorderSizePixel = 0
+
+playerTab.Text = "PLAYER"
+playerTab.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+playerTab.Font = Enum.Font.Code
+playerTab.TextSize = 14
+
+playerTab.Parent = tabBar
+
+local pages = Instance.new("Frame")
+
+pages.Name = "Pages"
+pages.Size = UDim2.new(1, 0, 1, -25)
+pages.Position = UDim2.fromOffset(0, 25)
+
+pages.BackgroundTransparency = 1
+pages.BorderSizePixel = 0
+
+pages.Parent = content
+
+local playerPage = Instance.new("ScrollingFrame")
+
+playerPage.Name = "PlayerPage"
+playerPage.Size = UDim2.fromScale(1, 1)
+playerPage.Position = UDim2.fromOffset(0, 0)
+
+playerPage.BackgroundTransparency = 1
+playerPage.BorderSizePixel = 0
+
+playerPage.ScrollBarThickness = 3
+playerPage.ScrollBarImageColor3 = Color3.fromRGB(255, 0, 0)
+
+playerPage.ScrollingDirection = Enum.ScrollingDirection.Y
+playerPage.CanvasSize = UDim2.fromOffset(0, 100)
+
+playerPage.Active = true
+playerPage.Visible = true
+
+playerPage.Parent = pages
+
+local walkSpeedLabel = Instance.new("TextLabel")
+
+walkSpeedLabel.Name = "WalkSpeedLabel"
+walkSpeedLabel.Size = UDim2.fromOffset(100, 25)
+walkSpeedLabel.Position = UDim2.fromOffset(8, 8)
+
+walkSpeedLabel.BackgroundTransparency = 1
+
+walkSpeedLabel.Text = "WalkSpeed"
+walkSpeedLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+walkSpeedLabel.Font = Enum.Font.Code
+walkSpeedLabel.TextSize = 14
+walkSpeedLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+walkSpeedLabel.Parent = playerPage
+
+local slider = Instance.new("Frame")
+
+slider.Name = "WalkSpeedSlider"
+slider.Size = UDim2.fromOffset(190, 4)
+slider.Position = UDim2.fromOffset(105, 19)
+
+slider.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+slider.BorderSizePixel = 0
+
+slider.Parent = playerPage
+
+local fill = Instance.new("Frame")
+
+fill.Name = "Fill"
+fill.Size = UDim2.fromScale(0.032, 1)
+
+fill.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+fill.BorderSizePixel = 0
+
+fill.Parent = slider
+
+local knob = Instance.new("Frame")
+
+knob.Name = "Knob"
+knob.Size = UDim2.fromOffset(10, 10)
+knob.AnchorPoint = Vector2.new(0.5, 0.5)
+knob.Position = UDim2.fromScale(0.032, 0.5)
+
+knob.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+knob.BorderSizePixel = 0
+
+knob.Parent = slider
+
+local valueBox = Instance.new("TextBox")
+
+valueBox.Name = "Value"
+valueBox.Size = UDim2.fromOffset(55, 22)
+valueBox.Position = UDim2.fromOffset(305, 8)
+
+valueBox.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+
+valueBox.BorderSizePixel = 1
+valueBox.BorderColor3 = Color3.fromRGB(120, 0, 0)
+
+valueBox.Text = "16"
+valueBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+valueBox.Font = Enum.Font.Code
+valueBox.TextSize = 14
+
+valueBox.ClearTextOnFocus = false
+
+valueBox.Parent = playerPage
+
 local toggleButton = Instance.new("TextButton")
 
 toggleButton.Name = "ToggleButton"
@@ -98,6 +229,8 @@ toggleButton.Font = Enum.Font.Code
 toggleButton.TextSize = 14
 
 toggleButton.Parent = container
+
+local player = Players.LocalPlayer
 
 local guiOpen = true
 local animating = false
@@ -214,6 +347,95 @@ toggleButton.MouseButton1Click:Connect(function()
         end)
     end
 end)
+
+local currentValue = 16
+local minimumValue = 0
+local maximumValue = 500
+
+local function setWalkSpeed(value)
+    value = math.clamp(value, minimumValue, maximumValue)
+
+    currentValue = value
+
+    valueBox.Text = tostring(value)
+
+    local percentage = (value - minimumValue) / (maximumValue - minimumValue)
+
+    fill.Size = UDim2.fromScale(percentage, 1)
+    knob.Position = UDim2.fromScale(percentage, 0.5)
+
+    local character = player.Character
+
+    if character then
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
+
+        if humanoid then
+            humanoid.WalkSpeed = value
+        end
+    end
+end
+
+local draggingSlider = false
+
+local function updateSlider(input)
+    local relativeX = input.Position.X - slider.AbsolutePosition.X
+
+    local percentage = math.clamp(
+        relativeX / slider.AbsoluteSize.X,
+        0,
+        1
+    )
+
+    local value = minimumValue + (
+        (maximumValue - minimumValue) * percentage
+    )
+
+    value = math.round(value)
+
+    setWalkSpeed(value)
+end
+
+slider.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1
+        or input.UserInputType == Enum.UserInputType.Touch then
+
+        draggingSlider = true
+
+        updateSlider(input)
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if draggingSlider then
+        if input.UserInputType == Enum.UserInputType.MouseMovement
+            or input.UserInputType == Enum.UserInputType.Touch then
+
+            updateSlider(input)
+        end
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1
+        or input.UserInputType == Enum.UserInputType.Touch then
+
+        draggingSlider = false
+    end
+end)
+
+valueBox.FocusLost:Connect(function()
+    local value = tonumber(valueBox.Text)
+
+    if value then
+        value = math.clamp(value, minimumValue, maximumValue)
+
+        setWalkSpeed(value)
+    else
+        valueBox.Text = tostring(currentValue)
+    end
+end)
+
+setWalkSpeed(16)
 
 local dragging = false
 local dragStart
