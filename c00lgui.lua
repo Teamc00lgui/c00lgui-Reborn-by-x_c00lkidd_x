@@ -530,6 +530,124 @@ local ClickTeleportButton = createPlayerButton(
     160
 )
 
+local ForceFieldButton = createPlayerButton(
+    "ForceFieldButton",
+    "ForceField: OFF",
+    8,
+    190
+)
+
+local GodButton = createPlayerButton(
+    "GodButton",
+    "God: OFF",
+    160,
+    190
+)
+
+local forceFieldEnabled = false
+local godEnabled = false
+local godConnection
+
+local function removeForceField()
+    local character = player.Character
+
+    if not character then
+        return
+    end
+
+    local forceField = character:FindFirstChild("c00lForceField")
+
+    if forceField then
+        forceField:Destroy()
+    end
+end
+
+local function stopForceField()
+    forceFieldEnabled = false
+
+    removeForceField()
+
+    ForceFieldButton.Text = "ForceField: OFF"
+    ForceFieldButton.TextColor3 = Color3.fromRGB(255, 0, 0)
+end
+
+local function startForceField()
+    forceFieldEnabled = true
+
+    local character = player.Character
+
+    if character then
+        local forceField = character:FindFirstChild("c00lForceField")
+
+        if not forceField then
+            forceField = Instance.new("ForceField")
+            forceField.Name = "c00lForceField"
+            forceField.Parent = character
+        end
+    end
+
+    ForceFieldButton.Text = "ForceField: ON"
+    ForceFieldButton.TextColor3 = Color3.fromRGB(0, 255, 0)
+end
+
+local function stopGod()
+    godEnabled = false
+
+    if godConnection then
+        godConnection:Disconnect()
+        godConnection = nil
+    end
+
+    GodButton.Text = "God: OFF"
+    GodButton.TextColor3 = Color3.fromRGB(255, 0, 0)
+end
+
+local function startGod()
+    godEnabled = true
+
+    local character = player.Character
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+
+    if not humanoid then
+        GodButton.Text = "God: OFF"
+        GodButton.TextColor3 = Color3.fromRGB(255, 0, 0)
+        godEnabled = false
+        return
+    end
+
+    humanoid.MaxHealth = math.huge
+    humanoid.Health = humanoid.MaxHealth
+
+    godConnection = humanoid.HealthChanged:Connect(function()
+        if not godEnabled then
+            return
+        end
+
+        if humanoid.Health < humanoid.MaxHealth then
+            humanoid.Health = humanoid.MaxHealth
+        end
+    end)
+
+    GodButton.Text = "God: ON"
+    GodButton.TextColor3 = Color3.fromRGB(0, 255, 0)
+end
+
+ForceFieldButton.MouseButton1Click:Connect(function()
+    if forceFieldEnabled then
+        stopForceField()
+    else
+        startForceField()
+    end
+end)
+
+GodButton.MouseButton1Click:Connect(function()
+    if godEnabled then
+        stopGod()
+    else
+        startGod()
+    end
+end)
+
 local clickTeleport = false
 
 local function stopClickTeleport()
@@ -2478,6 +2596,14 @@ player.CharacterAdded:Connect(function(character)
 
     if clickTeleport then
         stopClickTeleport()
+    end
+
+    if forceFieldEnabled then
+        stopForceField()
+    end
+
+    if godEnabled then
+        stopGod()
     end
 
     applyCharacterSettings()
