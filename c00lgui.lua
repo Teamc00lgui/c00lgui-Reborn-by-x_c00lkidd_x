@@ -852,6 +852,7 @@ local flyAttachment
 local flyOrientation
 local flyOrientationAttachment
 local flyConnection
+local flyAnimationConnection
 
 local flyUp = false
 local flyDown = false
@@ -867,6 +868,42 @@ local function setMobileFlyControlsVisible(visible)
     mobileFlyControls.Visible = visible
 end
 
+local function stopAllAnimations(character)
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+
+    if not humanoid then
+        return
+    end
+
+    local animator = humanoid:FindFirstChildOfClass("Animator")
+
+    if animator then
+        for _, track in ipairs(animator:GetPlayingAnimationTracks()) do
+            track:Stop(0)
+        end
+    end
+end
+
+local function disableFlyAnimationStates(humanoid)
+    humanoid:SetStateEnabled(Enum.HumanoidStateType.Running, false)
+    humanoid:SetStateEnabled(Enum.HumanoidStateType.RunningNoPhysics, false)
+    humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping, false)
+    humanoid:SetStateEnabled(Enum.HumanoidStateType.Freefall, false)
+    humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
+    humanoid:SetStateEnabled(Enum.HumanoidStateType.Climbing, false)
+    humanoid:SetStateEnabled(Enum.HumanoidStateType.Swimming, false)
+end
+
+local function enableFlyAnimationStates(humanoid)
+    humanoid:SetStateEnabled(Enum.HumanoidStateType.Running, true)
+    humanoid:SetStateEnabled(Enum.HumanoidStateType.RunningNoPhysics, true)
+    humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping, true)
+    humanoid:SetStateEnabled(Enum.HumanoidStateType.Freefall, true)
+    humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown, true)
+    humanoid:SetStateEnabled(Enum.HumanoidStateType.Climbing, true)
+    humanoid:SetStateEnabled(Enum.HumanoidStateType.Swimming, true)
+end
+
 local function stopFly()
     flying = false
     flyUp = false
@@ -875,6 +912,11 @@ local function stopFly()
     if flyConnection then
         flyConnection:Disconnect()
         flyConnection = nil
+    end
+
+    if flyAnimationConnection then
+        flyAnimationConnection:Disconnect()
+        flyAnimationConnection = nil
     end
 
     if flyVelocity then
@@ -912,6 +954,7 @@ local function stopFly()
 
         if humanoid then
             humanoid.AutoRotate = true
+            enableFlyAnimationStates(humanoid)
         end
     end
 
@@ -1024,6 +1067,8 @@ local function startFly()
 
     if humanoid then
         humanoid.AutoRotate = false
+
+        disableFlyAnimationStates(humanoid)
     end
 
     local animate = character:FindFirstChild("Animate")
@@ -1031,6 +1076,8 @@ local function startFly()
     if animate then
         animate.Disabled = true
     end
+
+    stopAllAnimations(character)
 
     flyAttachment = Instance.new("Attachment")
     flyAttachment.Name = "c00lFlyAttachment"
@@ -1063,6 +1110,18 @@ local function startFly()
     FlyButton.TextColor3 = Color3.fromRGB(0, 255, 0)
 
     setMobileFlyControlsVisible(true)
+
+    flyAnimationConnection = RunService.RenderStepped:Connect(function()
+        if not flying then
+            return
+        end
+
+    local currentCharacter = player.Character
+
+    if currentCharacter then
+        stopAllAnimations(currentCharacter)
+    end
+end)
 
     flyConnection = RunService.RenderStepped:Connect(updateFly)
 end
