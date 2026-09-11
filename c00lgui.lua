@@ -3,7 +3,6 @@ local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
-local GuiService = game:GetService("GuiService")
 local SoundService = game:GetService("SoundService")
 local Lighting = game:GetService("Lighting")
 
@@ -533,8 +532,6 @@ local ClickTeleportButton = createPlayerButton(
 
 local clickTeleport = false
 
-local mouse = player:GetMouse()
-
 local function stopClickTeleport()
     clickTeleport = false
 
@@ -557,17 +554,17 @@ ClickTeleportButton.MouseButton1Click:Connect(function()
     end
 end)
 
-mouse.Button1Down:Connect(function()
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if not clickTeleport then
         return
     end
 
-    local guiObjects = GuiService:GetGuiObjectsAtPosition(
-        mouse.X,
-        mouse.Y
-    )
+    if gameProcessed then
+        return
+    end
 
-    if #guiObjects > 0 then
+    if input.UserInputType ~= Enum.UserInputType.MouseButton1
+        and input.UserInputType ~= Enum.UserInputType.Touch then
         return
     end
 
@@ -583,10 +580,37 @@ mouse.Button1Down:Connect(function()
         return
     end
 
-    local targetPosition = mouse.Hit.Position
+    local camera = workspace.CurrentCamera
+
+    if not camera then
+        return
+    end
+
+    local position = input.Position
+
+    local ray = camera:ScreenPointToRay(
+        position.X,
+        position.Y
+    )
+
+    local raycastParams = RaycastParams.new()
+    raycastParams.FilterType = Enum.RaycastFilterType.Exclude
+    raycastParams.FilterDescendantsInstances = {
+        character
+    }
+
+    local result = workspace:Raycast(
+        ray.Origin,
+        ray.Direction * 1000,
+        raycastParams
+    )
+
+    if not result then
+        return
+    end
 
     root.CFrame = CFrame.new(
-        targetPosition + Vector3.new(0, 3, 0)
+        result.Position + Vector3.new(0, 3, 0)
     )
 end)
 
