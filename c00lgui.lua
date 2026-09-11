@@ -139,7 +139,14 @@ playerPage.Visible = true
 
 playerPage.Parent = pages
 
-local function createSliderControl(name, labelText, yPosition, defaultValue, minimumValue, maximumValue)
+local function createSliderControl(
+    name,
+    labelText,
+    yPosition,
+    defaultValue,
+    minimumValue,
+    maximumValue
+)
     local label = Instance.new("TextLabel")
 
     label.Name = name .. "Label"
@@ -168,7 +175,11 @@ local function createSliderControl(name, labelText, yPosition, defaultValue, min
 
     slider.Parent = playerPage
 
-    local percentage = (defaultValue - minimumValue) / (maximumValue - minimumValue)
+    local percentage = (
+        defaultValue - minimumValue
+    ) / (
+        maximumValue - minimumValue
+    )
 
     local fill = Instance.new("Frame")
 
@@ -530,23 +541,12 @@ local function setGravity(value)
     workspace.Gravity = gravityControl.currentValue
 end
 
-local originalCharacterData = {}
-
-local function cacheCharacter(character)
-    originalCharacterData = {}
-
-    for _, object in ipairs(character:GetDescendants()) do
-        if object:IsA("BasePart") then
-            originalCharacterData[object] = {
-                Size = object.Size
-            }
-        elseif object:IsA("SpecialMesh") then
-            originalCharacterData[object] = {
-                Scale = object.Scale
-            }
-        end
-    end
-end
+local characterScaleValues = {
+    "BodyHeightScale",
+    "BodyWidthScale",
+    "BodyDepthScale",
+    "HeadScale"
+}
 
 local function setCharacterSize(value)
     setControlValue(characterSizeControl, value)
@@ -557,18 +557,23 @@ local function setCharacterSize(value)
         return
     end
 
-    if next(originalCharacterData) == nil then
-        cacheCharacter(character)
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+
+    if not humanoid then
+        return
     end
 
-    for object, data in pairs(originalCharacterData) do
-        if object and object.Parent then
-            if object:IsA("BasePart") then
-                object.Size = data.Size * characterSizeControl.currentValue
-            elseif object:IsA("SpecialMesh") then
-                object.Scale = data.Scale * characterSizeControl.currentValue
-            end
+    for _, scaleName in ipairs(characterScaleValues) do
+        local scale = humanoid:FindFirstChild(scaleName)
+
+        if not scale then
+            scale = Instance.new("NumberValue")
+            scale.Name = scaleName
+            scale.Value = 1
+            scale.Parent = humanoid
         end
+
+        scale.Value = characterSizeControl.currentValue
     end
 end
 
@@ -650,11 +655,9 @@ local function applyCharacterSettings()
         return
     end
 
-    originalCharacterData = {}
+    character:WaitForChild("Humanoid")
 
     task.wait()
-
-    cacheCharacter(character)
 
     setWalkSpeed(walkSpeedControl.currentValue)
     setJumpPower(jumpPowerControl.currentValue)
@@ -662,8 +665,6 @@ local function applyCharacterSettings()
 end
 
 player.CharacterAdded:Connect(function(character)
-    originalCharacterData = {}
-
     character:WaitForChild("Humanoid")
 
     task.wait(0.1)
@@ -676,10 +677,8 @@ setJumpPower(50)
 setGravity(196.2)
 
 if player.Character then
-    cacheCharacter(player.Character)
+    setCharacterSize(1)
 end
-
-setCharacterSize(1)
 
 local dragging = false
 local dragStart
