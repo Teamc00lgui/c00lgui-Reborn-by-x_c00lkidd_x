@@ -90,24 +90,6 @@ tabBar.BorderSizePixel = 0
 
 tabBar.Parent = content
 
-local playerTab = Instance.new("TextButton")
-
-playerTab.Name = "PlayerTab"
-playerTab.Size = UDim2.fromOffset(80, 25)
-playerTab.Position = UDim2.fromOffset(0, 0)
-
-playerTab.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
-
-playerTab.BorderSizePixel = 0
-
-playerTab.Text = "PLAYER"
-playerTab.TextColor3 = Color3.fromRGB(255, 255, 255)
-
-playerTab.Font = Enum.Font.SourceSansBold
-playerTab.TextSize = 14
-
-playerTab.Parent = tabBar
-
 local pages = Instance.new("Frame")
 
 pages.Name = "Pages"
@@ -135,9 +117,136 @@ playerPage.ScrollingDirection = Enum.ScrollingDirection.Y
 playerPage.CanvasSize = UDim2.fromOffset(0, 190)
 
 playerPage.Active = true
-playerPage.Visible = true
+playerPage.Visible = false
 
 playerPage.Parent = pages
+
+local visualsPage = Instance.new("ScrollingFrame")
+
+visualsPage.Name = "VisualsPage"
+visualsPage.Size = UDim2.fromScale(1, 1)
+visualsPage.Position = UDim2.fromOffset(0, 0)
+
+visualsPage.BackgroundTransparency = 1
+visualsPage.BorderSizePixel = 0
+
+visualsPage.ScrollBarThickness = 3
+visualsPage.ScrollBarImageColor3 = Color3.fromRGB(255, 0, 0)
+
+visualsPage.ScrollingDirection = Enum.ScrollingDirection.Y
+visualsPage.CanvasSize = UDim2.fromOffset(0, 190)
+
+visualsPage.Active = true
+visualsPage.Visible = false
+
+visualsPage.Parent = pages
+
+local serverPage = Instance.new("ScrollingFrame")
+
+serverPage.Name = "ServerPage"
+serverPage.Size = UDim2.fromScale(1, 1)
+serverPage.Position = UDim2.fromOffset(0, 0)
+
+serverPage.BackgroundTransparency = 1
+serverPage.BorderSizePixel = 0
+
+serverPage.ScrollBarThickness = 3
+serverPage.ScrollBarImageColor3 = Color3.fromRGB(255, 0, 0)
+
+serverPage.ScrollingDirection = Enum.ScrollingDirection.Y
+serverPage.CanvasSize = UDim2.fromOffset(0, 190)
+
+serverPage.Active = true
+serverPage.Visible = false
+
+serverPage.Parent = pages
+
+local pageButtons = {}
+local pageFrames = {}
+
+local function createPageTab(name, text, position)
+    local button = Instance.new("TextButton")
+
+    button.Name = name .. "Tab"
+    button.Size = UDim2.fromOffset(80, 25)
+    button.Position = UDim2.fromOffset(position, 0)
+
+    button.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+
+    button.BorderSizePixel = 0
+
+    button.Text = text
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+    button.Font = Enum.Font.SourceSansBold
+    button.TextSize = 14
+
+    button.Parent = tabBar
+
+    pageButtons[name] = button
+
+    return button
+end
+
+local playerTab = createPageTab(
+    "Player",
+    "PLAYER",
+    0
+)
+
+local visualsTab = createPageTab(
+    "Visuals",
+    "VISUALS",
+    80
+)
+
+local serverTab = createPageTab(
+    "Server",
+    "SERVER",
+    160
+)
+
+pageFrames.Player = playerPage
+pageFrames.Visuals = visualsPage
+pageFrames.Server = serverPage
+
+local selectedPage = nil
+
+local function selectPage(pageName)
+    local page = pageFrames[pageName]
+
+    if not page then
+        return
+    end
+
+    for name, pageFrame in pairs(pageFrames) do
+        pageFrame.Visible = name == pageName
+    end
+
+    for name, button in pairs(pageButtons) do
+        if name == pageName then
+            button.BackgroundColor3 = Color3.fromRGB(22, 0, 0)
+            button.TextColor3 = Color3.fromRGB(255, 0, 0)
+        else
+            button.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+            button.TextColor3 = Color3.fromRGB(255, 255, 255)
+        end
+    end
+
+    selectedPage = pageName
+end
+
+playerTab.MouseButton1Click:Connect(function()
+    selectPage("Player")
+end)
+
+visualsTab.MouseButton1Click:Connect(function()
+    selectPage("Visuals")
+end)
+
+serverTab.MouseButton1Click:Connect(function()
+    selectPage("Server")
+end)
 
 local function createSliderControl(
     name,
@@ -657,6 +766,8 @@ setGravity(196.2)
 if player.Character then
     setCharacterSize(1)
 end
+
+selectPage("Player")
 
 local dragging = false
 local dragStart
