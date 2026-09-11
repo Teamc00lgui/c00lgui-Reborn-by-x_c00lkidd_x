@@ -38,7 +38,7 @@ frame.Name = "MainFrame"
 frame.Size = UDim2.fromOffset(400, 250)
 frame.Position = UDim2.fromOffset(0, 0)
 
-frame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 
 frame.BorderSizePixel = 2
 frame.BorderColor3 = Color3.fromRGB(255, 0, 0)
@@ -73,7 +73,7 @@ toggleButton.Name = "ToggleButton"
 toggleButton.Size = UDim2.fromOffset(400, 20)
 toggleButton.Position = UDim2.fromOffset(0, 250)
 
-toggleButton.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+toggleButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 
 toggleButton.BorderSizePixel = 2
 toggleButton.BorderColor3 = Color3.fromRGB(255, 0, 0)
@@ -100,37 +100,47 @@ local dragStart
 local startPosition
 local dragInput
 
-title.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = true
+local function updateDrag(input)
+    local delta = input.Position - dragStart
 
+    local newPosition = UDim2.new(
+        startPosition.X.Scale,
+        startPosition.X.Offset + delta.X,
+        startPosition.Y.Scale,
+        startPosition.Y.Offset + delta.Y
+    )
+
+    container.Position = newPosition
+end
+
+title.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1
+        or input.UserInputType == Enum.UserInputType.Touch then
+
+        dragging = true
         dragStart = input.Position
         startPosition = container.Position
+        dragInput = input
+
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+                dragInput = nil
+            end
+        end)
     end
 end)
 
 title.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement then
+    if input.UserInputType == Enum.UserInputType.MouseMovement
+        or input.UserInputType == Enum.UserInputType.Touch then
+
         dragInput = input
     end
 end)
 
 UserInputService.InputChanged:Connect(function(input)
-    if dragging and input == dragInput then
-        local delta = input.Position - dragStart
-
-        container.Position = UDim2.new(
-            startPosition.X.Scale,
-            startPosition.X.Offset + delta.X,
-            startPosition.Y.Scale,
-            startPosition.Y.Offset + delta.Y
-        )
-    end
-end)
-
-UserInputService.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragging = false
-        dragInput = nil
+    if input == dragInput and dragging then
+        updateDrag(input)
     end
 end)
