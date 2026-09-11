@@ -406,10 +406,20 @@ toggleButton.MouseButton1Click:Connect(function()
 
         frameTween:Play()
         buttonTween:Play()
-        playContentTweens(fadeTweens)
 
         frameTween.Completed:Once(function()
-            animating = false
+            if not guiOpen then
+                animating = false
+                return
+            end
+
+            playContentTweens(fadeTweens)
+
+            task.delay(contentFadeTime, function()
+                if guiOpen then
+                    animating = false
+                end
+            end)
         end)
     end
 end)
