@@ -250,6 +250,85 @@ local contentTweenInfo = TweenInfo.new(
     Enum.EasingDirection.Out
 )
 
+local transparencyObjects = {}
+
+for _, object in ipairs(content:GetDescendants()) do
+    if object:IsA("GuiObject") then
+        local data = {
+            object = object,
+            BackgroundTransparency = object.BackgroundTransparency
+        }
+
+        if object:IsA("TextLabel")
+            or object:IsA("TextButton")
+            or object:IsA("TextBox") then
+
+            data.TextTransparency = object.TextTransparency
+            data.TextStrokeTransparency = object.TextStrokeTransparency
+        end
+
+        if object:IsA("ImageLabel")
+            or object:IsA("ImageButton") then
+
+            data.ImageTransparency = object.ImageTransparency
+        end
+
+        table.insert(transparencyObjects, data)
+    end
+end
+
+local function fadeContent(fadeOut)
+    local completedTween
+
+    for _, data in ipairs(transparencyObjects) do
+        local object = data.object
+
+        if not object or not object.Parent then
+            continue
+        end
+
+        local properties = {}
+
+        if fadeOut then
+            properties.BackgroundTransparency = 1
+
+            if data.TextTransparency ~= nil then
+                properties.TextTransparency = 1
+                properties.TextStrokeTransparency = 1
+            end
+
+            if data.ImageTransparency ~= nil then
+                properties.ImageTransparency = 1
+            end
+        else
+            properties.BackgroundTransparency = data.BackgroundTransparency
+
+            if data.TextTransparency ~= nil then
+                properties.TextTransparency = data.TextTransparency
+                properties.TextStrokeTransparency = data.TextStrokeTransparency
+            end
+
+            if data.ImageTransparency ~= nil then
+                properties.ImageTransparency = data.ImageTransparency
+            end
+        end
+
+        local tween = TweenService:Create(
+            object,
+            contentTweenInfo,
+            properties
+        )
+
+        if not completedTween then
+            completedTween = tween
+        end
+
+        tween:Play()
+    end
+
+    return completedTween
+end
+
 toggleButton.MouseButton1Click:Connect(function()
     if animating then
         return
@@ -261,47 +340,41 @@ toggleButton.MouseButton1Click:Connect(function()
         guiOpen = false
         toggleButton.Text = "Open"
 
-        local contentTween = TweenService:Create(
-            content,
-            contentTweenInfo,
-            {
-                GroupTransparency = 1
-            }
-        )
+        local fadeTween = fadeContent(true)
 
-        contentTween:Play()
+        if fadeTween then
+            fadeTween.Completed:Once(function()
+                if guiOpen then
+                    animating = false
+                    return
+                end
 
-        contentTween.Completed:Once(function()
-            if guiOpen then
-                animating = false
-                return
-            end
+                content.Visible = false
 
-            content.Visible = false
+                local frameTween = TweenService:Create(
+                    frame,
+                    tweenInfo,
+                    {
+                        Size = UDim2.fromOffset(400, 35)
+                    }
+                )
 
-            local frameTween = TweenService:Create(
-                frame,
-                tweenInfo,
-                {
-                    Size = UDim2.fromOffset(400, 35)
-                }
-            )
+                local buttonTween = TweenService:Create(
+                    toggleButton,
+                    tweenInfo,
+                    {
+                        Position = UDim2.fromOffset(0, 35)
+                    }
+                )
 
-            local buttonTween = TweenService:Create(
-                toggleButton,
-                tweenInfo,
-                {
-                    Position = UDim2.fromOffset(0, 35)
-                }
-            )
+                frameTween:Play()
+                buttonTween:Play()
 
-            frameTween:Play()
-            buttonTween:Play()
-
-            frameTween.Completed:Once(function()
-                animating = false
+                frameTween.Completed:Once(function()
+                    animating = false
+                end)
             end)
-        end)
+        end
 
     else
         guiOpen = true
@@ -312,8 +385,6 @@ toggleButton.MouseButton1Click:Connect(function()
 
         frame.Size = UDim2.fromOffset(400, 35)
         toggleButton.Position = UDim2.fromOffset(0, 35)
-
-        content.GroupTransparency = 1
 
         local frameTween = TweenService:Create(
             frame,
@@ -331,17 +402,14 @@ toggleButton.MouseButton1Click:Connect(function()
             }
         )
 
-        local contentTween = TweenService:Create(
-            content,
-            contentTweenInfo,
-            {
-                GroupTransparency = 0
-            }
-        )
+        local fadeTween = fadeContent(false)
 
         frameTween:Play()
         buttonTween:Play()
-        contentTween:Play()
+
+        if fadeTween then
+            fadeTween:Play()
+        end
 
         frameTween.Completed:Once(function()
             animating = false
