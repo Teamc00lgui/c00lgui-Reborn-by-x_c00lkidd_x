@@ -976,7 +976,7 @@ musicTitle.Position = UDim2.fromOffset(8, 8)
 musicTitle.BackgroundTransparency = 1
 
 musicTitle.Text = "MUSIC"
-musicTitle.TextColor3 = Color3.fromRGB(255, 0, 0)
+musicTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
 
 musicTitle.Font = Enum.Font.SourceSansBold
 musicTitle.TextSize = 16
@@ -1058,7 +1058,7 @@ presetTitle.Position = UDim2.fromOffset(8, 75)
 presetTitle.BackgroundTransparency = 1
 
 presetTitle.Text = "PRESET MUSIC"
-presetTitle.TextColor3 = Color3.fromRGB(255, 0, 0)
+presetTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
 
 presetTitle.Font = Enum.Font.SourceSansBold
 presetTitle.TextSize = 14
