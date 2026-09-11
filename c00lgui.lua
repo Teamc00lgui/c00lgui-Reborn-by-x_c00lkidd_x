@@ -79,17 +79,6 @@ content.GroupTransparency = 0
 
 content.Parent = frame
 
-local tabBar = Instance.new("Frame")
-
-tabBar.Name = "TabBar"
-tabBar.Size = UDim2.new(1, 0, 0, 25)
-tabBar.Position = UDim2.fromOffset(0, 0)
-
-tabBar.BackgroundTransparency = 1
-tabBar.BorderSizePixel = 0
-
-tabBar.Parent = content
-
 local pages = Instance.new("Frame")
 
 pages.Name = "Pages"
@@ -99,7 +88,44 @@ pages.Position = UDim2.fromOffset(0, 25)
 pages.BackgroundTransparency = 1
 pages.BorderSizePixel = 0
 
+pages.ZIndex = 1
+
 pages.Parent = content
+
+local pageSelector = Instance.new("TextButton")
+
+pageSelector.Name = "PageSelector"
+pageSelector.Size = UDim2.fromOffset(140, 25)
+pageSelector.Position = UDim2.fromOffset(6, 0)
+
+pageSelector.BackgroundTransparency = 1
+pageSelector.BorderSizePixel = 0
+
+pageSelector.Text = "PLAYER  ▼"
+pageSelector.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+pageSelector.Font = Enum.Font.SourceSansBold
+pageSelector.TextSize = 14
+pageSelector.TextXAlignment = Enum.TextXAlignment.Left
+
+pageSelector.AutoButtonColor = false
+pageSelector.ZIndex = 10
+
+pageSelector.Parent = content
+
+local pageDropdown = Instance.new("Frame")
+
+pageDropdown.Name = "PageDropdown"
+pageDropdown.Size = UDim2.fromOffset(140, 75)
+pageDropdown.Position = UDim2.fromOffset(6, 25)
+
+pageDropdown.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+pageDropdown.BorderSizePixel = 0
+
+pageDropdown.Visible = false
+pageDropdown.ZIndex = 20
+
+pageDropdown.Parent = content
 
 local playerPage = Instance.new("ScrollingFrame")
 
@@ -118,6 +144,8 @@ playerPage.CanvasSize = UDim2.fromOffset(0, 190)
 
 playerPage.Active = true
 playerPage.Visible = false
+
+playerPage.ZIndex = 1
 
 playerPage.Parent = pages
 
@@ -139,6 +167,8 @@ visualsPage.CanvasSize = UDim2.fromOffset(0, 190)
 visualsPage.Active = true
 visualsPage.Visible = false
 
+visualsPage.ZIndex = 1
+
 visualsPage.Parent = pages
 
 local serverPage = Instance.new("ScrollingFrame")
@@ -159,58 +189,74 @@ serverPage.CanvasSize = UDim2.fromOffset(0, 190)
 serverPage.Active = true
 serverPage.Visible = false
 
+serverPage.ZIndex = 1
+
 serverPage.Parent = pages
 
-local pageButtons = {}
 local pageFrames = {}
-
-local function createPageTab(name, text, position)
-    local button = Instance.new("TextButton")
-
-    button.Name = name .. "Tab"
-    button.Size = UDim2.fromOffset(80, 25)
-    button.Position = UDim2.fromOffset(position, 0)
-
-    button.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
-
-    button.BorderSizePixel = 0
-
-    button.Text = text
-    button.TextColor3 = Color3.fromRGB(255, 255, 255)
-
-    button.Font = Enum.Font.SourceSansBold
-    button.TextSize = 14
-
-    button.Parent = tabBar
-
-    pageButtons[name] = button
-
-    return button
-end
-
-local playerTab = createPageTab(
-    "Player",
-    "PLAYER",
-    0
-)
-
-local visualsTab = createPageTab(
-    "Visuals",
-    "VISUALS",
-    80
-)
-
-local serverTab = createPageTab(
-    "Server",
-    "SERVER",
-    160
-)
 
 pageFrames.Player = playerPage
 pageFrames.Visuals = visualsPage
 pageFrames.Server = serverPage
 
+local function createPageOption(name, text, position)
+    local option = Instance.new("TextButton")
+
+    option.Name = name .. "Option"
+    option.Size = UDim2.new(1, 0, 0, 25)
+    option.Position = UDim2.fromOffset(0, position)
+
+    option.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+    option.BackgroundTransparency = 0
+
+    option.BorderSizePixel = 0
+
+    option.Text = text
+    option.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+    option.Font = Enum.Font.SourceSansBold
+    option.TextSize = 14
+    option.TextXAlignment = Enum.TextXAlignment.Left
+
+    option.AutoButtonColor = false
+    option.ZIndex = 21
+
+    option.Parent = pageDropdown
+
+    return option
+end
+
+local playerOption = createPageOption(
+    "Player",
+    "PLAYER",
+    0
+)
+
+local visualsOption = createPageOption(
+    "Visuals",
+    "VISUALS",
+    25
+)
+
+local serverOption = createPageOption(
+    "Server",
+    "SERVER",
+    50
+)
+
 local selectedPage = nil
+
+local function setSelectorText(pageName, opened)
+    local arrow = opened and "▲" or "▼"
+
+    if pageName == "Player" then
+        pageSelector.Text = "PLAYER  " .. arrow
+    elseif pageName == "Visuals" then
+        pageSelector.Text = "VISUALS  " .. arrow
+    elseif pageName == "Server" then
+        pageSelector.Text = "SERVER  " .. arrow
+    end
+end
 
 local function selectPage(pageName)
     local page = pageFrames[pageName]
@@ -223,30 +269,59 @@ local function selectPage(pageName)
         pageFrame.Visible = name == pageName
     end
 
-    for name, button in pairs(pageButtons) do
-        if name == pageName then
-            button.BackgroundColor3 = Color3.fromRGB(22, 0, 0)
-            button.TextColor3 = Color3.fromRGB(255, 0, 0)
-        else
-            button.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
-            button.TextColor3 = Color3.fromRGB(255, 255, 255)
-        end
-    end
-
     selectedPage = pageName
+
+    pageDropdown.Visible = false
+
+    setSelectorText(pageName, false)
 end
 
-playerTab.MouseButton1Click:Connect(function()
+pageSelector.MouseButton1Click:Connect(function()
+    pageDropdown.Visible = not pageDropdown.Visible
+
+    setSelectorText(
+        selectedPage,
+        pageDropdown.Visible
+    )
+end)
+
+playerOption.MouseButton1Click:Connect(function()
     selectPage("Player")
 end)
 
-visualsTab.MouseButton1Click:Connect(function()
+visualsOption.MouseButton1Click:Connect(function()
     selectPage("Visuals")
 end)
 
-serverTab.MouseButton1Click:Connect(function()
+serverOption.MouseButton1Click:Connect(function()
     selectPage("Server")
 end)
+
+pageSelector.MouseEnter:Connect(function()
+    pageSelector.TextColor3 = Color3.fromRGB(255, 0, 0)
+end)
+
+pageSelector.MouseLeave:Connect(function()
+    pageSelector.TextColor3 = Color3.fromRGB(255, 255, 255)
+end)
+
+local pageOptions = {
+    playerOption,
+    visualsOption,
+    serverOption
+}
+
+for _, option in ipairs(pageOptions) do
+    option.MouseEnter:Connect(function()
+        option.BackgroundColor3 = Color3.fromRGB(22, 0, 0)
+        option.TextColor3 = Color3.fromRGB(255, 0, 0)
+    end)
+
+    option.MouseLeave:Connect(function()
+        option.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+        option.TextColor3 = Color3.fromRGB(255, 255, 255)
+    end)
+end
 
 local function createSliderControl(
     name,
@@ -510,6 +585,12 @@ toggleButton.MouseButton1Click:Connect(function()
     if guiOpen then
         guiOpen = false
         toggleButton.Text = "Open"
+
+        pageDropdown.Visible = false
+
+        if selectedPage then
+            setSelectorText(selectedPage, false)
+        end
 
         local fadeTweens = createContentTween(true)
 
