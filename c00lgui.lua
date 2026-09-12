@@ -172,14 +172,14 @@ end
 
 local playerPage = createPage("Player")
 local visualsPage = createPage("Visuals")
-local serverPage = createPage("Server")
+local trollPage = createPage("Troll")
 local musicPage = createPage("Music")
 local executorPage = createPage("Executor")
 
 local pageFrames = {
     Player = playerPage,
     Visuals = visualsPage,
-    Server = serverPage,
+    Troll = trollPage,
     Music = musicPage,
     Executor = executorPage
 }
@@ -223,9 +223,9 @@ local visualsOption = createPageOption(
     25
 )
 
-local serverOption = createPageOption(
-    "Server",
-    "SERVER",
+local trollOption = createPageOption(
+    "Troll",
+    "TROLL",
     50
 )
 
@@ -244,7 +244,7 @@ local executorOption = createPageOption(
 local pageOptions = {
     playerOption,
     visualsOption,
-    serverOption,
+    trollOption,
     musicOption,
     executorOption
 }
@@ -275,8 +275,8 @@ local function setSelectorText(pageName, opened)
         pageSelector.Text = "PLAYER  " .. arrow
     elseif pageName == "Visuals" then
         pageSelector.Text = "VISUALS  " .. arrow
-    elseif pageName == "Server" then
-        pageSelector.Text = "SERVER  " .. arrow
+    elseif pageName == "Troll" then
+        pageSelector.Text = "TROLL  " .. arrow
     elseif pageName == "Music" then
         pageSelector.Text = "MUSIC  " .. arrow
     elseif pageName == "Executor" then
@@ -319,8 +319,8 @@ visualsOption.MouseButton1Click:Connect(function()
     selectPage("Visuals")
 end)
 
-serverOption.MouseButton1Click:Connect(function()
-    selectPage("Server")
+trollOption.MouseButton1Click:Connect(function()
+    selectPage("Troll")
 end)
 
 musicOption.MouseButton1Click:Connect(function()
@@ -2272,7 +2272,7 @@ end
 
 updateCanvasSize(playerPage)
 updateCanvasSize(visualsPage)
-updateCanvasSize(serverPage)
+updateCanvasSize(trollPage)
 updateCanvasSize(musicPage)
 updateCanvasSize(executorPage)
 
