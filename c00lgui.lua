@@ -1047,11 +1047,11 @@ local function updateFly()
 
     flyVelocity.VectorVelocity = direction
 
-    if flyOrientation and lookDirection.Magnitude > 0 then
-        flyOrientation.CFrame = CFrame.lookAt(
-            root.Position,
-            root.Position + lookDirection.Unit
-        )
+if flyOrientation and not mobileDevice and lookDirection.Magnitude > 0 then
+    flyOrientation.CFrame = CFrame.lookAt(
+        root.Position,
+        root.Position + lookDirection.Unit
+    )
     end
 end
 
@@ -1074,11 +1074,11 @@ local function startFly()
 
     local humanoid = character:FindFirstChildOfClass("Humanoid")
 
-    if humanoid then
-        humanoid.AutoRotate = false
+if humanoid then
+    humanoid.AutoRotate = mobileDevice
 
-        disableFlyAnimationStates(humanoid)
-    end
+    disableFlyAnimationStates(humanoid)
+end
 
     local animate = character:FindFirstChild("Animate")
 
