@@ -990,53 +990,32 @@ local function updateFly()
     end
 
     local direction = Vector3.zero
-    local lookDirection = camera.CFrame.LookVector
-    local rightDirection = camera.CFrame.RightVector
 
-if mobileDevice then
-    local PlayerModule = player:WaitForChild("PlayerScripts"):WaitForChild("PlayerModule")
-    local controls = require(PlayerModule):GetControls()
-    local moveVector = controls:GetMoveVector()
+    if mobileDevice then
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
 
-    local cameraLook = Vector3.new(
-        lookDirection.X,
-        0,
-        lookDirection.Z
-    )
+        if humanoid then
+            local moveDirection = humanoid.MoveDirection
 
-    local cameraRight = Vector3.new(
-        rightDirection.X,
-        0,
-        rightDirection.Z
-    )
-
-    if cameraLook.Magnitude > 0 then
-        cameraLook = cameraLook.Unit
-    end
-
-    if cameraRight.Magnitude > 0 then
-        cameraRight = cameraRight.Unit
-    end
-
-    direction =
-        cameraRight * moveVector.X
-        - cameraLook * moveVector.Z
-end
+            if moveDirection.Magnitude > 0 then
+                direction += camera.CFrame.LookVector * moveDirection.Magnitude
+            end
+        end
     else
         if UserInputService:IsKeyDown(Enum.KeyCode.W) then
-            direction += lookDirection
+            direction += camera.CFrame.LookVector
         end
 
         if UserInputService:IsKeyDown(Enum.KeyCode.S) then
-            direction -= lookDirection
+            direction -= camera.CFrame.LookVector
         end
 
         if UserInputService:IsKeyDown(Enum.KeyCode.A) then
-            direction -= rightDirection
+            direction -= camera.CFrame.RightVector
         end
 
         if UserInputService:IsKeyDown(Enum.KeyCode.D) then
-            direction += rightDirection
+            direction += camera.CFrame.RightVector
         end
 
         if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
@@ -1045,10 +1024,6 @@ end
 
         if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then
             direction -= Vector3.yAxis
-        end
-
-        if direction.Magnitude > 0 then
-            direction = direction.Unit * 50
         end
     end
 
@@ -1066,11 +1041,15 @@ end
 
     flyVelocity.VectorVelocity = direction
 
-if flyOrientation and not mobileDevice and lookDirection.Magnitude > 0 then
-    flyOrientation.CFrame = CFrame.lookAt(
-        root.Position,
-        root.Position + lookDirection.Unit
-    )
+    if flyOrientation then
+        local lookDirection = camera.CFrame.LookVector
+
+        if lookDirection.Magnitude > 0 then
+            flyOrientation.CFrame = CFrame.lookAt(
+                root.Position,
+                root.Position + lookDirection.Unit
+            )
+        end
     end
 end
 
@@ -1093,11 +1072,11 @@ local function startFly()
 
     local humanoid = character:FindFirstChildOfClass("Humanoid")
 
-if humanoid then
-    humanoid.AutoRotate = mobileDevice
+    if humanoid then
+        humanoid.AutoRotate = false
 
-    disableFlyAnimationStates(humanoid)
-end
+        disableFlyAnimationStates(humanoid)
+    end
 
     local animate = character:FindFirstChild("Animate")
 
