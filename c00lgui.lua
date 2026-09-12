@@ -997,10 +997,34 @@ local function updateFly()
         local humanoid = character:FindFirstChildOfClass("Humanoid")
 
         if humanoid then
-            direction = humanoid.MoveDirection
+            local moveDirection = humanoid.MoveDirection
 
-            if direction.Magnitude > 0 then
-                direction = direction.Unit * 50
+            if moveDirection.Magnitude > 0 then
+                local flatLook = Vector3.new(
+                    lookDirection.X,
+                    0,
+                    lookDirection.Z
+                )
+
+                local flatRight = Vector3.new(
+                    rightDirection.X,
+                    0,
+                    rightDirection.Z
+                )
+
+                if flatLook.Magnitude > 0 then
+                    flatLook = flatLook.Unit
+                end
+
+                if flatRight.Magnitude > 0 then
+                    flatRight = flatRight.Unit
+                end
+
+                local forwardAmount = moveDirection:Dot(flatLook)
+                local rightAmount = moveDirection:Dot(flatRight)
+
+                direction += lookDirection * forwardAmount
+                direction += rightDirection * rightAmount
             end
         end
     else
@@ -1027,10 +1051,6 @@ local function updateFly()
         if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then
             direction -= Vector3.yAxis
         end
-
-        if direction.Magnitude > 0 then
-            direction = direction.Unit * 50
-        end
     end
 
     if flyUp then
@@ -1047,11 +1067,13 @@ local function updateFly()
 
     flyVelocity.VectorVelocity = direction
 
-if flyOrientation and not mobileDevice and lookDirection.Magnitude > 0 then
-    flyOrientation.CFrame = CFrame.lookAt(
-        root.Position,
-        root.Position + lookDirection.Unit
-    )
+    if flyOrientation then
+        if lookDirection.Magnitude > 0 then
+            flyOrientation.CFrame = CFrame.lookAt(
+                root.Position,
+                root.Position + lookDirection.Unit
+            )
+        end
     end
 end
 
@@ -1074,11 +1096,11 @@ local function startFly()
 
     local humanoid = character:FindFirstChildOfClass("Humanoid")
 
-if humanoid then
-    humanoid.AutoRotate = mobileDevice
+    if humanoid then
+        humanoid.AutoRotate = false
 
-    disableFlyAnimationStates(humanoid)
-end
+        disableFlyAnimationStates(humanoid)
+    end
 
     local animate = character:FindFirstChild("Animate")
 
