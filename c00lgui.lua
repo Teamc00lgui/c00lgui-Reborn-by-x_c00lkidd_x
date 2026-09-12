@@ -2492,6 +2492,41 @@ clearButton.MouseButton1Click:Connect(function()
     setExecutorOutput("Ready.")
 end)
 
+local infiniteYieldButton = Instance.new("TextButton")
+
+infiniteYieldButton.Name = "InfiniteYieldButton"
+infiniteYieldButton.Size = UDim2.fromOffset(377, 25)
+infiniteYieldButton.Position = UDim2.fromOffset(8, 306)
+
+infiniteYieldButton.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+
+infiniteYieldButton.BorderSizePixel = 1
+infiniteYieldButton.BorderColor3 = Color3.fromRGB(120, 0, 0)
+
+infiniteYieldButton.Text = "LOAD INFINITE YIELD"
+infiniteYieldButton.TextColor3 = Color3.fromRGB(255, 0, 0)
+
+infiniteYieldButton.Font = Enum.Font.SourceSans
+infiniteYieldButton.TextSize = 14
+
+infiniteYieldButton.AutoButtonColor = false
+
+infiniteYieldButton.Parent = executorPage
+
+infiniteYieldButton.MouseEnter:Connect(function()
+    infiniteYieldButton.BackgroundColor3 = Color3.fromRGB(22, 0, 0)
+    infiniteYieldButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+end)
+
+infiniteYieldButton.MouseLeave:Connect(function()
+    infiniteYieldButton.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+    infiniteYieldButton.TextColor3 = Color3.fromRGB(255, 0, 0)
+end)
+
+infiniteYieldButton.MouseButton1Click:Connect(function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+end)
+
 local function updateCanvasSize(scrollingFrame)
     local contentHeight = 0
 
