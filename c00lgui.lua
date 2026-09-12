@@ -1545,6 +1545,243 @@ removeSkyButton.MouseButton1Click:Connect(function()
     removeSky()
 end)
 
+local TrollTitle = Instance.new("TextLabel")
+
+TrollTitle.Name = "TrollTitle"
+TrollTitle.Size = UDim2.fromOffset(377, 25)
+TrollTitle.Position = UDim2.fromOffset(8, 8)
+
+TrollTitle.BackgroundTransparency = 1
+TrollTitle.BorderSizePixel = 0
+
+TrollTitle.Text = "TROLL"
+TrollTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+TrollTitle.Font = Enum.Font.SourceSansBold
+TrollTitle.TextSize = 16
+TrollTitle.TextXAlignment = Enum.TextXAlignment.Left
+
+TrollTitle.Parent = trollPage
+
+local SpinButton = Instance.new("TextButton")
+
+SpinButton.Name = "SpinButton"
+SpinButton.Size = UDim2.fromOffset(377, 25)
+SpinButton.Position = UDim2.fromOffset(8, 38)
+
+SpinButton.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+
+SpinButton.BorderSizePixel = 1
+SpinButton.BorderColor3 = Color3.fromRGB(120, 0, 0)
+
+SpinButton.Text = "Spin: OFF"
+SpinButton.TextColor3 = Color3.fromRGB(255, 0, 0)
+
+SpinButton.Font = Enum.Font.SourceSans
+SpinButton.TextSize = 14
+
+SpinButton.AutoButtonColor = false
+
+SpinButton.Parent = trollPage
+
+local TeleportTitle = Instance.new("TextLabel")
+
+TeleportTitle.Name = "TeleportTitle"
+TeleportTitle.Size = UDim2.fromOffset(377, 25)
+TeleportTitle.Position = UDim2.fromOffset(8, 73)
+
+TeleportTitle.BackgroundTransparency = 1
+TeleportTitle.BorderSizePixel = 0
+
+TeleportTitle.Text = "TELEPORT"
+TeleportTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+TeleportTitle.Font = Enum.Font.SourceSansBold
+TeleportTitle.TextSize = 14
+TeleportTitle.TextXAlignment = Enum.TextXAlignment.Left
+
+TeleportTitle.Parent = trollPage
+
+local teleportList = Instance.new("Frame")
+
+teleportList.Name = "TeleportList"
+teleportList.Size = UDim2.fromOffset(377, 0)
+teleportList.Position = UDim2.fromOffset(8, 98)
+
+teleportList.BackgroundTransparency = 1
+teleportList.BorderSizePixel = 0
+
+teleportList.Parent = trollPage
+
+local spinning = false
+local spinSpeed = 1000
+local spinConnection
+
+local function stopSpin()
+    spinning = false
+
+    if spinConnection then
+        spinConnection:Disconnect()
+        spinConnection = nil
+    end
+
+    local character = player.Character
+
+    if character then
+        local root = character:FindFirstChild("HumanoidRootPart")
+
+        if root then
+            root.AssemblyAngularVelocity = Vector3.zero
+        end
+    end
+
+    if flying and flyOrientation then
+        flyOrientation.MaxTorque = math.huge
+    end
+
+    SpinButton.Text = "Spin: OFF"
+    SpinButton.TextColor3 = Color3.fromRGB(255, 0, 0)
+end
+
+local function startSpin()
+    local character = player.Character
+
+    if not character then
+        return
+    end
+
+    local root = character:FindFirstChild("HumanoidRootPart")
+
+    if not root then
+        return
+    end
+
+    spinning = true
+
+    if flying and flyOrientation then
+        flyOrientation.MaxTorque = 0
+    end
+
+    SpinButton.Text = "Spin: ON"
+    SpinButton.TextColor3 = Color3.fromRGB(0, 255, 0)
+
+    spinConnection = RunService.Heartbeat:Connect(function()
+        if not spinning then
+            return
+        end
+
+        local currentCharacter = player.Character
+
+        if not currentCharacter then
+            return
+        end
+
+        local currentRoot = currentCharacter:FindFirstChild("HumanoidRootPart")
+
+        if not currentRoot then
+            return
+        end
+
+        currentRoot.AssemblyAngularVelocity = Vector3.new(
+            0,
+            spinSpeed,
+            0
+        )
+    end)
+end
+
+SpinButton.MouseButton1Click:Connect(function()
+    if spinning then
+        stopSpin()
+    else
+        startSpin()
+    end
+end)
+
+local function teleportToPlayer(targetPlayer)
+    if not targetPlayer or targetPlayer == player then
+        return
+    end
+
+    local character = player.Character
+    local targetCharacter = targetPlayer.Character
+
+    if not character or not targetCharacter then
+        return
+    end
+
+    local root = character:FindFirstChild("HumanoidRootPart")
+    local targetRoot = targetCharacter:FindFirstChild("HumanoidRootPart")
+
+    if not root or not targetRoot then
+        return
+    end
+
+    root.CFrame = targetRoot.CFrame + Vector3.new(0, 3, 0)
+end
+
+local function refreshTeleportList()
+    for _, object in ipairs(teleportList:GetChildren()) do
+        object:Destroy()
+    end
+
+    local yPosition = 0
+
+    for _, targetPlayer in ipairs(Players:GetPlayers()) do
+        if targetPlayer ~= player then
+            local button = Instance.new("TextButton")
+
+            button.Name = targetPlayer.Name
+            button.Size = UDim2.fromOffset(377, 25)
+            button.Position = UDim2.fromOffset(0, yPosition)
+
+            button.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+
+            button.BorderSizePixel = 1
+            button.BorderColor3 = Color3.fromRGB(120, 0, 0)
+
+            button.Text = targetPlayer.DisplayName .. "  @" .. targetPlayer.Name
+            button.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+            button.Font = Enum.Font.SourceSans
+            button.TextSize = 14
+            button.TextXAlignment = Enum.TextXAlignment.Left
+
+            button.AutoButtonColor = false
+
+            button.Parent = teleportList
+
+            button.MouseEnter:Connect(function()
+                button.BackgroundColor3 = Color3.fromRGB(22, 0, 0)
+                button.TextColor3 = Color3.fromRGB(255, 0, 0)
+            end)
+
+            button.MouseLeave:Connect(function()
+                button.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+                button.TextColor3 = Color3.fromRGB(255, 255, 255)
+            end)
+
+            button.MouseButton1Click:Connect(function()
+                teleportToPlayer(targetPlayer)
+            end)
+
+            yPosition += 30
+        end
+    end
+
+    teleportList.Size = UDim2.fromOffset(377, yPosition)
+end
+
+Players.PlayerAdded:Connect(function()
+    refreshTeleportList()
+end)
+
+Players.PlayerRemoving:Connect(function()
+    refreshTeleportList()
+end)
+
+refreshTeleportList()
+
 local musicSound = SoundService:FindFirstChild("c00lguiMusic")
 
 if not musicSound then
