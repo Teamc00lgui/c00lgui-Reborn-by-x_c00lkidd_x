@@ -1769,7 +1769,14 @@ local function refreshTeleportList()
         end
     end
 
-    teleportList.Size = UDim2.fromOffset(377, yPosition)
+teleportList.Size = UDim2.fromOffset(377, yPosition)
+
+trollPage.CanvasSize = UDim2.fromOffset(
+    0,
+    teleportList.Position.Y.Offset
+    + teleportList.Size.Y.Offset
+    + 10
+)
 end
 
 Players.PlayerAdded:Connect(function()
