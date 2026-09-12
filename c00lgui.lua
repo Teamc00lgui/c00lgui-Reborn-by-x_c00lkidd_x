@@ -995,7 +995,11 @@ local function updateFly()
         local humanoid = character:FindFirstChildOfClass("Humanoid")
 
         if humanoid then
-            direction += humanoid.MoveDirection
+            local moveDirection = humanoid.MoveDirection
+
+            if moveDirection.Magnitude > 0 then
+                direction += camera.CFrame.LookVector * moveDirection.Magnitude
+            end
         end
     else
         if UserInputService:IsKeyDown(Enum.KeyCode.W) then
