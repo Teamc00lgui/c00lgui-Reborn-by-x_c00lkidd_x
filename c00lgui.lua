@@ -575,6 +575,63 @@ local RagdollButton = createPlayerButton(
     280
 )
 
+local FallButton = createPlayerButton(
+    "FallButton",
+    "Fall: OFF",
+    160,
+    280
+)
+
+local fallEnabled = false
+
+local function stopFall()
+    fallEnabled = false
+
+    local character = player.Character
+
+    if character then
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
+
+        if humanoid then
+            humanoid.PlatformStand = false
+            humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
+        end
+    end
+
+    FallButton.Text = "Fall: OFF"
+    FallButton.TextColor3 = Color3.fromRGB(255, 0, 0)
+end
+
+local function startFall()
+    local character = player.Character
+
+    if not character then
+        return
+    end
+
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+
+    if not humanoid then
+        return
+    end
+
+    fallEnabled = true
+
+    humanoid.PlatformStand = true
+    humanoid:ChangeState(Enum.HumanoidStateType.Physics)
+
+    FallButton.Text = "Fall: ON"
+    FallButton.TextColor3 = Color3.fromRGB(0, 255, 0)
+end
+
+FallButton.MouseButton1Click:Connect(function()
+    if fallEnabled then
+        stopFall()
+    else
+        startFall()
+    end
+end)
+
 local ragdollEnabled = false
 local ragdollJoints = {}
 
