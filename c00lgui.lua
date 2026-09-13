@@ -568,57 +568,93 @@ local JoystickButton = createPlayerButton(
     250
 )
 
-local PlatformStandButton = createPlayerButton(
-    "PlatformStandButton",
-    "Platform Stand: OFF",
+local RagdollButton = createPlayerButton(
+    "RagdollButton",
+    "Ragdoll: OFF",
     8,
     280
 )
 
-local platformStandEnabled = false
+local ragdollEnabled = false
+local ragdollJoints = {}
 
-local function stopPlatformStand()
-    platformStandEnabled = false
+local function stopRagdoll()
+    ragdollEnabled = false
 
     local character = player.Character
 
     if character then
-        local humanoid = character:FindFirstChildOfClass("Humanoid")
+        for _, jointData in ipairs(ragdollJoints) do
+            if jointData.Motor6D then
+                jointData.Motor6D.Enabled = true
+            end
 
-        if humanoid then
-            humanoid.PlatformStand = false
+            if jointData.Constraint then
+                jointData.Constraint:Destroy()
+            end
+
+            if jointData.Attachment0 then
+                jointData.Attachment0:Destroy()
+            end
+
+            if jointData.Attachment1 then
+                jointData.Attachment1:Destroy()
+            end
         end
     end
 
-    PlatformStandButton.Text = "Platform Stand: OFF"
-    PlatformStandButton.TextColor3 = Color3.fromRGB(255, 0, 0)
+    ragdollJoints = {}
+
+    RagdollButton.Text = "Ragdoll: OFF"
+    RagdollButton.TextColor3 = Color3.fromRGB(255, 0, 0)
 end
 
-local function startPlatformStand()
+local function startRagdoll()
     local character = player.Character
 
     if not character then
         return
     end
 
-    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    ragdollEnabled = true
+    ragdollJoints = {}
 
-    if not humanoid then
-        return
+    for _, object in ipairs(character:GetDescendants()) do
+        if object:IsA("Motor6D") and object.Part0 and object.Part1 then
+            local attachment0 = Instance.new("Attachment")
+            local attachment1 = Instance.new("Attachment")
+
+            attachment0.CFrame = object.C0
+            attachment1.CFrame = object.C1
+
+            attachment0.Parent = object.Part0
+            attachment1.Parent = object.Part1
+
+            local constraint = Instance.new("BallSocketConstraint")
+            constraint.Attachment0 = attachment0
+            constraint.Attachment1 = attachment1
+            constraint.Parent = object.Parent
+
+            object.Enabled = false
+
+            table.insert(ragdollJoints, {
+                Motor6D = object,
+                Constraint = constraint,
+                Attachment0 = attachment0,
+                Attachment1 = attachment1
+            })
+        end
     end
 
-    platformStandEnabled = true
-    humanoid.PlatformStand = true
-
-    PlatformStandButton.Text = "Platform Stand: ON"
-    PlatformStandButton.TextColor3 = Color3.fromRGB(0, 255, 0)
+    RagdollButton.Text = "Ragdoll: ON"
+    RagdollButton.TextColor3 = Color3.fromRGB(0, 255, 0)
 end
 
-PlatformStandButton.MouseButton1Click:Connect(function()
-    if platformStandEnabled then
-        stopPlatformStand()
+RagdollButton.MouseButton1Click:Connect(function()
+    if ragdollEnabled then
+        stopRagdoll()
     else
-        startPlatformStand()
+        startRagdoll()
     end
 end)
 
@@ -3475,8 +3511,8 @@ player.CharacterAdded:Connect(function(character)
         stopGod()
     end
 
-    if platformStandEnabled then
-        stopPlatformStand()
+    if ragdollEnabled then
+        stopRagdoll()
     end
 
     applyCharacterSettings()
