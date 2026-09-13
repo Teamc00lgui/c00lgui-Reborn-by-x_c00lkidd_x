@@ -583,9 +583,15 @@ local FallButton = createPlayerButton(
 )
 
 local fallEnabled = false
+local fallConnection
 
 local function stopFall()
     fallEnabled = false
+
+    if fallConnection then
+        fallConnection:Disconnect()
+        fallConnection = nil
+    end
 
     local character = player.Character
 
@@ -600,18 +606,6 @@ local function stopFall()
 
     FallButton.Text = "Fall: OFF"
     FallButton.TextColor3 = Color3.fromRGB(255, 0, 0)
-end
-
-local function stopFallAnimations(humanoid)
-    local animator = humanoid:FindFirstChildOfClass("Animator")
-
-    if not animator then
-        return
-    end
-
-    for _, track in ipairs(animator:GetPlayingAnimationTracks()) do
-        track:Stop(0)
-    end
 end
 
 local function startFall()
@@ -629,10 +623,36 @@ local function startFall()
 
     fallEnabled = true
 
-    stopFallAnimations(humanoid)
-
     humanoid.PlatformStand = true
     humanoid:ChangeState(Enum.HumanoidStateType.Physics)
+
+    fallConnection = RunService.RenderStepped:Connect(function()
+        if not fallEnabled then
+            return
+        end
+
+        local currentCharacter = player.Character
+
+        if not currentCharacter then
+            return
+        end
+
+        local currentHumanoid = currentCharacter:FindFirstChildOfClass("Humanoid")
+
+        if not currentHumanoid then
+            return
+        end
+
+        currentHumanoid.PlatformStand = true
+
+        local animator = currentHumanoid:FindFirstChildOfClass("Animator")
+
+        if animator then
+            for _, track in ipairs(animator:GetPlayingAnimationTracks()) do
+                track:Stop(0)
+            end
+        end
+    end)
 
     FallButton.Text = "Fall: ON"
     FallButton.TextColor3 = Color3.fromRGB(0, 255, 0)
