@@ -850,13 +850,14 @@ mobileFlyDownButton.Parent = mobileFlyControls
 
 local flying = false
 
+local flyKeyDown
+local flyKeyUp
 local flyConnection
-local flyVelocity
-local flyAttachment
 
 local flyUp = false
 local flyDown = false
 
+local iyFlySpeed = 1
 local mobileDevice = UserInputService.TouchEnabled
 
 local mobileFlyControls = Instance.new("Frame")
@@ -920,12 +921,15 @@ mobileFlyDownButton.ZIndex = 101
 mobileFlyDownButton.Parent = mobileFlyControls
 
 local function setMobileFlyControlsVisible(visible)
-    if not mobileDevice then
-        mobileFlyControls.Visible = false
-        return
+    mobileFlyControls.Visible = mobileDevice and visible
+end
+
+local function getRoot(character)
+    if not character then
+        return nil
     end
 
-    mobileFlyControls.Visible = visible
+    return character:FindFirstChild("HumanoidRootPart")
 end
 
 local function stopFly()
@@ -933,19 +937,19 @@ local function stopFly()
     flyUp = false
     flyDown = false
 
+    if flyKeyDown then
+        flyKeyDown:Disconnect()
+        flyKeyDown = nil
+    end
+
+    if flyKeyUp then
+        flyKeyUp:Disconnect()
+        flyKeyUp = nil
+    end
+
     if flyConnection then
         flyConnection:Disconnect()
         flyConnection = nil
-    end
-
-    if flyVelocity then
-        flyVelocity:Destroy()
-        flyVelocity = nil
-    end
-
-    if flyAttachment then
-        flyAttachment:Destroy()
-        flyAttachment = nil
     end
 
     setMobileFlyControlsVisible(false)
@@ -960,129 +964,207 @@ local function stopFly()
         end
     end
 
+    local camera = workspace.CurrentCamera
+
+    if camera then
+        camera.CameraType = Enum.CameraType.Custom
+    end
+
     FlyButton.Text = "Fly: OFF"
     FlyButton.TextColor3 = Color3.fromRGB(255, 0, 0)
 end
 
-local function updateFly()
-    if not flying then
+local function startDesktopFly()
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+
+    if not humanoid then
         return
     end
 
-    local character = player.Character
-
-    if not character then
-        return
-    end
-
-    local root = character:FindFirstChild("HumanoidRootPart")
+    local root = getRoot(character)
 
     if not root then
         return
     end
 
+    local bodyGyro = Instance.new("BodyGyro")
+    local bodyVelocity = Instance.new("BodyVelocity")
+
+    bodyGyro.P = 9e4
+    bodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
+    bodyGyro.CFrame = root.CFrame
+    bodyGyro.Parent = root
+
+    bodyVelocity.MaxForce = Vector3.new(9e9, 9e9, 9e9)
+    bodyVelocity.Velocity = Vector3.zero
+    bodyVelocity.Parent = root
+
+    local control = {
+        F = 0,
+        B = 0,
+        L = 0,
+        R = 0,
+        Q = 0,
+        E = 0
+    }
+
+    local lastControl = {
+        F = 0,
+        B = 0,
+        L = 0,
+        R = 0,
+        Q = 0,
+        E = 0
+    }
+
+    local speed = 0
+
+    flying = true
+
+    FlyButton.Text = "Fly: ON"
+    FlyButton.TextColor3 = Color3.fromRGB(0, 255, 0)
+
     local camera = workspace.CurrentCamera
 
-    if not camera then
-        return
+    if camera then
+        camera.CameraType = Enum.CameraType.Track
     end
 
-    local lookDirection = camera.CFrame.LookVector
-    local rightDirection = camera.CFrame.RightVector
+    flyKeyDown = UserInputService.InputBegan:Connect(function(input, processed)
+        if processed or not flying then
+            return
+        end
 
-    local direction = Vector3.zero
+        if input.KeyCode == Enum.KeyCode.W then
+            control.F = iyFlySpeed
+        elseif input.KeyCode == Enum.KeyCode.S then
+            control.B = -iyFlySpeed
+        elseif input.KeyCode == Enum.KeyCode.A then
+            control.L = -iyFlySpeed
+        elseif input.KeyCode == Enum.KeyCode.D then
+            control.R = iyFlySpeed
+        elseif input.KeyCode == Enum.KeyCode.E then
+            control.Q = iyFlySpeed * 2
+        elseif input.KeyCode == Enum.KeyCode.Q then
+            control.E = -iyFlySpeed * 2
+        end
+    end)
 
-    if UserInputService:IsKeyDown(Enum.KeyCode.W) then
-        direction += lookDirection
-    end
+    flyKeyUp = UserInputService.InputEnded:Connect(function(input, processed)
+        if processed then
+            return
+        end
 
-    if UserInputService:IsKeyDown(Enum.KeyCode.S) then
-        direction -= lookDirection
-    end
+        if input.KeyCode == Enum.KeyCode.W then
+            control.F = 0
+        elseif input.KeyCode == Enum.KeyCode.S then
+            control.B = 0
+        elseif input.KeyCode == Enum.KeyCode.A then
+            control.L = 0
+        elseif input.KeyCode == Enum.KeyCode.D then
+            control.R = 0
+        elseif input.KeyCode == Enum.KeyCode.E then
+            control.Q = 0
+        elseif input.KeyCode == Enum.KeyCode.Q then
+            control.E = 0
+        end
+    end)
 
-    if UserInputService:IsKeyDown(Enum.KeyCode.A) then
-        direction -= rightDirection
-    end
+    flyConnection = RunService.RenderStepped:Connect(function()
+        if not flying then
+            return
+        end
 
-    if UserInputService:IsKeyDown(Enum.KeyCode.D) then
-        direction += rightDirection
-    end
+        local currentCharacter = player.Character
 
-    if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
-        direction += Vector3.yAxis
-    end
+        if not currentCharacter then
+            return
+        end
 
-    if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then
-        direction -= Vector3.yAxis
-    end
+        local currentRoot = getRoot(currentCharacter)
 
-    if mobileDevice then
-        local humanoid = character:FindFirstChildOfClass("Humanoid")
+        if not currentRoot then
+            return
+        end
+
+        local currentCamera = workspace.CurrentCamera
+
+        if not currentCamera then
+            return
+        end
+
+        humanoid = currentCharacter:FindFirstChildOfClass("Humanoid")
 
         if humanoid then
-            local moveDirection = humanoid.MoveDirection
-
-            if moveDirection.Magnitude > 0 then
-                local cameraForward = Vector3.new(
-                    lookDirection.X,
-                    0,
-                    lookDirection.Z
-                )
-
-                local cameraRight = Vector3.new(
-                    rightDirection.X,
-                    0,
-                    rightDirection.Z
-                )
-
-                if cameraForward.Magnitude > 0 then
-                    cameraForward = cameraForward.Unit
-                end
-
-                if cameraRight.Magnitude > 0 then
-                    cameraRight = cameraRight.Unit
-                end
-
-                local forwardAmount = moveDirection:Dot(cameraForward)
-                local rightAmount = moveDirection:Dot(cameraRight)
-
-                direction += (
-                    cameraForward * forwardAmount
-                    + cameraRight * rightAmount
-                ) * 50
-            end
+            humanoid.PlatformStand = true
         end
-    end
 
-    if flyUp then
-        direction += Vector3.yAxis * 50
-    end
+        local moving =
+            control.L + control.R ~= 0
+            or control.F + control.B ~= 0
+            or control.Q + control.E ~= 0
 
-    if flyDown then
-        direction -= Vector3.yAxis * 50
-    end
+        if moving then
+            speed = 50
+        elseif speed ~= 0 then
+            speed = 0
+        end
 
-    if direction.Magnitude > 0 then
-        direction = direction.Unit * 50
-    end
+        if moving then
+            bodyVelocity.Velocity = (
+                currentCamera.CFrame.LookVector * (control.F + control.B)
+                + (
+                    (
+                        currentCamera.CFrame
+                        * CFrame.new(
+                            control.L + control.R,
+                            (control.F + control.B + control.Q + control.E) * 0.2,
+                            0
+                        )
+                    ).Position
+                    - currentCamera.CFrame.Position
+                )
+            ) * speed
 
-    if flyVelocity then
-        flyVelocity.VectorVelocity = direction
-    end
+            lastControl = {
+                F = control.F,
+                B = control.B,
+                L = control.L,
+                R = control.R
+            }
+        elseif speed ~= 0 then
+            bodyVelocity.Velocity = (
+                currentCamera.CFrame.LookVector
+                * (lastControl.F + lastControl.B)
+                + (
+                    (
+                        currentCamera.CFrame
+                        * CFrame.new(
+                            lastControl.L + lastControl.R,
+                            (lastControl.F + lastControl.B) * 0.2,
+                            0
+                        )
+                    ).Position
+                    - currentCamera.CFrame.Position
+                )
+            ) * speed
+        else
+            bodyVelocity.Velocity = Vector3.zero
+        end
+
+        bodyGyro.CFrame = currentCamera.CFrame
+    end)
 end
 
-local function startFly()
-    if flying then
-        return
-    end
-
+local function startMobileFly()
     local character = player.Character
 
     if not character then
         return
     end
 
-    local root = character:FindFirstChild("HumanoidRootPart")
+    local root = getRoot(character)
 
     if not root then
         return
@@ -1090,21 +1172,27 @@ local function startFly()
 
     local humanoid = character:FindFirstChildOfClass("Humanoid")
 
-    if humanoid then
-        humanoid.PlatformStand = true
+    if not humanoid then
+        return
     end
 
-    flyAttachment = Instance.new("Attachment")
-    flyAttachment.Name = "c00lFlyAttachment"
-    flyAttachment.Parent = root
+    local playerModule = player:WaitForChild("PlayerScripts"):WaitForChild("PlayerModule")
+    local controlModule = require(
+        playerModule:WaitForChild("ControlModule")
+    )
 
-    flyVelocity = Instance.new("LinearVelocity")
-    flyVelocity.Name = "c00lFlyVelocity"
-    flyVelocity.Attachment0 = flyAttachment
-    flyVelocity.RelativeTo = Enum.ActuatorRelativeTo.World
-    flyVelocity.MaxForce = math.huge
-    flyVelocity.VectorVelocity = Vector3.zero
-    flyVelocity.Parent = root
+    local bodyVelocity = Instance.new("BodyVelocity")
+    local bodyGyro = Instance.new("BodyGyro")
+
+    bodyVelocity.MaxForce = Vector3.new(9e9, 9e9, 9e9)
+    bodyVelocity.Velocity = Vector3.zero
+    bodyVelocity.Parent = root
+
+    bodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
+    bodyGyro.P = 1000
+    bodyGyro.D = 50
+    bodyGyro.CFrame = root.CFrame
+    bodyGyro.Parent = root
 
     flying = true
 
@@ -1113,40 +1201,77 @@ local function startFly()
 
     setMobileFlyControlsVisible(true)
 
-    flyConnection = RunService.RenderStepped:Connect(updateFly)
+    flyConnection = RunService.RenderStepped:Connect(function()
+        if not flying then
+            return
+        end
+
+        local currentCharacter = player.Character
+
+        if not currentCharacter then
+            return
+        end
+
+        local currentRoot = getRoot(currentCharacter)
+
+        if not currentRoot then
+            return
+        end
+
+        local currentHumanoid = currentCharacter:FindFirstChildOfClass("Humanoid")
+
+        if not currentHumanoid then
+            return
+        end
+
+        local camera = workspace.CurrentCamera
+
+        if not camera then
+            return
+        end
+
+        currentHumanoid.PlatformStand = true
+
+        bodyGyro.CFrame = camera.CFrame
+
+        local direction = controlModule:GetMoveVector()
+        local velocity = Vector3.zero
+
+        if direction.X ~= 0 then
+            velocity += camera.CFrame.RightVector
+                * direction.X
+                * (iyFlySpeed * 50)
+        end
+
+        if direction.Z ~= 0 then
+            velocity -= camera.CFrame.LookVector
+                * direction.Z
+                * (iyFlySpeed * 50)
+        end
+
+        if flyUp then
+            velocity += Vector3.yAxis * 50
+        end
+
+        if flyDown then
+            velocity -= Vector3.yAxis * 50
+        end
+
+        bodyVelocity.Velocity = velocity
+    end)
 end
 
-mobileFlyUpButton.MouseButton1Down:Connect(function()
-    flyUp = true
-end)
-
-mobileFlyUpButton.MouseButton1Up:Connect(function()
-    flyUp = false
-end)
-
-mobileFlyUpButton.TouchLongPress:Connect(function(_, state)
-    if state == Enum.UserInputState.Begin then
-        flyUp = true
-    elseif state == Enum.UserInputState.End then
-        flyUp = false
+local function startFly()
+    if flying then
+        return
     end
-end)
 
-mobileFlyDownButton.MouseButton1Down:Connect(function()
-    flyDown = true
-end)
-
-mobileFlyDownButton.MouseButton1Up:Connect(function()
-    flyDown = false
-end)
-
-mobileFlyDownButton.TouchLongPress:Connect(function(_, state)
-    if state == Enum.UserInputState.Begin then
-        flyDown = true
-    elseif state == Enum.UserInputState.End then
-        flyDown = false
+    if mobileDevice then
+        startMobileFly()
+    else
+        startDesktopFly()
     end
-end)
+end
 
 FlyButton.MouseButton1Click:Connect(function()
     if flying then
@@ -1154,6 +1279,54 @@ FlyButton.MouseButton1Click:Connect(function()
     else
         startFly()
     end
+end)
+
+mobileFlyUpButton.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch
+        or input.UserInputType == Enum.UserInputType.MouseButton1 then
+
+        flyUp = true
+    end
+end)
+
+mobileFlyUpButton.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch
+        or input.UserInputType == Enum.UserInputType.MouseButton1 then
+
+        flyUp = false
+    end
+end)
+
+mobileFlyDownButton.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch
+        or input.UserInputType == Enum.UserInputType.MouseButton1 then
+
+        flyDown = true
+    end
+end)
+
+mobileFlyDownButton.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch
+        or input.UserInputType == Enum.UserInputType.MouseButton1 then
+
+        flyDown = false
+    end
+end)
+
+mobileFlyUpButton.MouseEnter:Connect(function()
+    mobileFlyUpButton.BackgroundColor3 = Color3.fromRGB(22, 0, 0)
+end)
+
+mobileFlyUpButton.MouseLeave:Connect(function()
+    mobileFlyUpButton.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+end)
+
+mobileFlyDownButton.MouseEnter:Connect(function()
+    mobileFlyDownButton.BackgroundColor3 = Color3.fromRGB(22, 0, 0)
+end)
+
+mobileFlyDownButton.MouseLeave:Connect(function()
+    mobileFlyDownButton.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
 end)
 
 local noclip = false
