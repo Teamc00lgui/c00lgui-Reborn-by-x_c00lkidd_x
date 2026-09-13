@@ -602,6 +602,18 @@ local function stopFall()
     FallButton.TextColor3 = Color3.fromRGB(255, 0, 0)
 end
 
+local function stopFallAnimations(humanoid)
+    local animator = humanoid:FindFirstChildOfClass("Animator")
+
+    if not animator then
+        return
+    end
+
+    for _, track in ipairs(animator:GetPlayingAnimationTracks()) do
+        track:Stop(0)
+    end
+end
+
 local function startFall()
     local character = player.Character
 
@@ -616,6 +628,8 @@ local function startFall()
     end
 
     fallEnabled = true
+
+    stopFallAnimations(humanoid)
 
     humanoid.PlatformStand = true
     humanoid:ChangeState(Enum.HumanoidStateType.Physics)
@@ -3570,6 +3584,10 @@ player.CharacterAdded:Connect(function(character)
 
     if ragdollEnabled then
         stopRagdoll()
+    end
+
+    if falllEnabled then
+        stopFall()
     end
 
     applyCharacterSettings()
