@@ -568,6 +568,60 @@ local JoystickButton = createPlayerButton(
     250
 )
 
+local PlatformStandButton = createPlayerButton(
+    "PlatformStandButton",
+    "Platform Stand: OFF",
+    8,
+    280
+)
+
+local platformStandEnabled = false
+
+local function stopPlatformStand()
+    platformStandEnabled = false
+
+    local character = player.Character
+
+    if character then
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
+
+        if humanoid then
+            humanoid.PlatformStand = false
+        end
+    end
+
+    PlatformStandButton.Text = "Platform Stand: OFF"
+    PlatformStandButton.TextColor3 = Color3.fromRGB(255, 0, 0)
+end
+
+local function startPlatformStand()
+    local character = player.Character
+
+    if not character then
+        return
+    end
+
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+
+    if not humanoid then
+        return
+    end
+
+    platformStandEnabled = true
+    humanoid.PlatformStand = true
+
+    PlatformStandButton.Text = "Platform Stand: ON"
+    PlatformStandButton.TextColor3 = Color3.fromRGB(0, 255, 0)
+end
+
+PlatformStandButton.MouseButton1Click:Connect(function()
+    if platformStandEnabled then
+        stopPlatformStand()
+    else
+        startPlatformStand()
+    end
+end)
+
 local jumpEnabled = false
 local joystickEnabled = false
 
@@ -3419,6 +3473,10 @@ player.CharacterAdded:Connect(function(character)
 
     if godEnabled then
         stopGod()
+    end
+
+    if platformStandEnabled then
+        stopPlatformStand()
     end
 
     applyCharacterSettings()
