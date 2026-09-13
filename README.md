@@ -1,4 +1,4 @@
-# c00lgui (DEVEL)
+# c00lgui (TEST)
 
 **EXECUTE:**
 ```LUA
