@@ -554,6 +554,284 @@ local GodButton = createPlayerButton(
     220
 )
 
+local JumpButton = createPlayerButton(
+    "JumpButton",
+    "Jump: OFF",
+    8,
+    250
+)
+
+local JoystickButton = createPlayerButton(
+    "JoystickButton",
+    "Joystick: OFF",
+    160,
+    250
+)
+
+local jumpEnabled = false
+local joystickEnabled = false
+
+local jumpControl
+local joystickControl
+local joystickKnob
+local joystickInput
+local joystickDirection = Vector2.zero
+
+local function createMobileControl(name, size, position)
+    local control = Instance.new("Frame")
+
+    control.Name = name
+    control.Size = UDim2.fromOffset(size, size)
+    control.Position = position
+
+    control.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    control.BackgroundTransparency = 0.1
+
+    control.BorderSizePixel = 2
+    control.BorderColor3 = Color3.fromRGB(255, 0, 0)
+
+    control.Visible = false
+    control.ZIndex = 200
+
+    control.Parent = gui
+
+    return control
+end
+
+local function createMobileButton(name, size, position, text)
+    local button = Instance.new("TextButton")
+
+    button.Name = name
+    button.Size = UDim2.fromOffset(size, size)
+    button.Position = position
+
+    button.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    button.BackgroundTransparency = 0.1
+
+    button.BorderSizePixel = 2
+    button.BorderColor3 = Color3.fromRGB(255, 0, 0)
+
+    button.Text = text
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+    button.Font = Enum.Font.SourceSansBold
+    button.TextSize = 20
+
+    button.AutoButtonColor = false
+    button.Visible = false
+    button.ZIndex = 201
+
+    button.Parent = gui
+
+    return button
+end
+
+local function setJumpVisible(visible)
+    if jumpControl then
+        jumpControl.Visible = UserInputService.TouchEnabled and visible
+    end
+end
+
+local function setJoystickVisible(visible)
+    if joystickControl then
+        joystickControl.Visible = UserInputService.TouchEnabled and visible
+    end
+end
+
+jumpControl = createMobileButton(
+    "MobileJump",
+    70,
+    UDim2.new(1, -90, 1, -110),
+    "JUMP"
+)
+
+joystickControl = createMobileControl(
+    "MobileJoystick",
+    100,
+    UDim2.new(0, 25, 1, -125)
+)
+
+joystickKnob = Instance.new("Frame")
+
+joystickKnob.Name = "Knob"
+joystickKnob.Size = UDim2.fromOffset(30, 30)
+joystickKnob.AnchorPoint = Vector2.new(0.5, 0.5)
+joystickKnob.Position = UDim2.fromScale(0.5, 0.5)
+
+joystickKnob.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+joystickKnob.BorderSizePixel = 0
+
+joystickKnob.ZIndex = 202
+joystickKnob.Parent = joystickControl
+
+local joystickRadius = 35
+
+local function resetJoystick()
+    joystickDirection = Vector2.zero
+    joystickInput = nil
+
+    joystickKnob.Position = UDim2.fromScale(0.5, 0.5)
+end
+
+local function updateJoystick(input)
+    local center = joystickControl.AbsolutePosition
+        + joystickControl.AbsoluteSize / 2
+
+    local offset = Vector2.new(
+        input.Position.X - center.X,
+        input.Position.Y - center.Y
+    )
+
+    if offset.Magnitude > joystickRadius then
+        offset = offset.Unit * joystickRadius
+    end
+
+    joystickDirection = Vector2.new(
+        offset.X / joystickRadius,
+        offset.Y / joystickRadius
+    )
+
+    joystickKnob.Position = UDim2.fromOffset(
+        joystickControl.AbsoluteSize.X / 2 + offset.X,
+        joystickControl.AbsoluteSize.Y / 2 + offset.Y
+    )
+end
+
+joystickControl.InputBegan:Connect(function(input)
+    if input.UserInputType ~= Enum.UserInputType.Touch then
+        return
+    end
+
+    joystickInput = input
+    updateJoystick(input)
+end)
+
+joystickControl.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch then
+        joystickInput = input
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if input == joystickInput then
+        updateJoystick(input)
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+    if input == joystickInput then
+        resetJoystick()
+    end
+end)
+
+jumpControl.InputBegan:Connect(function(input)
+    if input.UserInputType ~= Enum.UserInputType.Touch then
+        return
+    end
+
+    local character = player.Character
+
+    if not character then
+        return
+    end
+
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+
+    if humanoid then
+        humanoid.Jump = true
+    end
+end)
+
+RunService.RenderStepped:Connect(function()
+    if not joystickEnabled then
+        return
+    end
+
+    local character = player.Character
+
+    if not character then
+        return
+    end
+
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+
+    if not humanoid then
+        return
+    end
+
+    local camera = workspace.CurrentCamera
+
+    if not camera then
+        return
+    end
+
+    local cameraCFrame = camera.CFrame
+
+    local forward = Vector3.new(
+        cameraCFrame.LookVector.X,
+        0,
+        cameraCFrame.LookVector.Z
+    )
+
+    local right = Vector3.new(
+        cameraCFrame.RightVector.X,
+        0,
+        cameraCFrame.RightVector.Z
+    )
+
+    if forward.Magnitude > 0 then
+        forward = forward.Unit
+    end
+
+    if right.Magnitude > 0 then
+        right = right.Unit
+    end
+
+    local movement = (
+        right * joystickDirection.X
+        + forward * -joystickDirection.Y
+    )
+
+    if movement.Magnitude > 1 then
+        movement = movement.Unit
+    end
+
+    humanoid:Move(movement, false)
+end)
+
+JoystickButton.MouseButton1Click:Connect(function()
+    joystickEnabled = not joystickEnabled
+
+    if joystickEnabled then
+        JoystickButton.Text = "Joystick: ON"
+        JoystickButton.TextColor3 = Color3.fromRGB(0, 255, 0)
+
+        setJoystickVisible(true)
+    else
+        JoystickButton.Text = "Joystick: OFF"
+        JoystickButton.TextColor3 = Color3.fromRGB(255, 0, 0)
+
+        resetJoystick()
+        setJoystickVisible(false)
+    end
+end)
+
+JumpButton.MouseButton1Click:Connect(function()
+    jumpEnabled = not jumpEnabled
+
+    if jumpEnabled then
+        JumpButton.Text = "Jump: ON"
+        JumpButton.TextColor3 = Color3.fromRGB(0, 255, 0)
+
+        setJumpVisible(true)
+    else
+        JumpButton.Text = "Jump: OFF"
+        JumpButton.TextColor3 = Color3.fromRGB(255, 0, 0)
+
+        setJumpVisible(false)
+    end
+end)
+
 local forceFieldEnabled = false
 local godEnabled = false
 local godConnection
