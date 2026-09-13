@@ -850,17 +850,74 @@ mobileFlyDownButton.Parent = mobileFlyControls
 
 local flying = false
 
+local flyConnection
 local flyVelocity
 local flyAttachment
-local flyOrientation
-local flyOrientationAttachment
-local flyConnection
-local flyAnimationConnection
 
 local flyUp = false
 local flyDown = false
 
 local mobileDevice = UserInputService.TouchEnabled
+
+local mobileFlyControls = Instance.new("Frame")
+
+mobileFlyControls.Name = "MobileFlyControls"
+mobileFlyControls.Size = UDim2.fromOffset(70, 150)
+mobileFlyControls.Position = UDim2.new(1, -90, 1, -190)
+
+mobileFlyControls.BackgroundTransparency = 1
+mobileFlyControls.BorderSizePixel = 0
+
+mobileFlyControls.Visible = false
+mobileFlyControls.ZIndex = 100
+
+mobileFlyControls.Parent = gui
+
+local mobileFlyUpButton = Instance.new("TextButton")
+
+mobileFlyUpButton.Name = "FlyUp"
+mobileFlyUpButton.Size = UDim2.fromOffset(60, 60)
+mobileFlyUpButton.Position = UDim2.fromOffset(5, 0)
+
+mobileFlyUpButton.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+mobileFlyUpButton.BackgroundTransparency = 0.15
+
+mobileFlyUpButton.BorderSizePixel = 2
+mobileFlyUpButton.BorderColor3 = Color3.fromRGB(255, 0, 0)
+
+mobileFlyUpButton.Text = "▲"
+mobileFlyUpButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+mobileFlyUpButton.Font = Enum.Font.SourceSansBold
+mobileFlyUpButton.TextSize = 26
+
+mobileFlyUpButton.AutoButtonColor = false
+mobileFlyUpButton.ZIndex = 101
+
+mobileFlyUpButton.Parent = mobileFlyControls
+
+local mobileFlyDownButton = Instance.new("TextButton")
+
+mobileFlyDownButton.Name = "FlyDown"
+mobileFlyDownButton.Size = UDim2.fromOffset(60, 60)
+mobileFlyDownButton.Position = UDim2.fromOffset(5, 70)
+
+mobileFlyDownButton.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
+mobileFlyDownButton.BackgroundTransparency = 0.15
+
+mobileFlyDownButton.BorderSizePixel = 2
+mobileFlyDownButton.BorderColor3 = Color3.fromRGB(255, 0, 0)
+
+mobileFlyDownButton.Text = "▼"
+mobileFlyDownButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+mobileFlyDownButton.Font = Enum.Font.SourceSansBold
+mobileFlyDownButton.TextSize = 26
+
+mobileFlyDownButton.AutoButtonColor = false
+mobileFlyDownButton.ZIndex = 101
+
+mobileFlyDownButton.Parent = mobileFlyControls
 
 local function setMobileFlyControlsVisible(visible)
     if not mobileDevice then
@@ -869,42 +926,6 @@ local function setMobileFlyControlsVisible(visible)
     end
 
     mobileFlyControls.Visible = visible
-end
-
-local function stopAllAnimations(character)
-    local humanoid = character:FindFirstChildOfClass("Humanoid")
-
-    if not humanoid then
-        return
-    end
-
-    local animator = humanoid:FindFirstChildOfClass("Animator")
-
-    if animator then
-        for _, track in ipairs(animator:GetPlayingAnimationTracks()) do
-            track:Stop(0)
-        end
-    end
-end
-
-local function disableFlyAnimationStates(humanoid)
-    humanoid:SetStateEnabled(Enum.HumanoidStateType.Running, false)
-    humanoid:SetStateEnabled(Enum.HumanoidStateType.RunningNoPhysics, false)
-    humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping, false)
-    humanoid:SetStateEnabled(Enum.HumanoidStateType.Freefall, false)
-    humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown, false)
-    humanoid:SetStateEnabled(Enum.HumanoidStateType.Climbing, false)
-    humanoid:SetStateEnabled(Enum.HumanoidStateType.Swimming, false)
-end
-
-local function enableFlyAnimationStates(humanoid)
-    humanoid:SetStateEnabled(Enum.HumanoidStateType.Running, true)
-    humanoid:SetStateEnabled(Enum.HumanoidStateType.RunningNoPhysics, true)
-    humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping, true)
-    humanoid:SetStateEnabled(Enum.HumanoidStateType.Freefall, true)
-    humanoid:SetStateEnabled(Enum.HumanoidStateType.FallingDown, true)
-    humanoid:SetStateEnabled(Enum.HumanoidStateType.Climbing, true)
-    humanoid:SetStateEnabled(Enum.HumanoidStateType.Swimming, true)
 end
 
 local function stopFly()
@@ -917,19 +938,9 @@ local function stopFly()
         flyConnection = nil
     end
 
-    if flyAnimationConnection then
-        flyAnimationConnection:Disconnect()
-        flyAnimationConnection = nil
-    end
-
     if flyVelocity then
         flyVelocity:Destroy()
         flyVelocity = nil
-    end
-
-    if flyOrientation then
-        flyOrientation:Destroy()
-        flyOrientation = nil
     end
 
     if flyAttachment then
@@ -937,27 +948,15 @@ local function stopFly()
         flyAttachment = nil
     end
 
-    if flyOrientationAttachment then
-        flyOrientationAttachment:Destroy()
-        flyOrientationAttachment = nil
-    end
-
     setMobileFlyControlsVisible(false)
 
     local character = player.Character
 
     if character then
-        local animate = character:FindFirstChild("Animate")
-
-        if animate then
-            animate.Disabled = false
-        end
-
         local humanoid = character:FindFirstChildOfClass("Humanoid")
 
         if humanoid then
-            humanoid.AutoRotate = true
-            enableFlyAnimationStates(humanoid)
+            humanoid.PlatformStand = false
         end
     end
 
@@ -966,14 +965,13 @@ local function stopFly()
 end
 
 local function updateFly()
-    if not flying or not flyVelocity then
+    if not flying then
         return
     end
 
     local character = player.Character
 
     if not character then
-        stopFly()
         return
     end
 
@@ -989,7 +987,34 @@ local function updateFly()
         return
     end
 
+    local lookDirection = camera.CFrame.LookVector
+    local rightDirection = camera.CFrame.RightVector
+
     local direction = Vector3.zero
+
+    if UserInputService:IsKeyDown(Enum.KeyCode.W) then
+        direction += lookDirection
+    end
+
+    if UserInputService:IsKeyDown(Enum.KeyCode.S) then
+        direction -= lookDirection
+    end
+
+    if UserInputService:IsKeyDown(Enum.KeyCode.A) then
+        direction -= rightDirection
+    end
+
+    if UserInputService:IsKeyDown(Enum.KeyCode.D) then
+        direction += rightDirection
+    end
+
+    if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+        direction += Vector3.yAxis
+    end
+
+    if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then
+        direction -= Vector3.yAxis
+    end
 
     if mobileDevice then
         local humanoid = character:FindFirstChildOfClass("Humanoid")
@@ -998,58 +1023,51 @@ local function updateFly()
             local moveDirection = humanoid.MoveDirection
 
             if moveDirection.Magnitude > 0 then
-                direction += camera.CFrame.LookVector * moveDirection.Magnitude
+                local cameraForward = Vector3.new(
+                    lookDirection.X,
+                    0,
+                    lookDirection.Z
+                )
+
+                local cameraRight = Vector3.new(
+                    rightDirection.X,
+                    0,
+                    rightDirection.Z
+                )
+
+                if cameraForward.Magnitude > 0 then
+                    cameraForward = cameraForward.Unit
+                end
+
+                if cameraRight.Magnitude > 0 then
+                    cameraRight = cameraRight.Unit
+                end
+
+                local forwardAmount = moveDirection:Dot(cameraForward)
+                local rightAmount = moveDirection:Dot(cameraRight)
+
+                direction += (
+                    cameraForward * forwardAmount
+                    + cameraRight * rightAmount
+                ) * 50
             end
-        end
-    else
-        if UserInputService:IsKeyDown(Enum.KeyCode.W) then
-            direction += camera.CFrame.LookVector
-        end
-
-        if UserInputService:IsKeyDown(Enum.KeyCode.S) then
-            direction -= camera.CFrame.LookVector
-        end
-
-        if UserInputService:IsKeyDown(Enum.KeyCode.A) then
-            direction -= camera.CFrame.RightVector
-        end
-
-        if UserInputService:IsKeyDown(Enum.KeyCode.D) then
-            direction += camera.CFrame.RightVector
-        end
-
-        if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
-            direction += Vector3.yAxis
-        end
-
-        if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then
-            direction -= Vector3.yAxis
         end
     end
 
     if flyUp then
-        direction += Vector3.yAxis
+        direction += Vector3.yAxis * 50
     end
 
     if flyDown then
-        direction -= Vector3.yAxis
+        direction -= Vector3.yAxis * 50
     end
 
     if direction.Magnitude > 0 then
         direction = direction.Unit * 50
     end
 
-    flyVelocity.VectorVelocity = direction
-
-    if flyOrientation then
-        local lookDirection = camera.CFrame.LookVector
-
-        if lookDirection.Magnitude > 0 then
-            flyOrientation.CFrame = CFrame.lookAt(
-                root.Position,
-                root.Position + lookDirection.Unit
-            )
-        end
+    if flyVelocity then
+        flyVelocity.VectorVelocity = direction
     end
 end
 
@@ -1073,18 +1091,8 @@ local function startFly()
     local humanoid = character:FindFirstChildOfClass("Humanoid")
 
     if humanoid then
-        humanoid.AutoRotate = false
-
-        disableFlyAnimationStates(humanoid)
+        humanoid.PlatformStand = true
     end
-
-    local animate = character:FindFirstChild("Animate")
-
-    if animate then
-        animate.Disabled = true
-    end
-
-    stopAllAnimations(character)
 
     flyAttachment = Instance.new("Attachment")
     flyAttachment.Name = "c00lFlyAttachment"
@@ -1098,19 +1106,6 @@ local function startFly()
     flyVelocity.VectorVelocity = Vector3.zero
     flyVelocity.Parent = root
 
-    flyOrientationAttachment = Instance.new("Attachment")
-    flyOrientationAttachment.Name = "c00lFlyOrientationAttachment"
-    flyOrientationAttachment.Parent = root
-
-    flyOrientation = Instance.new("AlignOrientation")
-    flyOrientation.Name = "c00lFlyOrientation"
-    flyOrientation.Attachment0 = flyOrientationAttachment
-    flyOrientation.Mode = Enum.OrientationAlignmentMode.OneAttachment
-    flyOrientation.MaxTorque = math.huge
-    flyOrientation.Responsiveness = 20
-    flyOrientation.CFrame = root.CFrame
-    flyOrientation.Parent = root
-
     flying = true
 
     FlyButton.Text = "Fly: ON"
@@ -1118,20 +1113,40 @@ local function startFly()
 
     setMobileFlyControlsVisible(true)
 
-flyAnimationConnection = RunService.RenderStepped:Connect(function()
-    if not flying then
-        return
-    end
+    flyConnection = RunService.RenderStepped:Connect(updateFly)
+end
 
-    local currentCharacter = player.Character
+mobileFlyUpButton.MouseButton1Down:Connect(function()
+    flyUp = true
+end)
 
-    if currentCharacter then
-        stopAllAnimations(currentCharacter)
+mobileFlyUpButton.MouseButton1Up:Connect(function()
+    flyUp = false
+end)
+
+mobileFlyUpButton.TouchLongPress:Connect(function(_, state)
+    if state == Enum.UserInputState.Begin then
+        flyUp = true
+    elseif state == Enum.UserInputState.End then
+        flyUp = false
     end
 end)
 
-    flyConnection = RunService.RenderStepped:Connect(updateFly)
-end
+mobileFlyDownButton.MouseButton1Down:Connect(function()
+    flyDown = true
+end)
+
+mobileFlyDownButton.MouseButton1Up:Connect(function()
+    flyDown = false
+end)
+
+mobileFlyDownButton.TouchLongPress:Connect(function(_, state)
+    if state == Enum.UserInputState.Begin then
+        flyDown = true
+    elseif state == Enum.UserInputState.End then
+        flyDown = false
+    end
+end)
 
 FlyButton.MouseButton1Click:Connect(function()
     if flying then
@@ -1139,54 +1154,6 @@ FlyButton.MouseButton1Click:Connect(function()
     else
         startFly()
     end
-end)
-
-mobileFlyUpButton.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.Touch
-        or input.UserInputType == Enum.UserInputType.MouseButton1 then
-
-        flyUp = true
-    end
-end)
-
-mobileFlyUpButton.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.Touch
-        or input.UserInputType == Enum.UserInputType.MouseButton1 then
-
-        flyUp = false
-    end
-end)
-
-mobileFlyDownButton.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.Touch
-        or input.UserInputType == Enum.UserInputType.MouseButton1 then
-
-        flyDown = true
-    end
-end)
-
-mobileFlyDownButton.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.Touch
-        or input.UserInputType == Enum.UserInputType.MouseButton1 then
-
-        flyDown = false
-    end
-end)
-
-mobileFlyUpButton.MouseEnter:Connect(function()
-    mobileFlyUpButton.BackgroundColor3 = Color3.fromRGB(22, 0, 0)
-end)
-
-mobileFlyUpButton.MouseLeave:Connect(function()
-    mobileFlyUpButton.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
-end)
-
-mobileFlyDownButton.MouseEnter:Connect(function()
-    mobileFlyDownButton.BackgroundColor3 = Color3.fromRGB(22, 0, 0)
-end)
-
-mobileFlyDownButton.MouseLeave:Connect(function()
-    mobileFlyDownButton.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
 end)
 
 local noclip = false
