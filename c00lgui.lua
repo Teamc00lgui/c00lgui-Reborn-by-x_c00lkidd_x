@@ -738,7 +738,7 @@ jumpControl.InputBegan:Connect(function(input)
     local humanoid = character:FindFirstChildOfClass("Humanoid")
 
     if humanoid then
-        humanoid.Jump = true
+        humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
     end
 end)
 
