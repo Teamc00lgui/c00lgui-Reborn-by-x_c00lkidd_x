@@ -477,6 +477,16 @@ local characterSizeControl = createSliderControl(
     5
 )
 
+local healthControl = createSliderControl(
+    playerPage,
+    "Health",
+    "Health",
+    128,
+    100,
+    1,
+    1000
+)
+
 local function createPlayerButton(name, text, xPosition, yPosition)
     local button = Instance.new("TextButton")
 
@@ -506,42 +516,42 @@ local FlyButton = createPlayerButton(
     "FlyButton",
     "Fly: OFF",
     8,
-    130
+    160
 )
 
 local NoclipButton = createPlayerButton(
     "NoclipButton",
     "Noclip: OFF",
     160,
-    130
+    160
 )
 
 local InfiniteJumpButton = createPlayerButton(
     "InfiniteJumpButton",
     "Infinite Jump: OFF",
     8,
-    160
+    190
 )
 
 local ClickTeleportButton = createPlayerButton(
     "ClickTeleportButton",
     "Click Teleport: OFF",
     160,
-    160
+    190
 )
 
 local ForceFieldButton = createPlayerButton(
     "ForceFieldButton",
     "ForceField: OFF",
     8,
-    190
+    220
 )
 
 local GodButton = createPlayerButton(
     "GodButton",
     "God: OFF",
     160,
-    190
+    220
 )
 
 local forceFieldEnabled = false
@@ -2996,6 +3006,25 @@ local function setCharacterSize(value)
     end)
 end
 
+local function setHealth(value)
+    setControlValue(healthControl, value)
+
+    local character = player.Character
+
+    if not character then
+        return
+    end
+
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+
+    if not humanoid then
+        return
+    end
+
+    humanoid.MaxHealth = healthControl.currentValue
+    humanoid.Health = healthControl.currentValue
+end
+
 local function connectControl(control, setter)
     local dragging = false
 
@@ -3066,6 +3095,7 @@ connectControl(walkSpeedControl, setWalkSpeed)
 connectControl(jumpPowerControl, setJumpPower)
 connectControl(gravityControl, setGravity)
 connectControl(characterSizeControl, setCharacterSize)
+connectControl(healthControl, setHealth)
 
 local function applyCharacterSettings()
     local character = player.Character
@@ -3074,13 +3104,14 @@ local function applyCharacterSettings()
         return
     end
 
-    character:WaitForChild("Humanoid")
+    local humanoid = character:WaitForChild("Humanoid")
 
     task.wait()
 
     setWalkSpeed(walkSpeedControl.currentValue)
     setJumpPower(jumpPowerControl.currentValue)
     setCharacterSize(characterSizeControl.currentValue)
+    setHealth(healthControl.currentValue)
 end
 
 player.CharacterAdded:Connect(function(character)
