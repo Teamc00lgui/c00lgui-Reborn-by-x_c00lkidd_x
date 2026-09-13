@@ -958,9 +958,19 @@ local function stopFly()
 
     if character then
         local humanoid = character:FindFirstChildOfClass("Humanoid")
+        local root = character:FindFirstChild("HumanoidRootPart")
+
+        if root then
+            for _, object in ipairs(root:GetChildren()) do
+                if object:IsA("BodyVelocity") or object:IsA("BodyGyro") then
+                    object:Destroy()
+                end
+            end
+        end
 
         if humanoid then
             humanoid.PlatformStand = false
+            humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
         end
     end
 
