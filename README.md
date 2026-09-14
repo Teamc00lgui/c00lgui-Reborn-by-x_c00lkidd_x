@@ -1,4 +1,4 @@
-# c00lgui
+# c00lgui Reborn
 
 c00lgui Reborn is a Luau-based GUI project created by **x_c00lkidd_x**.
 
