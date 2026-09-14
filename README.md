@@ -9,6 +9,7 @@ c00lgui Reborn is a Luau-based GUI project created by **x_c00lkidd_x**.
 The project focuses on a customizable in-game interface with different tools, visual effects, player features, music, and other experimental features.
 
 ## Screenshots
+
 _TBA_
 
 ## Branches
@@ -24,15 +25,18 @@ An unstable branch used to test new features before they are considered ready fo
 - Do not use the test branch as your main version.
 
 ## Execute
+
 ```LUAU
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Teamc00lgui/c00lgui-Reborn-by-x_c00lkidd_x/main/c00lgui.luau"))()
 ```
 ## Attention
+
 - You'll need an executor to use c00lgui, and to apply the skybox, etc., you'll need to bypass FE, so... good luck.
 - R6 recommended.
 - You can be banned using this, because this is an exploit.
 
 ## Features
+
 - Player tools
 - Visual effects
 - Music
@@ -40,6 +44,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/Teamc00lgui/c00lgui-R
 - Luau command execution
 
 ## Credits
+
 - Created and maintained by **x_c00lkidd_x**.
 - Inspiration in **c00lgui Reborn rc7 by v3rx**.
 - Original c00lgui by **007n7/c00lkidd**.
@@ -47,5 +52,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/Teamc00lgui/c00lgui-R
 _Please give credit if you repost or modify the project._
 
 ## Project
+
 Started: September 10, 2026
-- c00lgui Reborn is actively developed and new features may be added over time.
+
+c00lgui Reborn is actively developed and new features may be added over time.
