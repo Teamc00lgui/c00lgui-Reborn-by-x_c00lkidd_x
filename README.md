@@ -1,6 +1,6 @@
 # c00lgui Reborn
 
-<a href="https://discord.gg"><img src="https://shields.io" alt="Discord" height="40"/></a>
+<a href="https://https://discord.gg/ax94HgaXe"><img src="https://shields.io" alt="Discord" height="40"/></a>
 
 c00lgui Reborn is a Luau-based GUI project created by **x_c00lkidd_x**.
 
