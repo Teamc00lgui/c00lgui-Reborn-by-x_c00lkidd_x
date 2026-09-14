@@ -41,7 +41,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/Teamc00lgui/c00lgui-R
 - Inspiration in **c00lgui Reborn rc7 by v3rx**.
 - Original c00lgui by **007n7/c00lkidd**.
 
-_Please give credits if you repost or modify the project._
+_Please give credit if you repost or modify the project._
 
 ## Project
 Started: September 10, 2026
