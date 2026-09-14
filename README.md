@@ -34,7 +34,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/Teamc00lgui/c00lgui-R
 - Visual effects
 - Music
 - Troll features
-- Executor of LUAU commands
+- Luau command execution
 
 ## Credits
 - Created and maintained by **x_c00lkidd_x**.
