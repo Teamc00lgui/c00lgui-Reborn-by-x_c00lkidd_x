@@ -4,6 +4,18 @@ c00lgui Reborn is a Luau-based GUI project created by **x_c00lkidd_x**.
 
 The project focuses on a customizable in-game interface with different tools, visual effects, player features, music, and other experimental features.
 
+**Branches:**
+
+`main`
+
+The stable and recommended branch.
+
+`test`
+
+An unstable branch used to test new features before they are considered ready for main.
+
+- Do not use the test branch as your main version.
+
 **EXECUTE:**
 ```LUAU
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Teamc00lgui/c00lgui-Reborn-by-x_c00lkidd_x/main/c00lgui.luau"))()
