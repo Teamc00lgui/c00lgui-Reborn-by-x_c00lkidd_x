@@ -22,10 +22,14 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/Teamc00lgui/c00lgui-R
 ```
 **ATTENTION:**
 - You'll need an executor to use c00lgui, and to apply the skybox, etc., you'll need to bypass FE, so... good luck.
-- This is the official repo of 'c00lgui Reborn by x_c00lkidd_x'.
-- You can repost this code with or without modifications, BUT PLEASE DO NOT PUT A VIRUS IN THE CODE, AND GIVE CREDIT TO 'x_c00lkidd_x', thanks.
 - R6 recommended.
 - You can be banned using this, because this is an exploit.
+
+**Credits:**
+
+- Created and maintained by x_c00lkidd_x.
+
+-- Please give credit if you repost or modify the project.
 
 **Project:**
 
