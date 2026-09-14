@@ -1,5 +1,7 @@
 # c00lgui Reborn
 
+[![Discord](https://shields.io)](https://discord.gg)
+
 c00lgui Reborn is a Luau-based GUI project created by **x_c00lkidd_x**.
 
 The project focuses on a customizable in-game interface with different tools, visual effects, player features, music, and other experimental features.
