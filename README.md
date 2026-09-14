@@ -1,4 +1,4 @@
-# c00lgui Reborn
+# c00lgui Reborn by x_c00lkidd_x
 
 <a href="https://discord.gg/ax94HgaXe">
   <img src="https://img.shields.io/badge/Discord-Team%20c00lkidd-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Team c00lkidd">
@@ -20,14 +20,22 @@ An unstable branch used to test new features before they are considered ready fo
 
 - Do not use the test branch as your main version.
 
-## EXECUTE:
+## Execute:
 ```LUAU
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Teamc00lgui/c00lgui-Reborn-by-x_c00lkidd_x/main/c00lgui.luau"))()
 ```
-## ATTENTION:
+## Attention:
 - You'll need an executor to use c00lgui, and to apply the skybox, etc., you'll need to bypass FE, so... good luck.
 - R6 recommended.
 - You can be banned using this, because this is an exploit.
+
+## Features:
+
+- Player tools
+- Visual effects
+- Music
+- Troll features
+- Executor of LUAU commands
 
 ## Credits:
 
