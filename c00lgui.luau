@@ -1329,66 +1329,6 @@ local flyDown = false
 local iyFlySpeed = 1
 local mobileDevice = UserInputService.TouchEnabled
 
-local mobileFlyControls = Instance.new("Frame")
-
-mobileFlyControls.Name = "MobileFlyControls"
-mobileFlyControls.Size = UDim2.fromOffset(70, 150)
-mobileFlyControls.Position = UDim2.new(1, -90, 1, -190)
-
-mobileFlyControls.BackgroundTransparency = 1
-mobileFlyControls.BorderSizePixel = 0
-
-mobileFlyControls.Visible = false
-mobileFlyControls.ZIndex = 100
-
-mobileFlyControls.Parent = gui
-
-local mobileFlyUpButton = Instance.new("TextButton")
-
-mobileFlyUpButton.Name = "FlyUp"
-mobileFlyUpButton.Size = UDim2.fromOffset(60, 60)
-mobileFlyUpButton.Position = UDim2.fromOffset(5, 0)
-
-mobileFlyUpButton.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
-mobileFlyUpButton.BackgroundTransparency = 0.15
-
-mobileFlyUpButton.BorderSizePixel = 2
-mobileFlyUpButton.BorderColor3 = Color3.fromRGB(255, 0, 0)
-
-mobileFlyUpButton.Text = "▲"
-mobileFlyUpButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-
-mobileFlyUpButton.Font = Enum.Font.SourceSansBold
-mobileFlyUpButton.TextSize = 26
-
-mobileFlyUpButton.AutoButtonColor = false
-mobileFlyUpButton.ZIndex = 101
-
-mobileFlyUpButton.Parent = mobileFlyControls
-
-local mobileFlyDownButton = Instance.new("TextButton")
-
-mobileFlyDownButton.Name = "FlyDown"
-mobileFlyDownButton.Size = UDim2.fromOffset(60, 60)
-mobileFlyDownButton.Position = UDim2.fromOffset(5, 70)
-
-mobileFlyDownButton.BackgroundColor3 = Color3.fromRGB(12, 12, 12)
-mobileFlyDownButton.BackgroundTransparency = 0.15
-
-mobileFlyDownButton.BorderSizePixel = 2
-mobileFlyDownButton.BorderColor3 = Color3.fromRGB(255, 0, 0)
-
-mobileFlyDownButton.Text = "▼"
-mobileFlyDownButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-
-mobileFlyDownButton.Font = Enum.Font.SourceSansBold
-mobileFlyDownButton.TextSize = 26
-
-mobileFlyDownButton.AutoButtonColor = false
-mobileFlyDownButton.ZIndex = 101
-
-mobileFlyDownButton.Parent = mobileFlyControls
-
 local function setMobileFlyControlsVisible(visible)
     mobileFlyControls.Visible = mobileDevice and visible
 end
@@ -1655,10 +1595,10 @@ local function startMobileFly()
         return
     end
 
-    local playerModule = player:WaitForChild("PlayerScripts"):WaitForChild("PlayerModule")
-    local controlModule = require(
-        playerModule:WaitForChild("ControlModule")
-    )
+local playerModule = player:WaitForChild("PlayerScripts"):WaitForChild("PlayerModule")
+local controlModule = require(
+    playerModule:WaitForChild("ControlModule") :: ModuleScript
+)
 
     local bodyVelocity = Instance.new("BodyVelocity")
     local bodyGyro = Instance.new("BodyGyro")
@@ -2258,10 +2198,6 @@ local function stopSpin()
         end
     end
 
-    if flying and flyOrientation then
-        flyOrientation.MaxTorque = math.huge
-    end
-
     SpinButton.Text = "Spin: OFF"
     SpinButton.TextColor3 = Color3.fromRGB(255, 0, 0)
 end
@@ -2280,10 +2216,6 @@ local function startSpin()
     end
 
     spinning = true
-
-    if flying and flyOrientation then
-        flyOrientation.MaxTorque = 0
-    end
 
     SpinButton.Text = "Spin: ON"
     SpinButton.TextColor3 = Color3.fromRGB(0, 255, 0)
@@ -3563,7 +3495,7 @@ local function applyCharacterSettings()
         return
     end
 
-    local humanoid = character:WaitForChild("Humanoid")
+    character:WaitForChild("Humanoid")
 
     task.wait()
 
@@ -3606,7 +3538,7 @@ player.CharacterAdded:Connect(function(character)
         stopRagdoll()
     end
 
-    if falllEnabled then
+    if fallEnabled then
         stopFall()
     end
 
