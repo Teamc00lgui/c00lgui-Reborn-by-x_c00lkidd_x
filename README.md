@@ -1,7 +1,7 @@
 # c00lgui (TEST)
 
 **EXECUTE:**
-```LUA
+```LUAU
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Teamc00lgui/c00lgui-Reborn-by-x_c00lkidd_x/test/c00lgui.luau"))()
 ```
 **ATTENTION:**
