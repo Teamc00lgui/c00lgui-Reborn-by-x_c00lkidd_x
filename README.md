@@ -1,6 +1,6 @@
 # c00lgui Reborn
 
-[![Discord](https://shields.io)](https://discord.gg)
+[![Discord](https://shields.io)](https://discord.gg/Mnr2cWg5Ry)
 
 c00lgui Reborn is a Luau-based GUI project created by **x_c00lkidd_x**.
 
