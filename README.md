@@ -27,9 +27,13 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/Teamc00lgui/c00lgui-R
 
 **Credits:**
 
-- Created and maintained by x_c00lkidd_x.
+- Created and maintained by **x_c00lkidd_x**.
 
--- Please give credit if you repost or modify the project.
+- Inspiration in **c00lgui Reborn rc7 by v3rx**.
+
+- Original c00lgui by **007n7/c00lkidd**.
+
+_Please give credit if you repost or modify the project._
 
 **Project:**
 
