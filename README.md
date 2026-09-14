@@ -1,7 +1,6 @@
 # c00lgui Reborn
 
-<p align="center"> <a href="https://discord.gg/ax94HgaXe"> <img src="https://img.shields.io/badge/Discord-join%20the%20server-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Join the Discord server!"> </a> </p>
-         
+<a href="https://discord.gg/ax94HgaXe"> <img src="https://img.shields.io/badge/Discord-join%20the%20server-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Join the Discord server!"> </a>         
 
 c00lgui Reborn is a Luau-based GUI project created by **x_c00lkidd_x**.
 
