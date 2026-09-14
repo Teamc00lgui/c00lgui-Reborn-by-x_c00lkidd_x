@@ -45,4 +45,4 @@ _Please give credits if you repost or modify the project._
 
 ## Project
 Started: September 10, 2026
-c00lgui Reborn is actively developed and new features may be added over time.
+- c00lgui Reborn is actively developed and new features may be added over time.
